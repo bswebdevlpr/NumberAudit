@@ -4,6 +4,9 @@
 >
 > 재현: `node bench/seed-flow.js [--noisy] --write` → `node bench/roundtrip.js [--noisy]`
 > → `node bench/block-fusion.js 2965412` → `node bench/noise-stress.js` → `node bench/ladder.js`
+>
+> 여기 적힌 방 ID 는 내 계정의 테스트 방이다. 남의 계정에서는 그대로 안 돌아간다 —
+> 자기 방 ID 로 바꾸거나, `bench/seed-flow.js --write` 로 새로 심고 그 ID 를 쓰면 된다.
 
 라운드 1~3 은 전부 내가 쓴 문자열이었다. 인용 게이트는 문자열 대조라서, flow 를 한 바퀴 돌고 온
 텍스트가 원문과 달라지면 그 자리에서 깨진다. 그래서 합성 12문서를 **실제 flow 프로젝트에 심고,
