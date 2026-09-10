@@ -138,7 +138,10 @@ function paint() {
 
   $('#foot').innerHTML = `프로젝트 ${esc(snap.project.projectId)} · 모델 ${esc(Object.entries(snap.model.byModel).map(([m, n]) => `${m}×${n}`).join(' · '))}
     · 호출 ${snap.model.calls}회 · ${(snap.ms / 1000).toFixed(1)}초
-    <br>데모 데이터는 API 로 심어 작성자가 모두 같습니다. 담당자 매핑은 참여자가 여럿인 프로젝트에서 갈립니다.`
+    <br>데모 데이터는 API 로 심어 작성자가 모두 같습니다. 담당자 매핑은 참여자가 여럿인 프로젝트에서 갈립니다.${
+      snap.live && snap.claims.length !== demoSnap.claims.length
+        ? `<br>지금 화면은 방금 돌린 결과입니다. 라이브는 함수 상한(60초) 안에 들어와야 해서 빠른 모델로 돌고,
+           저장본은 상위 모델로 만든 것이라 ${demoSnap.claims.length}건입니다.` : ''}`
 }
 
 const STEP_NAMES = ['수집', '정제', '추출', '게이트', '판정', '업무']
@@ -180,21 +183,23 @@ function highlightSection(prompt, docId) {
 
 
 /**
- * 게이트가 실제로 버린 기록.
- * 폐기는 **모델이 없는 인용을 만들어야** 생기므로 데모 데이터로 심을 수 있는 것이 아니다.
- * 라운드 4 에서 걸린 실측 한 건을 그대로 보여준다 — 지어낸 실패를 심지 않는다.
- * (그 건의 원인이던 `normalizeText` 의 개행 뭉갬은 고쳐서 지금은 재현되지 않는다.)
+ * 게이트가 실제로 버린 기록 — **그 일이 실제로 있었던 글에만** 붙인다.
+ * 폐기는 모델이 없는 인용을 만들어야 생기므로 데모 데이터로 심을 수 있는 것이 아니다.
+ * 라운드 4 에서 걸린 실측 한 건을 그대로 보인다 — 지어낸 실패를 심지 않는다.
  */
-function recordedReject(rejectedHere) {
-  if (rejectedHere) return ''
+const ROUND4_DOC = '요청당 쿼리가 47회 나갑니다'
+
+function recordedReject(d, rejectedHere) {
+  if (rejectedHere || !String(d.text ?? '').includes(ROUND4_DOC)) return ''
   return `<div class="recorded">
-    <span class="lbl">실제로 버린 기록 · 라운드 4 측정</span>
-    <p class="rl">이 글에서는 버려진 인용이 없습니다. 게이트가 무엇을 막는지는 실측에서 걸린 한 건으로 대신 보입니다.</p>
+    <span class="lbl">이 글에서 실제로 걸렀던 기록 · 라운드 4 측정</span>
+    <p class="rl">지금은 통과하지만, 실제 플로우 데이터로 처음 감사했을 때 이 글의 인용 하나가 여기서 버려졌습니다.</p>
     <div class="pre">✗ "- 요청당 쿼리가 47회 나갑니다."  (값 47)  →  폐기 · 인용이 원문에 없음
 원문   … - 목록 조회에서 N+1이 납니다. 요청당 쿼리가 47회 나갑니다. - p95 820ms …</div>
-    <p class="rl"><b>47회</b>는 그 글에 실제로 적혀 있습니다. 모델이 앞줄의 불릿 <code>- </code>를 끌어다
+    <p class="rl"><b>47회</b>는 이 글에 실제로 적혀 있습니다. 모델이 앞줄의 불릿 <code>- </code>를 끌어다
     원문에 없는 문장을 만들었을 뿐입니다. 게이트가 보는 것은 값이 맞는지가 아니라 <b>인용이 원문에 실재하는지</b>라서,
     참인 주장이 거짓 인용 때문에 버려졌습니다.</p>
+    <p class="rl">원인은 줄바꿈을 공백 하나로 뭉개던 정제 코드였습니다. 고친 뒤로는 재현되지 않습니다.</p>
   </div>`
 }
 
@@ -253,7 +258,7 @@ function render(i) {
       </div>
       <div class="pre">${at ? esc(d.text.slice(0, at[0])) + '<mark>' + esc(d.text.slice(at[0], at[1])) + '</mark>' + esc(d.text.slice(at[1])) : esc(d.text)}</div>
     </div>`
-  }).join('') + recordedReject(rej.length) + playground(d, mine[0])
+  }).join('') + recordedReject(d, rej.length) + playground(d, mine[0])
     : '<div class="empty">이 글에서 뽑힌 수치가 없습니다.</div>'
 
   // 5 판정 — 여기서 문서 밖으로 나간다
@@ -557,10 +562,13 @@ fetch('/api/audit', { method: 'POST' })
     const sec = (j.ms / 1000).toFixed(1)
     // 🔑 **무엇을 했는지를 먼저 말한다.** 저장본과의 차이는 이유와 붙여 뒤에 둔다 —
     //    숫자만 앞에 세우면 결함 고지처럼 읽힌다.
-    const diff = j.claims.length !== demoSnap.claims.length ? ` · 저장본 ${demoSnap.claims.length}건(상위 모델)` : ''
-    live.textContent = `방금 플로우를 다시 읽어 감사했습니다 · ${j.claims.length}건 · ${sec}초${diff}`
+    // 🔑 배지는 한 줄로 잘리는 자리다. **살아 있다는 증거**만 남기고,
+    //    저장본과의 차이는 그 숫자가 실제로 적히는 곳(푸터)으로 내린다.
+    live.textContent = `방금 다시 감사했습니다 · ${j.claims.length}건 · ${sec}초`
     live.title = `${ran} · 호출 ${j.model.calls ?? '?'}회 · ${sec}초` +
-      (diff ? ' — 라이브는 함수 상한(60초) 안에 들어와야 해서 빠른 모델로 돕니다.' : '')
+      (j.claims.length !== demoSnap.claims.length
+        ? ` — 라이브는 함수 상한(60초) 안에 들어와야 해서 빠른 모델로 돕니다. 저장본은 상위 모델로 만든 것이라 ${demoSnap.claims.length}건입니다.`
+        : '')
   })
   .catch(() => {
     live.className = 'livebadge warn'
