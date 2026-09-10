@@ -398,6 +398,13 @@ function renderIntro() {
   $('#steps').innerHTML = `<div class="intro">
     <div class="k">워크플로 예시</div>
     <h2>글 하나가 업무가 되기까지</h2>
+    <dl class="brief">
+      <dt>푸는 문제</dt>
+      <dd>숫자는 글에서 글로 옮겨 다니는데, <b>그 숫자를 어떻게 쟀는지</b>는 같이 옮겨 가지 않습니다.</dd>
+      <dt>쓰는 방법</dt>
+      <dd>플로우 API 로 글과 댓글을 읽고, Gemini 가 수치를 뽑고,
+          <b>인용이 원문에 실재하는지는 코드가 확인합니다.</b></dd>
+    </dl>
     <button class="btn" data-start="${pick < 0 ? 0 : pick}">예시 불러오기</button>
     <span class="hint">「${esc(label)}」${ro(label)} 여섯 단계를 따라갑니다 · 왼쪽에서 다른 원문을 골라도 됩니다</span>
   </div>`
