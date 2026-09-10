@@ -11,3 +11,6 @@ bench/out/*.log
 
 # 빌드 산출물 — src/ 에서 복사된다
 public/lib/
+
+# 작업 규칙 — 내부 문서
+CLAUDE.md
