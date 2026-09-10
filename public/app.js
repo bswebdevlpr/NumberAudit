@@ -108,9 +108,9 @@ function traceBlock(cs, here, set) {
   const hasMiss = bare.some((c) => flagged.has(c.claimId))
   return `<div class="trace">
     <div class="th"><div>숫자</div><div>적힌 글</div><div>어떻게 쟀다고 적혀 있나</div></div>
-    ${grounded.length ? `<div class="cut">측정 기록 — 방법이 함께 적혀 있다${outGroup.length ? ' · 단위가 같은 값을 프로젝트 전체에서 모았다' : ''}</div>${grounded.map((c) => traceRow(c, here)).join('')}` : ''}
+    ${grounded.length ? `<div class="cut">측정 기록 — 방법이 함께 적혀 있다${outGroup.length ? ' · 단위가 같은 값을 프로젝트 전체에서 모았습니다' : ''}</div>${grounded.map((c) => traceRow(c, here)).join('')}` : ''}
     ${bare.length ? `<div class="cut">방법이 적혀 있지 않은 값</div>${bare.map((c) => traceRow(c, here)).join('')}` : ''}
-    ${hasMiss ? '<div class="foot">틀렸다는 판정이 아닙니다 — <b>감사한 글에서 근거를 못 찾았다</b>는 표시입니다.</div>' : ''}
+    ${hasMiss ? '<div class="foot">틀렸다는 판정이 아닙니다 — <b>감사한 글에서 근거를 찾지 못했다</b>는 표시입니다.</div>' : ''}
   </div>`
 }
 
@@ -120,20 +120,24 @@ function paint() {
   $('#docList').innerHTML = docs.map((d, i) => {
   const cs = claimsOf(d.docId), bad = cs.filter((c) => flagged.has(c.claimId)).length
   const judged = snap.verdicts.some((v) => v.claimIds.some((id) => cs.some((c) => c.claimId === id)))
-  // 제목만 보이면 어떤 글인지 안 잡힌다. 본문 앞머리를 같이 보여준다.
+  // 제목만 보이면 어떤 글인지 안 잡힌다. 앞머리를 두 줄 보여주고, 전문은 펼쳐서 본다.
   // 댓글은 제목이 부모 글 것이라 반대다 — 내용을 위에, 어느 글의 댓글인지를 아래에 둔다.
   const head = d.kind === 'comment' ? d.text : d.title
   const sub = d.kind === 'comment'
     ? `「${cleanTitle(d.title)}」의 댓글`
     : String(d.text ?? '').replace(/\s+/g, ' ').trim()
-  // 수치가 없거나 어느 지표에도 안 묶인 글은 흐리게 둔다. 목록에서 빼지는 않는다 —
-  // 안 보이면 「없는 것」이 되고, 그건 감사 범위를 숨기는 것이다.
-  return `<button class="docrow${judged ? '' : ' idle'}" data-i="${i}" aria-current="false">
-    <span class="t">${esc(head)}</span>
-    <span class="p">${esc(sub)}</span>
-    <span class="s"><span class="chip">${d.kind === 'comment' ? '댓글' : '글'}</span>
-      수치 ${cs.length}${bad ? ` <span class="chip flag">근거 없음 ${bad}</span>` : judged ? '' : ' · 판정 없음'}</span>
-  </button>`
+  // 수치가 없거나 어느 지표에도 안 묶인 글은 흐리게 둡니다. 목록에서 빼지는 않습니다 —
+  // 안 보이면 「없는 것」이 되고, 그건 감사 범위를 숨기는 것입니다.
+  return `<div class="docitem">
+    <button class="docrow${judged ? '' : ' idle'}" data-i="${i}" aria-current="false">
+      <span class="t">${esc(head)}</span>
+      <span class="p">${esc(sub)}</span>
+      <span class="s"><span class="chip">${d.kind === 'comment' ? '댓글' : '글'}</span>
+        수치 ${cs.length}${bad ? ` <span class="chip flag">근거 없음 ${bad}</span>` : judged ? '' : ' · 판정 없음'}</span>
+    </button>
+    <button class="docmore" data-more="${i}" aria-expanded="false">본문 펼치기</button>
+    <div class="docbody" data-body="${i}" hidden>${esc(d.text)}</div>
+  </div>`
   }).join('')
 
   $('#foot').innerHTML = `프로젝트 ${esc(snap.project.projectId)} · 모델 ${esc(Object.entries(snap.model.byModel).map(([m, n]) => `${m}×${n}`).join(' · '))}
@@ -185,21 +189,21 @@ function render(i) {
   // 1 수집 — 이 문서를 가져온 실제 호출
   const calls = (snap.trace?.flow ?? []).filter((t) => t.path.includes(String(d.postId)))
   const s1 = snap.mode === 'paste'
-    ? '<div class="pre">플로우를 거치지 않았습니다 — 붙여넣은 글입니다.</div>'
+    ? '<div class="pre">붙여넣은 글이 플로우에 올라와 있다고 가정하고, 수집을 건너뜁니다.</div>'
     : calls.length
     ? `<div class="pre">${calls.map((t) => `${t.method} ${esc(t.path)}  → HTTP ${t.http} · success=${t.success} · ${t.ms}ms\n  data: ${esc(t.dataKeys.join(', '))}`).join('\n\n')}</div>`
-    : '<div class="pre">(상위 글의 응답에 함께 실려 왔다)</div>'
+    : '<div class="pre">상위 글의 응답에 함께 실려 왔습니다.</div>'
 
   // 2 정제 — 본문이 세 벌로 온다
   const raw = d.raw ?? {}
-  const bin = (k, v) => `<div><span class="lbl">${k}${d.source?.startsWith(k) ? ' — 이걸 썼다' : ''}</span>
+  const bin = (k, v) => `<div><span class="lbl">${k}${d.source?.startsWith(k) ? ' · 사용' : ''}</span>
     <div class="pre">${v ? esc(v) : '(비어 있음)'}</div></div>`
   const s2 = snap.mode === 'paste'
     ? `<span class="lbl">붙여넣은 원문</span><div class="pre">${esc(raw.content)}</div>
        <span class="lbl">정제 결과</span><div class="pre">${esc(d.text)}</div>`
     : `<div class="twocol">${bin('content', raw.content)}${bin('outContent', raw.outContent)}</div>
     <div style="margin-top:12px">${bin('htmlContent', raw.htmlContent)}</div>
-    <span class="lbl">정제 결과 — ${esc(d.source ?? '')} 를 골랐다</span><div class="pre">${esc(d.text)}</div>`
+    <span class="lbl">정제 결과 · ${esc(d.source ?? '')} 사용</span><div class="pre">${esc(d.text)}</div>`
 
   // 3 추출 — 배치다. 이 문서 구간만 강조한다
   const mine = claimsOf(d.docId)
@@ -218,7 +222,7 @@ function render(i) {
     <span class="lbl">응답 JSON 중 이 문서 몫</span>
     <div class="pre">${esc(JSON.stringify(mine.map(({ docId, metric, valueText, unit, scope, method, isTarget, quote }) =>
       ({ docId, metric, valueText, unit, scope, method, isTarget, quote })), null, 1))}</div>`
-    : '<div class="pre">프롬프트 원문이 스냅샷에 없다</div>'
+    : '<div class="pre">프롬프트 원문이 스냅샷에 없습니다.</div>'
 
   // 4 게이트 — 인용을 원문에서 켠다
   const rej = rejectedOf(d.docId)
@@ -296,7 +300,7 @@ function render(i) {
         <span class="chip accent">상태 ${esc(p.task.status)}</span>
         <span class="chip ${p.task.priority === 'high' ? 'flag' : ''}">우선순위 ${esc(p.task.priority)}</span>
         <span class="chip">마감 ${esc(p.task.endDate)}</span>
-        <span class="chip">담당자 ${esc(p.worker?.name ?? '비움')}</span>
+<span class="chip">담당자 ${p.worker?.name ? esc(p.worker.name) : '등록할 때 글쓴이로 지정'}</span>
         <span class="chip">${esc(p.tier ?? '')}</span>
       </div>
       <div class="pre">${esc(p.task.contents)}</div>
@@ -304,7 +308,7 @@ function render(i) {
         <button class="btn" data-plan="${pi}">플로우에 등록</button>
         <span class="muted" style="font-size:12px">하위업무 ${p.subtasks.length}건이 함께 만들어진다</span>
       </div>
-      <p class="warnline">⚠️ 플로우에 삭제 API 가 없다. 등록하면 웹에서 직접 지워야 한다.</p>
+      <p class="warnline">⚠️ 플로우에 삭제 API 가 없습니다. 등록하면 웹에서 직접 지워야 합니다.</p>
     </div>`).join('') : `<div class="empty">${mine.length ? '이 글에서 어긋난 값을 찾지 못했습니다.' : '이 글에는 수치 주장이 없습니다.'}</div>`
 
   const STEPS = [
@@ -348,7 +352,7 @@ function renderPaste(msg = '', busy = false) {
       <button class="btn ghost" id="pasteBack">데모로 돌아가기</button>
     </div>
     ${msg ? `<p class="perr">${esc(msg)}</p>` : ''}
-    <span class="hint">플로우를 거치지 않습니다. 붙여넣은 글에 추출과 게이트만 겁니다.
+    <span class="hint">붙여넣은 글이 플로우에 올라와 있다고 가정하고 추출부터 돌립니다.
       ${b ? `모델 호출 1회를 씁니다 · ${b.maxChars}자까지 · ${Math.round(b.perIpMs / 1000)}초 간격` : ''}</span>
   </div>`
 }
@@ -414,6 +418,15 @@ $('#steps').addEventListener('click', async (e) => {
 })
 
 $('#docList').addEventListener('click', (e) => {
+  const more = e.target.closest('[data-more]')
+  if (more) {
+    const body = $(`[data-body="${more.dataset.more}"]`)
+    const open = body.hidden
+    body.hidden = !open
+    more.setAttribute('aria-expanded', String(open))
+    more.textContent = open ? '본문 접기' : '본문 펼치기'
+    return
+  }
   const b = e.target.closest('.docrow'); if (!b) return
   state.doc = Number(b.dataset.i); state.revealed = 1; show()
 })
@@ -490,7 +503,7 @@ $('#steps').addEventListener('click', async (e) => {
     b.textContent = r.error ? '등록 실패' : '등록됨'
   } catch (err) {
     submitted.push({ title: p.task.title, subtaskIds: [],
-      error: '이 배포는 읽기 전용이다 — 쓰기는 서버가 있어야 한다.' })
+      error: '이 배포는 읽기 전용입니다 — 쓰기는 서버가 있어야 합니다.' })
     b.textContent = '등록 불가'
   }
   renderOut(); $('#outList').scrollIntoView({ behavior: 'smooth', block: 'center' })
