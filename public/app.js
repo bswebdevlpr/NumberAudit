@@ -199,7 +199,7 @@ function render(i) {
        <span class="lbl">정제 결과</span><div class="pre">${esc(d.text)}</div>`
     : `<div class="twocol">${bin('content', raw.content)}${bin('outContent', raw.outContent)}</div>
     <div style="margin-top:12px">${bin('htmlContent', raw.htmlContent)}</div>
-    <span class="lbl">정제 결과 · ${esc(d.source ?? '')} 사용</span><div class="pre">${esc(d.text)}</div>`
+    <span class="lbl">정제 결과</span><div class="pre">${esc(d.text)}</div>`
 
   // 3 추출 — 배치다. 이 문서 구간만 강조한다
   const mine = claimsOf(d.docId)

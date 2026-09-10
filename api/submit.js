@@ -29,12 +29,12 @@ export function unverifiedQuotes(contents, docs) {
  * @returns {{error?: string, detail?: any, quotes?: number}}
  */
 export function validatePlan(plan, docs) {
-  if (!plan?.task?.title || !Array.isArray(plan.subtasks)) return { error: 'plan 이 없다' }
+  if (!plan?.task?.title || !Array.isArray(plan.subtasks)) return { error: '보낼 업무 내용이 없습니다.' }
   if (!String(plan.task.title).startsWith(TOOL_TITLE_PREFIX)) {
-    return { error: `제목은 ${TOOL_TITLE_PREFIX} 로 시작해야 한다` }
+    return { error: `제목은 ${TOOL_TITLE_PREFIX} 로 시작해야 합니다.` }
   }
   if (plan.subtasks.length > LIMITS.subtasks) {
-    return { error: `하위업무는 ${LIMITS.subtasks}건까지다 (지금 ${plan.subtasks.length}건)` }
+    return { error: `하위업무는 ${LIMITS.subtasks}건까지입니다 (지금 ${plan.subtasks.length}건).` }
   }
 
   const parts = [
@@ -44,12 +44,12 @@ export function validatePlan(plan, docs) {
 
   let total = 0
   for (const p of parts) {
-    if (String(p.title ?? '').length > LIMITS.title) return { error: `${p.where} 제목이 ${LIMITS.title}자를 넘는다` }
-    if (String(p.contents ?? '').length > LIMITS.contents) return { error: `${p.where} 본문이 ${LIMITS.contents}자를 넘는다` }
+    if (String(p.title ?? '').length > LIMITS.title) return { error: `${p.where} 제목이 ${LIMITS.title}자를 넘습니다.` }
+    if (String(p.contents ?? '').length > LIMITS.contents) return { error: `${p.where} 본문이 ${LIMITS.contents}자를 넘습니다.` }
     const { quotes, unverified } = unverifiedQuotes(p.contents, docs)
-    if (!quotes.length) return { error: `${p.where}에 인용이 없다` }
+    if (!quotes.length) return { error: `${p.where}에 인용이 없습니다.` }
     if (unverified.length) {
-      return { error: `${p.where}에 원문에서 확인되지 않는 인용 ${unverified.length}건`, detail: unverified }
+      return { error: `${p.where}에 원문에서 확인되지 않는 인용이 ${unverified.length}건 있습니다.`, detail: unverified }
     }
     total += quotes.length
   }
@@ -68,7 +68,7 @@ let used = 0
 const lastByIp = new Map()
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') return json(res, 405, { error: 'POST 만 받는다' })
+  if (req.method !== 'POST') return json(res, 405, { error: 'POST 만 받습니다.' })
   const missing = keysReady()
   if (missing) return json(res, 503, { error: missing })
 

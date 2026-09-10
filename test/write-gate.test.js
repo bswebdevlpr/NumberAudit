@@ -40,7 +40,7 @@ test('하위업무 본문도 검증한다 — 제목만 맞추고 하위업무�
 
 test('인용이 없는 하위업무도 막는다', () => {
   const v = validatePlan(plan({ subtasks: [{ title: 'x', contents: '그냥 텍스트' }] }), docs)
-  assert.match(v.error, /하위업무 1에 인용이 없다/)
+  assert.match(v.error, /하위업무 1에 인용이 없습니다/)
 })
 
 test('제목 접두사가 다르면 막는다 — 도구 출력 표식이다', () => {
@@ -55,6 +55,6 @@ test('하위업무 개수·길이 상한을 건다', () => {
 })
 
 test('plan 이 아니면 막는다', () => {
-  assert.match(validatePlan(null, docs).error, /plan 이 없다/)
-  assert.match(validatePlan({ task: { title: '[수치 감사] x' } }, docs).error, /plan 이 없다/)
+  assert.match(validatePlan(null, docs).error, /보낼 업무 내용이 없습니다/)
+  assert.match(validatePlan({ task: { title: '[수치 감사] x' } }, docs).error, /보낼 업무 내용이 없습니다/)
 })

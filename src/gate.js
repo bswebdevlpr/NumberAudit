@@ -62,7 +62,7 @@ export function checkClaim({ sourceText, quote, valueText }) {
   // ③ 값 주변에 문맥이 있나 — 값 자체만 인용하면 어느 문서 것인지 못 가린다
   const context = tight(q).length - tight(v).length
   if (context < MIN_CONTEXT_CHARS) {
-    return { ok: false, tier, reason: `문맥이 없다 (값 외 ${context}자)` }
+    return { ok: false, tier, reason: `문맥 없음 (값 외 ${context}자)` }
   }
 
   return { ok: true, tier, reason: null }

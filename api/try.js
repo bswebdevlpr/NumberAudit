@@ -32,7 +32,7 @@ function budget() {
 export default async function handler(req, res) {
   // GET 은 남은 횟수만 알려준다. 호출을 쓰지 않는다.
   if (req.method === 'GET') return json(res, 200, budget())
-  if (req.method !== 'POST') return json(res, 405, { error: 'POST 만 받는다' })
+  if (req.method !== 'POST') return json(res, 405, { error: 'POST 만 받습니다.' })
   const missing = keysReady()
   if (missing) return json(res, 503, { error: missing })
 

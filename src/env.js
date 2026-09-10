@@ -23,7 +23,7 @@ loadEnvFile(resolve(here, '../.env'))
 
 export function requireEnv(name) {
   const v = process.env[name]
-  if (!v) throw new Error(`환경변수 ${name} 가 없다. .env 또는 배포 환경변수를 확인한다.`)
+  if (!v) throw new Error(`환경변수 ${name} 가 없습니다. .env 또는 배포 환경변수를 확인해 주세요.`)
   return v
 }
 
