@@ -80,6 +80,6 @@ test('본문에 마크다운 표식을 쓰지 않는다 — 플로우에는 플�
 
 test('2차 판정 업무는 견준 근거를 같이 적는다', () => {
   const body = planTasks(snap)[0].task.contents
-  assert.match(body, /같은 단위\(ms\)로 측정 방법이 적힌 값/)
+  assert.match(body, /같은 단위\(ms\)로 「어떻게 쟀는지」가 적힌 값/)
   assert.match(body, /820ms/)
 })

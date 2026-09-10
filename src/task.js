@@ -31,7 +31,8 @@ const ymd = (d) => `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())
 const plusDays = (n) => { const d = new Date(); d.setDate(d.getDate() + n); return ymd(d) }
 
 export const KIND = {
-  UNSOURCED: { code: 'UNSOURCED', label: '근거가 안 보임', priority: 'high', dueInDays: 3 },
+  // 제목과 본문은 **플로우로 나가서 이 화면 없이 혼자 읽힌다.** 「근거」 같은 줄임말을 쓰지 않는다.
+  UNSOURCED: { code: 'UNSOURCED', label: '어떻게 쟀는지가 없음', priority: 'high', dueInDays: 3 },
   CONFLICT: { code: 'CONFLICT', label: '값이 갈림', priority: 'normal', dueInDays: 7 },
 }
 
@@ -104,7 +105,7 @@ export function planTasks(snapshot, { workers = new Map() } = {}) {
       '---',
       '이 업무는 수치 감사 도구가 만들었다. 판정은 다음 두 가지만 본다 —',
       '「인용이 원문에 실재하나」와 「같은 값이 측정 방법과 함께 적힌 곳이 있나」.',
-      '숫자가 틀렸다는 뜻이 아니다. 이 프로젝트의 글에서 근거를 못 찾았다는 뜻이다.',
+      '숫자가 틀렸다는 뜻이 아니다. 이 프로젝트의 글에서 어떻게 쟀는지를 못 찾았다는 뜻이다.',
     ].join('\n')
 
     // 담당자 — 그 수치를 쓴 사람. 여러 명이면 첫 번째. 참여자 목록에 없으면 비운다.
@@ -156,21 +157,21 @@ export function planTasks(snapshot, { workers = new Map() } = {}) {
       `■ ${kind.label} (${cs.length}건)`,
       ...cs.map(claimLine),
       '',
-      `■ 같은 단위(${unit})로 측정 방법이 적힌 값`,
+      `■ 같은 단위(${unit})로 「어떻게 쟀는지」가 적힌 값`,
       ...sameUnitGrounded.map(claimLine),
       '',
       '---',
       '이 판정은 그룹 밖 대조다. 지표 이름이 아니라 단위만 같은 값들과 견줬다.',
       '글쓴이가 수식어를 생략하면(「p95 응답시간」 → 「검색 응답」) 지표 묶기가 갈라져',
       '그룹 안에서는 대조할 상대가 사라지기 때문이다. 대신 단위만 같고 다른 지표일 수 있다 —',
-      '그래서 「숫자가 틀렸다」가 아니라 「이 프로젝트의 글에서 근거를 못 찾았다」까지만 말한다.',
+      '그래서 「숫자가 틀렸다」가 아니라 「이 프로젝트의 글에서 어떻게 쟀는지를 못 찾았다」까지만 말한다.',
     ].join('\n')
 
     const authors = [...new Set(cs.map((c) => c.author).filter(Boolean))]
     plans.unshift({
       kind: kind.code, tier: '2차(단위 대조)', metric,
       task: {
-        title: `${TOOL_TITLE_PREFIX} ${metric} ${cs[0].valueText}${unit} — 근거를 못 찾음`,
+        title: `${TOOL_TITLE_PREFIX} ${metric} ${cs[0].valueText}${unit} — 측정 방법을 못 찾음`,
         contents: body, status: 'request', priority: kind.priority, endDate: plusDays(kind.dueInDays),
       },
       subtasks: subtasksFor(kind, cs),

@@ -120,18 +120,14 @@ function paint() {
   $('#docList').innerHTML = docs.map((d, i) => {
   const cs = claimsOf(d.docId), bad = cs.filter((c) => flagged.has(c.claimId)).length
   const judged = snap.verdicts.some((v) => v.claimIds.some((id) => cs.some((c) => c.claimId === id)))
-  // 제목만 보이면 어떤 글인지 안 잡힌다. 앞머리를 두 줄 보여주고, 전문은 펼쳐서 본다.
-  // 댓글은 제목이 부모 글 것이라 반대다 — 내용을 위에, 어느 글의 댓글인지를 아래에 둔다.
+  // 댓글은 제목이 부모 글 것이라 그대로 두면 같은 줄이 여러 개가 된다. 내용을 제목 자리에 둔다.
+  // 본문은 아래 펼치기로 본다 — 앞머리를 같이 보이면 같은 글이 두 번 나온다.
   const head = d.kind === 'comment' ? d.text : d.title
-  const sub = d.kind === 'comment'
-    ? `「${cleanTitle(d.title)}」의 댓글`
-    : String(d.text ?? '').replace(/\s+/g, ' ').trim()
   // 수치가 없거나 어느 지표에도 안 묶인 글은 흐리게 둡니다. 목록에서 빼지는 않습니다 —
   // 안 보이면 「없는 것」이 되고, 그건 감사 범위를 숨기는 것입니다.
   return `<div class="docitem">
     <button class="docrow${judged ? '' : ' idle'}" data-i="${i}" aria-current="false">
       <span class="t">${esc(head)}</span>
-      <span class="p">${esc(sub)}</span>
       <span class="s"><span class="chip">${d.kind === 'comment' ? '댓글' : '글'}</span>
         수치 ${cs.length}${bad ? ` <span class="chip flag">근거 없음 ${bad}</span>` : judged ? '' : ' · 판정 없음'}</span>
     </button>

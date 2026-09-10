@@ -206,10 +206,7 @@ footer{border-top:1px solid var(--line);margin-top:72px;padding:26px 0 60px;colo
   max-height:220px;overflow:auto}
 .docrow .t{font-size:13.5px;font-weight:560;letter-spacing:-.01em;display:block;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.docrow .p{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
-  font-size:12px;line-height:1.5;color:var(--muted);margin-top:3px}
-.docrow[aria-current="true"] .p{color:var(--ink-2)}
-.docrow .s{font-size:11.5px;color:var(--muted);margin-top:6px;display:flex;gap:6px;align-items:center}
+.docrow .s{font-size:11.5px;color:var(--muted);margin-top:4px;display:flex;gap:6px;align-items:center}
 
 /* ── 단계 카드 ────────────────────────────────────────────────────── */
 .steps{display:flex;flex-direction:column;gap:12px;min-width:0}
