@@ -1,0 +1,13 @@
+# 키는 저장소에 들어가지 않는다. .env.example 만 공개한다.
+.env
+.env.*
+!.env.example
+
+node_modules/
+.DS_Store
+
+# 실행 로그
+bench/out/*.log
+
+# 빌드 산출물 — src/ 에서 복사된다
+public/lib/

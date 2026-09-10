@@ -1,0 +1,1060 @@
+{
+  "at": "2026-09-09T12:40:14.579Z",
+  "model": {
+    "gemini-3.6-flash": 9,
+    "gemini-3.5-flash": 3,
+    "gemini-3.1-flash-lite": 2
+  },
+  "regex": {
+    "claims": [
+      {
+        "claimId": "B001",
+        "docId": "post:1",
+        "postId": "1",
+        "title": "[킥오프] 검색 응답 개선",
+        "valueText": "3명",
+        "unit": "명",
+        "axis": "개수",
+        "quote": "이번 스프린트 목표를 공유합니다. 참여 인원은 3명입니다. - 검색 API p95 응답"
+      },
+      {
+        "claimId": "B002",
+        "docId": "post:1",
+        "postId": "1",
+        "title": "[킥오프] 검색 응답 개선",
+        "valueText": "820ms",
+        "unit": "ms",
+        "axis": "시간",
+        "quote": "3명입니다. - 검색 API p95 응답시간이 현재 820ms입니다. - 목표는 300ms입니다."
+      },
+      {
+        "claimId": "B003",
+        "docId": "post:1",
+        "postId": "1",
+        "title": "[킥오프] 검색 응답 개선",
+        "valueText": "300ms",
+        "unit": "ms",
+        "axis": "시간",
+        "quote": "p95 응답시간이 현재 820ms입니다. - 목표는 300ms입니다. - 배포 목표일은 9월 20"
+      },
+      {
+        "claimId": "B004",
+        "docId": "post:1",
+        "postId": "1",
+        "title": "[킥오프] 검색 응답 개선",
+        "valueText": "9월 20일",
+        "unit": "날짜",
+        "axis": "날짜",
+        "quote": "니다. - 목표는 300ms입니다. - 배포 목표일은 9월 20일입니다. - 대상 브랜치는 relea"
+      },
+      {
+        "claimId": "B005",
+        "docId": "post:2",
+        "postId": "2",
+        "title": "[주간] 1주차 — 쿼리 프로파일링",
+        "valueText": "47회",
+        "unit": "회",
+        "axis": "개수",
+        "quote": ". - 목록 조회에서 N+1이 납니다. 요청당 쿼리가 47회 나갑니다. - p95 820ms."
+      },
+      {
+        "claimId": "B006",
+        "docId": "post:2",
+        "postId": "2",
+        "title": "[주간] 1주차 — 쿼리 프로파일링",
+        "valueText": "820ms",
+        "unit": "ms",
+        "axis": "시간",
+        "quote": "납니다. 요청당 쿼리가 47회 나갑니다. - p95 820ms. 스테이징 · 동시 10 · 캐시"
+      },
+      {
+        "claimId": "B007",
+        "docId": "comment:2-1",
+        "postId": "2",
+        "title": "[주간] 1주차 — 쿼리 프로파일링 — 댓글",
+        "valueText": "47회",
+        "unit": "회",
+        "axis": "개수",
+        "quote": "47회면 손볼 만하네요. 진행 부탁드립니다"
+      },
+      {
+        "claimId": "B008",
+        "docId": "post:3",
+        "postId": "3",
+        "title": "인덱스 추가 + N+1 제거",
+        "valueText": "47회",
+        "unit": "회",
+        "axis": "개수",
+        "quote": "붙였습니다. PR #412 입니다. - 요청당 쿼리 47회에서 3회로 줄었습니다. - p95"
+      },
+      {
+        "claimId": "B009",
+        "docId": "post:3",
+        "postId": "3",
+        "title": "인덱스 추가 + N+1 제거",
+        "valueText": "3회",
+        "unit": "회",
+        "axis": "개수",
+        "quote": ". PR #412 입니다. - 요청당 쿼리 47회에서 3회로 줄었습니다. - p95 320ms"
+      },
+      {
+        "claimId": "B010",
+        "docId": "post:3",
+        "postId": "3",
+        "title": "인덱스 추가 + N+1 제거",
+        "valueText": "320ms",
+        "unit": "ms",
+        "axis": "시간",
+        "quote": "요청당 쿼리 47회에서 3회로 줄었습니다. - p95 320ms. 스테이징 · 동시 10 · 캐시"
+      },
+      {
+        "claimId": "B011",
+        "docId": "comment:3-1",
+        "postId": "3",
+        "title": "인덱스 추가 + N+1 제거 — 댓글",
+        "valueText": "280ms",
+        "unit": "ms",
+        "axis": "시간",
+        "quote": "재측정했더니 p95 280ms 나왔습니다. 캐시 워밍 후 3회 평"
+      },
+      {
+        "claimId": "B012",
+        "docId": "comment:3-1",
+        "postId": "3",
+        "title": "인덱스 추가 + N+1 제거 — 댓글",
+        "valueText": "3회",
+        "unit": "회",
+        "axis": "개수",
+        "quote": "정했더니 p95 280ms 나왔습니다. 캐시 워밍 후 3회 평균입니다."
+      },
+      {
+        "claimId": "B013",
+        "docId": "post:4",
+        "postId": "4",
+        "title": "[주간] 3주차 — 중간 점검",
+        "valueText": "42개",
+        "unit": "개",
+        "axis": "개수",
+        "quote": "- 응답 속도가 2배 이상 빨라졌습니다. - 테스트는 42개 추가했습니다. - 배포는 9월 13"
+      },
+      {
+        "claimId": "B014",
+        "docId": "post:4",
+        "postId": "4",
+        "title": "[주간] 3주차 — 중간 점검",
+        "valueText": "9월 13일",
+        "unit": "날짜",
+        "axis": "날짜",
+        "quote": "습니다. - 테스트는 42개 추가했습니다. - 배포는 9월 13일로 당깁니다."
+      },
+      {
+        "claimId": "B015",
+        "docId": "post:5",
+        "postId": "5",
+        "title": "[초안] 고객 공지 문구",
+        "valueText": "250ms",
+        "unit": "ms",
+        "axis": "시간",
+        "quote": "문구 초안입니다. 검토 부탁드립니다. - 검색 응답 250ms로 개선 - 테스트 커버리지 99%"
+      },
+      {
+        "claimId": "B016",
+        "docId": "post:5",
+        "postId": "5",
+        "title": "[초안] 고객 공지 문구",
+        "valueText": "99%",
+        "unit": "%",
+        "axis": "비율",
+        "quote": "- 검색 응답 250ms로 개선 - 테스트 커버리지 99% - 릴리스 예정일 9월 20일"
+      },
+      {
+        "claimId": "B017",
+        "docId": "post:5",
+        "postId": "5",
+        "title": "[초안] 고객 공지 문구",
+        "valueText": "9월 20일",
+        "unit": "날짜",
+        "axis": "날짜",
+        "quote": "로 개선 - 테스트 커버리지 99% - 릴리스 예정일 9월 20일"
+      },
+      {
+        "claimId": "B018",
+        "docId": "comment:5-1",
+        "postId": "5",
+        "title": "[초안] 고객 공지 문구 — 댓글",
+        "valueText": "250ms",
+        "unit": "ms",
+        "axis": "시간",
+        "quote": "250ms는 어디서 나온 숫자인가요? 처음 봅"
+      },
+      {
+        "claimId": "B019",
+        "docId": "post:6",
+        "postId": "6",
+        "title": "[QA] 회귀 테스트 결과",
+        "valueText": "4분",
+        "unit": "분",
+        "axis": "시간",
+        "quote": "개편 범위 회귀를 돌렸습니다. 실행 시간은 4분 12초입니다. - 테스트 1,284"
+      },
+      {
+        "claimId": "B020",
+        "docId": "post:6",
+        "postId": "6",
+        "title": "[QA] 회귀 테스트 결과",
+        "valueText": "12초",
+        "unit": "초",
+        "axis": "시간",
+        "quote": "개편 범위 회귀를 돌렸습니다. 실행 시간은 4분 12초입니다. - 테스트 1,284 케이스"
+      },
+      {
+        "claimId": "B021",
+        "docId": "post:6",
+        "postId": "6",
+        "title": "[QA] 회귀 테스트 결과",
+        "valueText": "1,284케이스",
+        "unit": "케이스",
+        "axis": "개수",
+        "quote": "렸습니다. 실행 시간은 4분 12초입니다. - 테스트 1,284 케이스 전부 통과 - 스테이트먼트 커버리"
+      },
+      {
+        "claimId": "B022",
+        "docId": "post:6",
+        "postId": "6",
+        "title": "[QA] 회귀 테스트 결과",
+        "valueText": "96.4%",
+        "unit": "%",
+        "axis": "비율",
+        "quote": "1,284 케이스 전부 통과 - 스테이트먼트 커버리지 96.4% - 3주차 공유의 「42개」는 케이"
+      },
+      {
+        "claimId": "B023",
+        "docId": "post:6",
+        "postId": "6",
+        "title": "[QA] 회귀 테스트 결과",
+        "valueText": "42개",
+        "unit": "개",
+        "axis": "개수",
+        "quote": "스테이트먼트 커버리지 96.4% - 3주차 공유의 「42개」는 케이스 수가 아니라 파일 수입니"
+      },
+      {
+        "claimId": "B024",
+        "docId": "post:7",
+        "postId": "7",
+        "title": "[회의록] 릴리스 판정",
+        "valueText": "5명",
+        "unit": "명",
+        "axis": "개수",
+        "quote": "릴리스 여부를 논의했습니다. 참석 5명. - 테스트 1,200여 개 통과"
+      },
+      {
+        "claimId": "B025",
+        "docId": "post:7",
+        "postId": "7",
+        "title": "[회의록] 릴리스 판정",
+        "valueText": "320ms",
+        "unit": "ms",
+        "axis": "시간",
+        "quote": "명. - 테스트 1,200여 개 통과 확인 - p95 320ms로 목표 300ms에는 못 미칩니다."
+      },
+      {
+        "claimId": "B026",
+        "docId": "post:7",
+        "postId": "7",
+        "title": "[회의록] 릴리스 판정",
+        "valueText": "300ms",
+        "unit": "ms",
+        "axis": "시간",
+        "quote": ",200여 개 통과 확인 - p95 320ms로 목표 300ms에는 못 미칩니다. - 릴리스는 9월"
+      },
+      {
+        "claimId": "B027",
+        "docId": "post:7",
+        "postId": "7",
+        "title": "[회의록] 릴리스 판정",
+        "valueText": "9월 13일",
+        "unit": "날짜",
+        "axis": "날짜",
+        "quote": "ms로 목표 300ms에는 못 미칩니다. - 릴리스는 9월 13일로 확정합니다."
+      }
+    ],
+    "groups": [
+      {
+        "key": "개수",
+        "ids": [
+          "B001",
+          "B005",
+          "B007",
+          "B008",
+          "B009",
+          "B012",
+          "B013",
+          "B021",
+          "B023",
+          "B024"
+        ]
+      },
+      {
+        "key": "시간",
+        "ids": [
+          "B002",
+          "B003",
+          "B006",
+          "B010",
+          "B011",
+          "B015",
+          "B018",
+          "B019",
+          "B020",
+          "B025",
+          "B026"
+        ]
+      },
+      {
+        "key": "날짜",
+        "ids": [
+          "B004",
+          "B014",
+          "B017",
+          "B027"
+        ]
+      },
+      {
+        "key": "비율",
+        "ids": [
+          "B016",
+          "B022"
+        ]
+      }
+    ],
+    "locate": {
+      "wanted": 9,
+      "found": 9,
+      "missed": [],
+      "noiseTotal": 6,
+      "noiseCaught": 3,
+      "noiseList": [
+        "3명(참여 인원)",
+        "4분 12초(테스트 실행 시간 — 드리프트 아님)",
+        "5명(참석 인원)"
+      ],
+      "total": 27
+    },
+    "group": {
+      "rows": [
+        {
+          "id": "G1",
+          "metric": "검색 API p95 응답시간",
+          "together": true,
+          "hostSize": 11,
+          "extras": 8,
+          "precision": 0.2727272727272727,
+          "missing": false
+        },
+        {
+          "id": "G2",
+          "metric": "검색 응답시간",
+          "together": true,
+          "hostSize": 11,
+          "extras": 9,
+          "precision": 0.18181818181818182,
+          "missing": false
+        },
+        {
+          "id": "G3",
+          "metric": "테스트 개수",
+          "together": true,
+          "hostSize": 10,
+          "extras": 7,
+          "precision": 0.3,
+          "missing": false
+        },
+        {
+          "id": "G4",
+          "metric": "테스트 커버리지",
+          "together": true,
+          "hostSize": 2,
+          "extras": 0,
+          "precision": 1,
+          "missing": false
+        },
+        {
+          "id": "G5",
+          "metric": "배포일",
+          "together": true,
+          "hostSize": 4,
+          "extras": 0,
+          "precision": 1,
+          "missing": false
+        }
+      ],
+      "ok": 5,
+      "total": 5,
+      "meanPrecision": 0.5509090909090909
+    }
+  },
+  "gemini": {
+    "claims": [
+      {
+        "metric": "참여 인원",
+        "valueText": "3명",
+        "unit": "명",
+        "condition": "",
+        "isTarget": false,
+        "quote": "참여 인원은 3명입니다.",
+        "docId": "post:1",
+        "postId": "1",
+        "title": "[킥오프] 검색 응답 개선",
+        "author": "팀장",
+        "claimId": "C001",
+        "gateTier": "1차"
+      },
+      {
+        "metric": "검색 API p95 응답시간",
+        "valueText": "820ms",
+        "unit": "ms",
+        "condition": "현재",
+        "isTarget": false,
+        "quote": "검색 API p95 응답시간이 현재 820ms입니다.",
+        "docId": "post:1",
+        "postId": "1",
+        "title": "[킥오프] 검색 응답 개선",
+        "author": "팀장",
+        "claimId": "C002",
+        "gateTier": "1차"
+      },
+      {
+        "metric": "검색 API p95 응답시간",
+        "valueText": "300ms",
+        "unit": "ms",
+        "condition": "",
+        "isTarget": true,
+        "quote": "목표는 300ms입니다.",
+        "docId": "post:1",
+        "postId": "1",
+        "title": "[킥오프] 검색 응답 개선",
+        "author": "팀장",
+        "claimId": "C003",
+        "gateTier": "1차"
+      },
+      {
+        "metric": "배포 목표일",
+        "valueText": "9월 20일",
+        "unit": "",
+        "condition": "",
+        "isTarget": true,
+        "quote": "배포 목표일은 9월 20일입니다.",
+        "docId": "post:1",
+        "postId": "1",
+        "title": "[킥오프] 검색 응답 개선",
+        "author": "팀장",
+        "claimId": "C004",
+        "gateTier": "1차"
+      },
+      {
+        "metric": "목록 조회 요청당 쿼리 수",
+        "valueText": "47회",
+        "unit": "회",
+        "condition": "목록 조회",
+        "isTarget": false,
+        "quote": "요청당 쿼리가 47회 나갑니다.",
+        "docId": "post:2",
+        "postId": "2",
+        "title": "[주간] 1주차 — 쿼리 프로파일링",
+        "author": "개발자A",
+        "claimId": "C005",
+        "gateTier": "1차"
+      },
+      {
+        "metric": "p95 응답시간",
+        "valueText": "820ms",
+        "unit": "ms",
+        "condition": "스테이징 · 동시 10 · 캐시 미적용 기준",
+        "isTarget": false,
+        "quote": "p95 820ms. 스테이징 · 동시 10 · 캐시 미적용 기준입니다.",
+        "docId": "post:2",
+        "postId": "2",
+        "title": "[주간] 1주차 — 쿼리 프로파일링",
+        "author": "개발자A",
+        "claimId": "C006",
+        "gateTier": "1차"
+      },
+      {
+        "metric": "댓글 쿼리 횟수",
+        "valueText": "47회",
+        "unit": "회",
+        "condition": "",
+        "isTarget": false,
+        "quote": "47회면 손볼 만하네요.",
+        "docId": "comment:2-1",
+        "postId": "2",
+        "title": "[주간] 1주차 — 쿼리 프로파일링 — 댓글",
+        "author": "팀장",
+        "claimId": "C007",
+        "gateTier": "1차"
+      },
+      {
+        "metric": "개선 전 요청당 쿼리 수",
+        "valueText": "47회",
+        "unit": "회",
+        "condition": "",
+        "isTarget": false,
+        "quote": "요청당 쿼리 47회에서 3회로 줄었습니다.",
+        "docId": "post:3",
+        "postId": "3",
+        "title": "인덱스 추가 + N+1 제거",
+        "author": "개발자A",
+        "claimId": "C008",
+        "gateTier": "1차"
+      },
+      {
+        "metric": "개선 후 요청당 쿼리 수",
+        "valueText": "3회",
+        "unit": "회",
+        "condition": "",
+        "isTarget": false,
+        "quote": "요청당 쿼리 47회에서 3회로 줄었습니다.",
+        "docId": "post:3",
+        "postId": "3",
+        "title": "인덱스 추가 + N+1 제거",
+        "author": "개발자A",
+        "claimId": "C009",
+        "gateTier": "1차"
+      },
+      {
+        "metric": "p95 응답시간",
+        "valueText": "320ms",
+        "unit": "ms",
+        "condition": "스테이징 · 동시 10 · 캐시 미적용 기준",
+        "isTarget": false,
+        "quote": "p95 320ms. 스테이징 · 동시 10 · 캐시 미적용 기준입니다.",
+        "docId": "post:3",
+        "postId": "3",
+        "title": "인덱스 추가 + N+1 제거",
+        "author": "개발자A",
+        "claimId": "C010",
+        "gateTier": "1차"
+      },
+      {
+        "metric": "p95 응답시간",
+        "valueText": "280ms",
+        "unit": "ms",
+        "condition": "캐시 워밍 후 3회 평균",
+        "isTarget": false,
+        "quote": "재측정했더니 p95 280ms 나왔습니다. 캐시 워밍 후 3회 평균입니다.",
+        "docId": "comment:3-1",
+        "postId": "3",
+        "title": "인덱스 추가 + N+1 제거 — 댓글",
+        "author": "개발자A",
+        "claimId": "C011",
+        "gateTier": "1차"
+      },
+      {
+        "metric": "측정 횟수",
+        "valueText": "3회",
+        "unit": "회",
+        "condition": "캐시 워밍 후",
+        "isTarget": false,
+        "quote": "재측정했더니 p95 280ms 나왔습니다. 캐시 워밍 후 3회 평균입니다.",
+        "docId": "comment:3-1",
+        "postId": "3",
+        "title": "인덱스 추가 + N+1 제거 — 댓글",
+        "author": "개발자A",
+        "claimId": "C012",
+        "gateTier": "1차"
+      },
+      {
+        "metric": "응답 속도 개선 폭",
+        "valueText": "2배 이상",
+        "unit": "배",
+        "condition": "",
+        "isTarget": false,
+        "quote": "응답 속도가 2배 이상 빨라졌습니다.",
+        "docId": "post:4",
+        "postId": "4",
+        "title": "[주간] 3주차 — 중간 점검",
+        "author": "팀장",
+        "claimId": "C013",
+        "gateTier": "1차"
+      },
+      {
+        "metric": "추가된 테스트 수",
+        "valueText": "42개",
+        "unit": "개",
+        "condition": "",
+        "isTarget": false,
+        "quote": "테스트는 42개 추가했습니다.",
+        "docId": "post:4",
+        "postId": "4",
+        "title": "[주간] 3주차 — 중간 점검",
+        "author": "팀장",
+        "claimId": "C014",
+        "gateTier": "1차"
+      },
+      {
+        "metric": "배포 일정",
+        "valueText": "9월 13일",
+        "unit": "",
+        "condition": "",
+        "isTarget": true,
+        "quote": "배포는 9월 13일로 당깁니다.",
+        "docId": "post:4",
+        "postId": "4",
+        "title": "[주간] 3주차 — 중간 점검",
+        "author": "팀장",
+        "claimId": "C015",
+        "gateTier": "1차"
+      },
+      {
+        "metric": "검색 응답",
+        "valueText": "250ms",
+        "unit": "ms",
+        "condition": "",
+        "isTarget": true,
+        "quote": "- 검색 응답 250ms로 개선",
+        "docId": "post:5",
+        "postId": "5",
+        "title": "[초안] 고객 공지 문구",
+        "author": "기획",
+        "claimId": "C016",
+        "gateTier": "1차"
+      },
+      {
+        "metric": "테스트 커버리지",
+        "valueText": "99%",
+        "unit": "%",
+        "condition": "",
+        "isTarget": true,
+        "quote": "- 테스트 커버리지 99%",
+        "docId": "post:5",
+        "postId": "5",
+        "title": "[초안] 고객 공지 문구",
+        "author": "기획",
+        "claimId": "C017",
+        "gateTier": "1차"
+      },
+      {
+        "metric": "릴리스 예정일",
+        "valueText": "9월 20일",
+        "unit": "",
+        "condition": "",
+        "isTarget": true,
+        "quote": "- 릴리스 예정일 9월 20일",
+        "docId": "post:5",
+        "postId": "5",
+        "title": "[초안] 고객 공지 문구",
+        "author": "기획",
+        "claimId": "C018",
+        "gateTier": "1차"
+      },
+      {
+        "metric": "언급된 숫자",
+        "valueText": "250ms",
+        "unit": "ms",
+        "condition": "",
+        "isTarget": false,
+        "quote": "250ms는 어디서 나온 숫자인가요?",
+        "docId": "comment:5-1",
+        "postId": "5",
+        "title": "[초안] 고객 공지 문구 — 댓글",
+        "author": "개발자A",
+        "claimId": "C019",
+        "gateTier": "1차"
+      },
+      {
+        "metric": "회귀 테스트 실행 시간",
+        "valueText": "4분 12초",
+        "unit": "",
+        "condition": "개편 범위 회귀",
+        "isTarget": false,
+        "quote": "개편 범위 회귀를 돌렸습니다. 실행 시간은 4분 12초입니다.",
+        "docId": "post:6",
+        "postId": "6",
+        "title": "[QA] 회귀 테스트 결과",
+        "author": "QA",
+        "claimId": "C020",
+        "gateTier": "1차"
+      },
+      {
+        "metric": "통과 테스트 케이스 수",
+        "valueText": "1,284",
+        "unit": "케이스",
+        "condition": "",
+        "isTarget": false,
+        "quote": "- 테스트 1,284 케이스 전부 통과",
+        "docId": "post:6",
+        "postId": "6",
+        "title": "[QA] 회귀 테스트 결과",
+        "author": "QA",
+        "claimId": "C021",
+        "gateTier": "1차"
+      },
+      {
+        "metric": "스테이트먼트 커버리지",
+        "valueText": "96.4%",
+        "unit": "%",
+        "condition": "",
+        "isTarget": false,
+        "quote": "- 스테이트먼트 커버리지 96.4%",
+        "docId": "post:6",
+        "postId": "6",
+        "title": "[QA] 회귀 테스트 결과",
+        "author": "QA",
+        "claimId": "C022",
+        "gateTier": "1차"
+      },
+      {
+        "metric": "3주차 공유 파일 수",
+        "valueText": "42개",
+        "unit": "개",
+        "condition": "3주차 공유",
+        "isTarget": false,
+        "quote": "- 3주차 공유의 「42개」는 케이스 수가 아니라 파일 수입니다.",
+        "docId": "post:6",
+        "postId": "6",
+        "title": "[QA] 회귀 테스트 결과",
+        "author": "QA",
+        "claimId": "C023",
+        "gateTier": "1차"
+      },
+      {
+        "metric": "회의록 테스트 케이스 수",
+        "valueText": "1,200여 개",
+        "unit": "개",
+        "condition": "케이스 기준",
+        "isTarget": false,
+        "quote": "그럼 회의록의 「1,200여 개」는 케이스 기준이 맞습니다.",
+        "docId": "comment:6-1",
+        "postId": "6",
+        "title": "[QA] 회귀 테스트 결과 — 댓글",
+        "author": "팀장",
+        "claimId": "C024",
+        "gateTier": "1차"
+      },
+      {
+        "metric": "통과한 테스트 수",
+        "valueText": "1,200여 개",
+        "unit": "개",
+        "condition": "",
+        "isTarget": false,
+        "quote": "테스트 1,200여 개 통과 확인",
+        "docId": "post:7",
+        "postId": "7",
+        "title": "[회의록] 릴리스 판정",
+        "author": "팀장",
+        "claimId": "C025",
+        "gateTier": "1차"
+      },
+      {
+        "metric": "p95 응답시간",
+        "valueText": "320ms",
+        "unit": "ms",
+        "condition": "",
+        "isTarget": false,
+        "quote": "p95 320ms로 목표 300ms에는 못 미칩니다.",
+        "docId": "post:7",
+        "postId": "7",
+        "title": "[회의록] 릴리스 판정",
+        "author": "팀장",
+        "claimId": "C026",
+        "gateTier": "1차"
+      },
+      {
+        "metric": "p95 응답시간 목표",
+        "valueText": "300ms",
+        "unit": "ms",
+        "condition": "",
+        "isTarget": true,
+        "quote": "p95 320ms로 목표 300ms에는 못 미칩니다.",
+        "docId": "post:7",
+        "postId": "7",
+        "title": "[회의록] 릴리스 판정",
+        "author": "팀장",
+        "claimId": "C027",
+        "gateTier": "1차"
+      },
+      {
+        "metric": "릴리스 일자",
+        "valueText": "9월 13일",
+        "unit": "",
+        "condition": "",
+        "isTarget": true,
+        "quote": "릴리스는 9월 13일로 확정합니다.",
+        "docId": "post:7",
+        "postId": "7",
+        "title": "[회의록] 릴리스 판정",
+        "author": "팀장",
+        "claimId": "C028",
+        "gateTier": "1차"
+      }
+    ],
+    "rejected": [
+      {
+        "metric": "참석자 수",
+        "valueText": "5명",
+        "unit": "명",
+        "condition": "",
+        "isTarget": false,
+        "quote": "참석 5명.",
+        "docId": "post:7",
+        "postId": "7",
+        "title": "[회의록] 릴리스 판정",
+        "author": "팀장",
+        "reason": "인용이 짧다 (<6자)"
+      }
+    ],
+    "stats": {
+      "raw": 29,
+      "tier1": 28,
+      "tier2": 0,
+      "byReason": {
+        "인용이 짧다 (<6자)": 1
+      }
+    },
+    "groups": [
+      {
+        "metric": "p95 응답시간",
+        "claimIds": [
+          "C002",
+          "C003",
+          "C006",
+          "C010",
+          "C011",
+          "C016",
+          "C019",
+          "C026",
+          "C027"
+        ]
+      },
+      {
+        "metric": "배포 및 릴리스 일정",
+        "claimIds": [
+          "C004",
+          "C015",
+          "C018",
+          "C028"
+        ]
+      },
+      {
+        "metric": "요청당 쿼리 수",
+        "claimIds": [
+          "C005",
+          "C007",
+          "C008",
+          "C009"
+        ]
+      },
+      {
+        "metric": "테스트 커버리지",
+        "claimIds": [
+          "C017",
+          "C022"
+        ]
+      },
+      {
+        "metric": "통과 테스트 케이스 수",
+        "claimIds": [
+          "C021",
+          "C024",
+          "C025"
+        ]
+      }
+    ],
+    "dangling": [],
+    "locate": {
+      "wanted": 9,
+      "found": 9,
+      "missed": [],
+      "noiseTotal": 6,
+      "noiseCaught": 2,
+      "noiseList": [
+        "3명(참여 인원)",
+        "4분 12초(테스트 실행 시간 — 드리프트 아님)"
+      ],
+      "total": 28
+    },
+    "group": {
+      "rows": [
+        {
+          "id": "G1",
+          "metric": "검색 API p95 응답시간",
+          "together": true,
+          "hostSize": 9,
+          "extras": 6,
+          "precision": 0.3333333333333333,
+          "missing": false
+        },
+        {
+          "id": "G2",
+          "metric": "검색 응답시간",
+          "together": true,
+          "hostSize": 9,
+          "extras": 7,
+          "precision": 0.2222222222222222,
+          "missing": false
+        },
+        {
+          "id": "G3",
+          "metric": "테스트 개수",
+          "together": false,
+          "hostSize": null,
+          "extras": null,
+          "precision": null,
+          "missing": false
+        },
+        {
+          "id": "G4",
+          "metric": "테스트 커버리지",
+          "together": true,
+          "hostSize": 2,
+          "extras": 0,
+          "precision": 1,
+          "missing": false
+        },
+        {
+          "id": "G5",
+          "metric": "배포일",
+          "together": true,
+          "hostSize": 4,
+          "extras": 0,
+          "precision": 1,
+          "missing": false
+        }
+      ],
+      "ok": 4,
+      "total": 5,
+      "meanPrecision": 0.6388888888888888
+    }
+  },
+  "external": {
+    "status": "실측",
+    "claims": [
+      {
+        "metric": "요구사항 정의 절감률",
+        "valueText": "85%",
+        "unit": "%",
+        "condition": "요구사항 정의 단계",
+        "isTarget": false,
+        "quote": "요구사항 정의 | 1-2주 | 1-2일 | **85%**",
+        "docId": "external:yaw-agents-readme",
+        "postId": "ext1",
+        "title": "YourAiWorkforce agents/README.md — 기대 효과",
+        "author": "(본인, 2026-07 이전)",
+        "claimId": "C001",
+        "gateTier": "1차"
+      },
+      {
+        "metric": "아키텍처 설계 절감률",
+        "valueText": "75%",
+        "unit": "%",
+        "condition": "아키텍처 설계 단계",
+        "isTarget": false,
+        "quote": "아키텍처 설계 | 3-5일 | 1일 | **75%**",
+        "docId": "external:yaw-agents-readme",
+        "postId": "ext1",
+        "title": "YourAiWorkforce agents/README.md — 기대 효과",
+        "author": "(본인, 2026-07 이전)",
+        "claimId": "C002",
+        "gateTier": "1차"
+      },
+      {
+        "metric": "데이터 파이프라인 절감률",
+        "valueText": "70%",
+        "unit": "%",
+        "condition": "데이터 파이프라인 단계",
+        "isTarget": false,
+        "quote": "데이터 파이프라인 | 1-2주 | 2-3일 | **70%**",
+        "docId": "external:yaw-agents-readme",
+        "postId": "ext1",
+        "title": "YourAiWorkforce agents/README.md — 기대 효과",
+        "author": "(본인, 2026-07 이전)",
+        "claimId": "C003",
+        "gateTier": "1차"
+      },
+      {
+        "metric": "핵심 기능 구현 절감률",
+        "valueText": "60%",
+        "unit": "%",
+        "condition": "핵심 기능 구현 단계",
+        "isTarget": false,
+        "quote": "핵심 기능 구현 | 3-4주 | 1-1.5주 | **60%**",
+        "docId": "external:yaw-agents-readme",
+        "postId": "ext1",
+        "title": "YourAiWorkforce agents/README.md — 기대 효과",
+        "author": "(본인, 2026-07 이전)",
+        "claimId": "C004",
+        "gateTier": "1차"
+      },
+      {
+        "metric": "품질 검증 절감률",
+        "valueText": "75%",
+        "unit": "%",
+        "condition": "품질 검증 단계",
+        "isTarget": false,
+        "quote": "품질 검증 | 1-2주 | 2-3일 | **75%**",
+        "docId": "external:yaw-agents-readme",
+        "postId": "ext1",
+        "title": "YourAiWorkforce agents/README.md — 기대 효과",
+        "author": "(본인, 2026-07 이전)",
+        "claimId": "C005",
+        "gateTier": "1차"
+      },
+      {
+        "metric": "총 기간 절감률",
+        "valueText": "80-90%",
+        "unit": "%",
+        "condition": "총 기간",
+        "isTarget": false,
+        "quote": "**총 기간** | **8-14주** | **7-14일** | **80-90%**",
+        "docId": "external:yaw-agents-readme",
+        "postId": "ext1",
+        "title": "YourAiWorkforce agents/README.md — 기대 효과",
+        "author": "(본인, 2026-07 이전)",
+        "claimId": "C006",
+        "gateTier": "1차"
+      },
+      {
+        "metric": "도메인 정확성",
+        "valueText": "95%",
+        "unit": "%",
+        "condition": "전문가 페르소나 검증",
+        "isTarget": false,
+        "quote": "✅ **도메인 정확성**: 전문가 페르소나 검증으로 95% 이상 정확도",
+        "docId": "external:yaw-agents-readme",
+        "postId": "ext1",
+        "title": "YourAiWorkforce agents/README.md — 기대 효과",
+        "author": "(본인, 2026-07 이전)",
+        "claimId": "C007",
+        "gateTier": "1차"
+      }
+    ],
+    "rejected": [],
+    "stats": {
+      "raw": 7,
+      "tier1": 7,
+      "tier2": 0,
+      "byReason": {}
+    },
+    "regexCount": 7,
+    "goldHit": {
+      "regex": [
+        "85%",
+        "75%",
+        "70%",
+        "60%",
+        "75%",
+        "95%"
+      ],
+      "gemini": [
+        "85%",
+        "75%",
+        "70%",
+        "60%",
+        "75%",
+        "80-90%",
+        "95%"
+      ]
+    },
+    "conditionCount": 7
+  }
+}

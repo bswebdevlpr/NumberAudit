@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>수치 감사 — 협업 공간의 숫자가 서로 맞는가</title>
+<meta name="description" content="플로우에 쌓인 글과 댓글에서 수치 주장을 뽑고, 인용을 원문에 되짚어 어긋난 것을 업무로 되돌린다.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="#top"><span class="dot"></span>수치 감사</a>
+    <span class="purpose">주간보고·대외 공지가 나가기 전에, 글에 흩어진 숫자를 서로 대조합니다</span>
+    <span class="livebadge" id="liveBadge" hidden></span>
+    <a class="repo" id="repoLink" target="_blank" rel="noopener">목적 · 로직 설명 →</a>
+  </div>
+</header>
+
+<section class="flowmap"><div class="wrap"><ol id="flowMap"></ol></div></section>
+
+<main class="wrap work">
+  <aside class="doclist">
+    <div class="listhead"><span>원문</span><span id="docCount"></span></div>
+    <button class="pastebtn" id="pasteBtn">＋ 내 글로 해보기</button>
+    <div id="docList"></div>
+  </aside>
+
+  <div class="steps" id="steps"></div>
+</main>
+
+<section class="wrap outbox">
+  <h2 id="outHead">되돌린 업무</h2>
+  <div id="outList"></div>
+</section>
+
+<footer><div class="wrap" id="foot"></div></footer>
+<script type="module" src="app.js"></script>
+</body>
+</html>

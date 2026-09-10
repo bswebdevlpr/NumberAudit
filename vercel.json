@@ -1,0 +1,13 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "functions": {
+    "api/audit.js": {
+      "maxDuration": 60
+    },
+    "api/submit.js": {
+      "maxDuration": 30
+    }
+  },
+  "buildCommand": "node scripts/build.js",
+  "outputDirectory": "public"
+}

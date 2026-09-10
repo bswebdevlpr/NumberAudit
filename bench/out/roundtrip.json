@@ -1,0 +1,27 @@
+{
+  "at": "2026-09-09T13:57:50.518Z",
+  "projectId": "2969669",
+  "text": {
+    "same": 12,
+    "differ": 0,
+    "missing": 0,
+    "diffs": []
+  },
+  "gate": {
+    "total": 29,
+    "pass": 29,
+    "tier1": 29,
+    "tier2": 0,
+    "reasons": {}
+  },
+  "flipped": [
+    {
+      "docId": "post:7",
+      "quote": "참석 5명.",
+      "value": "5",
+      "before": "폐기",
+      "after": "통과",
+      "why": null
+    }
+  ]
+}

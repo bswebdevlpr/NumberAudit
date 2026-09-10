@@ -1,0 +1,35 @@
+{
+  "note": "코드보다 먼저 확정한다. 결과를 보고 고치지 않는다.",
+  "synthetic": {
+    "drifts": [
+      { "id": "G1", "kind": "CONFLICT", "metric": "검색 API p95 응답시간",
+        "values": ["320ms", "280ms"], "docs": ["post:3", "comment:3-1"],
+        "note": "본문 320, 댓글에서만 280으로 갱신. 조건도 다르다(캐시 워밍 3회 평균)" },
+      { "id": "G2", "kind": "UNSOURCED", "metric": "검색 응답시간",
+        "values": ["250ms"], "docs": ["post:5"],
+        "note": "어느 측정 글에도 없던 값이 공지 초안에 등장" },
+      { "id": "G3", "kind": "UNIT", "metric": "테스트 개수",
+        "values": ["42개", "1,284"], "docs": ["post:4", "post:6"],
+        "note": "42는 파일 수, 1,284는 케이스 수" },
+      { "id": "G4", "kind": "CONFLICT", "metric": "테스트 커버리지",
+        "values": ["99%", "96.4%"], "docs": ["post:5", "post:6"],
+        "note": "공지 초안이 올림" },
+      { "id": "G5", "kind": "CONFLICT", "metric": "배포일",
+        "values": ["9월 20일", "9월 13일"], "docs": ["post:1", "post:5", "post:4", "post:7"],
+        "note": "두 날짜가 각각 두 글에 살아 있다" }
+    ],
+    "noise": [
+      { "value": "3명",  "doc": "post:1", "why": "참여 인원" },
+      { "value": "2.4.0", "doc": "post:1", "why": "브랜치 버전" },
+      { "value": "8080",  "doc": "post:2", "why": "포트" },
+      { "value": "412",   "doc": "post:3", "why": "PR 번호" },
+      { "value": "4분 12초", "doc": "post:6", "why": "테스트 실행 시간 — 드리프트 아님" },
+      { "value": "5명",   "doc": "post:7", "why": "참석 인원" }
+    ]
+  },
+  "external": {
+    "claims": ["85%", "75%", "70%", "60%", "75%", "80-90%", "95%"],
+    "conditionCount": 0,
+    "note": "절감률 7건. 전부 측정 조건이 없다 — 그게 이 문서의 실제 상태다"
+  }
+}

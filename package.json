@@ -1,0 +1,19 @@
+{
+  "name": "flow-number-audit",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "플로우 프로젝트에 흩어진 수치 주장의 정합성을 감사하고, 어긋난 것을 업무로 되돌린다",
+  "scripts": {
+    "projects": "node src/cli.js projects",
+    "collect": "node src/cli.js collect",
+    "audit": "node src/cli.js audit",
+    "bench": "node bench/run-flow.js",
+    "web": "node scripts/build.js && node scripts/dev-server.js",
+    "submit": "node src/cli.js submit",
+    "build": "node scripts/build.js",
+    "test": "node --test \"test/**/*.test.js\""
+  },
+  "license": "MIT",
+  "author": "BEOMSEOK KIM"
+}

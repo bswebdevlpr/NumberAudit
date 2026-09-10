@@ -1,0 +1,271 @@
+{
+  "at": "2026-09-09T13:58:05.884Z",
+  "projectId": "2969670",
+  "noisy": true,
+  "modelChain": [
+    "gemini-3.1-flash-lite"
+  ],
+  "usage": {
+    "calls": 1,
+    "byModel": {
+      "gemini-3.1-flash-lite": 1
+    },
+    "promptTokens": 1380,
+    "outputTokens": 1825,
+    "retries": 0,
+    "waitedMs": 0
+  },
+  "stats": {
+    "raw": 17,
+    "tier1": 17,
+    "tier2": 0,
+    "misattributed": 0,
+    "unknownDoc": 0,
+    "byReason": {}
+  },
+  "claims": [
+    {
+      "docId": "post:84931268",
+      "metric": "테스트 통과 수",
+      "valueText": "1,200여",
+      "unit": "개",
+      "scope": "테스트",
+      "method": "",
+      "isTarget": false,
+      "quote": "‣ 테스트 1,200여 개 통과 확인",
+      "title": "[회의록] 릴리스 판정",
+      "claimId": "B001",
+      "gateTier": "1차"
+    },
+    {
+      "docId": "post:84931268",
+      "metric": "p95 응답시간",
+      "valueText": "320",
+      "unit": "ms",
+      "scope": "p95",
+      "method": "",
+      "isTarget": false,
+      "quote": "‣ p95 320ms로 목표 300ms에는 못 미칩니다.",
+      "title": "[회의록] 릴리스 판정",
+      "claimId": "B002",
+      "gateTier": "1차"
+    },
+    {
+      "docId": "post:84931268",
+      "metric": "목표 p95 응답시간",
+      "valueText": "300",
+      "unit": "ms",
+      "scope": "목표",
+      "method": "",
+      "isTarget": true,
+      "quote": "‣ p95 320ms로 목표 300ms에는 못 미칩니다.",
+      "title": "[회의록] 릴리스 판정",
+      "claimId": "B003",
+      "gateTier": "1차"
+    },
+    {
+      "docId": "post:84931267",
+      "metric": "실행 시간",
+      "valueText": "4분 12초",
+      "unit": "분/초",
+      "scope": "회귀 테스트",
+      "method": "",
+      "isTarget": false,
+      "quote": "실행 시간은 4분 12초입니다.",
+      "title": "[QA] 회귀 테스트 결과",
+      "claimId": "B004",
+      "gateTier": "1차"
+    },
+    {
+      "docId": "post:84931267",
+      "metric": "테스트 통과 수",
+      "valueText": "1,284",
+      "unit": "케이스",
+      "scope": "회귀 테스트",
+      "method": "",
+      "isTarget": false,
+      "quote": "| 테스트 1,284 케이스 전부 통과 |",
+      "title": "[QA] 회귀 테스트 결과",
+      "claimId": "B005",
+      "gateTier": "1차"
+    },
+    {
+      "docId": "post:84931267",
+      "metric": "스테이트먼트 커버리지",
+      "valueText": "96.4",
+      "unit": "%",
+      "scope": "회귀 테스트",
+      "method": "",
+      "isTarget": false,
+      "quote": "| 스테이트먼트 커버리지 96.4% |",
+      "title": "[QA] 회귀 테스트 결과",
+      "claimId": "B006",
+      "gateTier": "1차"
+    },
+    {
+      "docId": "post:84931266",
+      "metric": "검색 응답시간",
+      "valueText": "250",
+      "unit": "ms",
+      "scope": "검색 응답",
+      "method": "",
+      "isTarget": false,
+      "quote": "– 검색 응답 250ms로 개선",
+      "title": "[초안] 고객 공지 문구",
+      "claimId": "B007",
+      "gateTier": "1차"
+    },
+    {
+      "docId": "post:84931266",
+      "metric": "테스트 커버리지",
+      "valueText": "99",
+      "unit": "%",
+      "scope": "테스트",
+      "method": "",
+      "isTarget": false,
+      "quote": "– 테스트 커버리지 99%",
+      "title": "[초안] 고객 공지 문구",
+      "claimId": "B008",
+      "gateTier": "1차"
+    },
+    {
+      "docId": "post:84931265",
+      "metric": "테스트 추가 수",
+      "valueText": "42",
+      "unit": "개",
+      "scope": "테스트",
+      "method": "",
+      "isTarget": false,
+      "quote": "• 테스트는 42개 추가했습니다.",
+      "title": "[주간] 3주차 — 중간 점검",
+      "claimId": "B009",
+      "gateTier": "1차"
+    },
+    {
+      "docId": "post:84931264",
+      "metric": "요청당 쿼리 수",
+      "valueText": "47",
+      "unit": "회",
+      "scope": "요청당 쿼리",
+      "method": "",
+      "isTarget": false,
+      "quote": "✅ 요청당 쿼리 47회에서 3회로 줄었습니다.",
+      "title": "인덱스 추가 + N+1 제거",
+      "claimId": "B010",
+      "gateTier": "1차"
+    },
+    {
+      "docId": "post:84931264",
+      "metric": "요청당 쿼리 수",
+      "valueText": "3",
+      "unit": "회",
+      "scope": "요청당 쿼리",
+      "method": "",
+      "isTarget": false,
+      "quote": "✅ 요청당 쿼리 47회에서 3회로 줄었습니다.",
+      "title": "인덱스 추가 + N+1 제거",
+      "claimId": "B011",
+      "gateTier": "1차"
+    },
+    {
+      "docId": "post:84931264",
+      "metric": "p95 응답시간",
+      "valueText": "320",
+      "unit": "ms",
+      "scope": "p95",
+      "method": "스테이징 · 동시 10 · 캐시 미적용",
+      "isTarget": false,
+      "quote": "✅ p95 320ms. 스테이징 · 동시 10 · 캐시 미적용 기준입니다.",
+      "title": "인덱스 추가 + N+1 제거",
+      "claimId": "B012",
+      "gateTier": "1차"
+    },
+    {
+      "docId": "comment:198833232",
+      "metric": "p95 응답시간",
+      "valueText": "280",
+      "unit": "ms",
+      "scope": "p95",
+      "method": "캐시 워밍 후 3회 평균",
+      "isTarget": false,
+      "quote": "재측정했더니 p95 280ms 나왔습니다. 캐시 워밍 후 3회 평균입니다.",
+      "title": "인덱스 추가 + N+1 제거 — 댓글",
+      "claimId": "B013",
+      "gateTier": "1차"
+    },
+    {
+      "docId": "post:84931263",
+      "metric": "요청당 쿼리 수",
+      "valueText": "47",
+      "unit": "회",
+      "scope": "목록 조회",
+      "method": "",
+      "isTarget": false,
+      "quote": "- 목록 조회에서 N+1이 납니다. 요청당 쿼리가 47회 나갑니다.",
+      "title": "[주간] 1주차 — 쿼리 프로파일링",
+      "claimId": "B014",
+      "gateTier": "1차"
+    },
+    {
+      "docId": "post:84931263",
+      "metric": "p95 응답시간",
+      "valueText": "820",
+      "unit": "ms",
+      "scope": "p95",
+      "method": "스테이징 · 동시 10 · 캐시 미적용",
+      "isTarget": false,
+      "quote": "- p95 820ms. 스테이징 · 동시 10 · 캐시 미적용 기준입니다.",
+      "title": "[주간] 1주차 — 쿼리 프로파일링",
+      "claimId": "B015",
+      "gateTier": "1차"
+    },
+    {
+      "docId": "post:84931262",
+      "metric": "검색 API p95 응답시간",
+      "valueText": "820",
+      "unit": "ms",
+      "scope": "검색 API",
+      "method": "",
+      "isTarget": false,
+      "quote": "• 검색 API p95 응답시간이 현재 820ms입니다.",
+      "title": "[킥오프] 검색 응답 개선",
+      "claimId": "B016",
+      "gateTier": "1차"
+    },
+    {
+      "docId": "post:84931262",
+      "metric": "목표 p95 응답시간",
+      "valueText": "300",
+      "unit": "ms",
+      "scope": "목표",
+      "method": "",
+      "isTarget": true,
+      "quote": "• 목표는 300ms입니다.",
+      "title": "[킥오프] 검색 응답 개선",
+      "claimId": "B017",
+      "gateTier": "1차"
+    }
+  ],
+  "rejected": [],
+  "compare": {
+    "round2": 28,
+    "here": 17,
+    "missed": [
+      "post:1|3",
+      "post:1|9월20일",
+      "post:2|8080",
+      "comment:2-1|47",
+      "post:4|2",
+      "post:4|9월13일",
+      "post:5|9월20일",
+      "comment:5-1|250",
+      "post:6|42",
+      "comment:6-1|1200여개",
+      "post:7|1200여개",
+      "post:7|9월13일"
+    ],
+    "extra": [
+      "post:7|1200여"
+    ]
+  }
+}

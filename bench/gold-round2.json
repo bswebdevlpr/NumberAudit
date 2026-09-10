@@ -1,0 +1,23 @@
+{
+  "question": "condition 한 필드가 「어디의 숫자인가」와 「어떻게 쟀나」를 섞는다. 쪼개면 갈리나?",
+  "note": "코드보다 먼저 확정한다. 결과를 보고 고치지 않는다. 2026-09-09 작성.",
+
+  "methodMeans": "무엇과 비교해 어떤 환경·표본으로 쟀는지. 「어느 단계의 숫자인가」는 scope 지 method 가 아니다.",
+
+  "synthetic": {
+    "methodExpected": [
+      { "value": "820ms", "doc": "post:2", "method": "스테이징 · 동시 10 · 캐시 미적용" },
+      { "value": "320ms", "doc": "post:3", "method": "스테이징 · 동시 10 · 캐시 미적용" },
+      { "value": "280ms", "doc": "comment:3-1", "method": "캐시 워밍 후 3회 평균" }
+    ],
+    "methodExpectedCount": 3,
+    "note": "나머지 주장은 전부 method 가 비어야 한다. 특히 post:1 의 820ms·300ms 는 조건 없이 적혀 있다"
+  },
+
+  "external": {
+    "methodExpectedCount": 0,
+    "note": "절감률 7건 전부. 「요구사항 정의 단계」는 scope 다. 무엇과 비교해 어떻게 쟀는지는 문서 어디에도 없다"
+  },
+
+  "foldCondition": "분리해도 외부 문서에서 method 가 채워지면 이 축을 버린다. 필드만 늘고 문제는 그대로인 것이다"
+}
