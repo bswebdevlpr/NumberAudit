@@ -15,5 +15,10 @@
     "test": "node --test \"test/**/*.test.js\""
   },
   "license": "MIT",
-  "author": "BEOMSEOK KIM"
+  "author": "BEOMSEOK KIM",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bswebdevlpr/number-audit.git"
+  },
+  "homepage": "https://github.com/bswebdevlpr/number-audit#readme"
 }
