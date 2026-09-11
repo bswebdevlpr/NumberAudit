@@ -24,8 +24,26 @@ const { auditText } = await import('../src/audit.js')
 const TRY_CHAIN = (process.env.TRY_GEMINI_MODEL ?? 'gemini-3.6-flash,gemini-3.5-flash,gemini-3.1-flash-lite')
   .split(',').map((s) => s.trim()).filter(Boolean)
 
+/**
+ * 🔑 비교군 — **저장된 스냅샷의 원문과 주장을 그대로 쓴다.** 모델을 다시 부르지 않는다.
+ *    붙여넣은 글 안에서만 견주면 「내 초안의 숫자가 이 프로젝트와 맞나」를 못 본다.
+ *    저장본이라 라이브보다 오래됐을 수 있다 — 그건 화면이 적는다.
+ */
+let cachedBase = null
+async function baseline() {
+  if (cachedBase) return cachedBase
+  try {
+    const { readFile } = await import('node:fs/promises')
+    const url = new URL('../public/snapshot.json', import.meta.url)
+    const j = JSON.parse(await readFile(url, 'utf8'))
+    cachedBase = { docs: j.docs ?? [], claims: j.claims ?? [] }
+  } catch { cachedBase = { docs: [], claims: [] } }   // 없으면 붙여넣은 글만 본다
+  return cachedBase
+}
+
 const MAX_CHARS = Number(process.env.TRY_MAX_CHARS ?? 4000)
-const DAILY_BUDGET = Number(process.env.TRY_DAILY_BUDGET ?? 12)
+// 🔑 비교군을 붙이면서 호출이 1회 → 2회가 됐다(추출 + 묶기). 하루 총량을 그만큼 줄인다.
+const DAILY_BUDGET = Number(process.env.TRY_DAILY_BUDGET ?? 6)
 const PER_IP_MS = Number(process.env.TRY_PER_IP_MS ?? 20_000)
 
 let day = new Date().toISOString().slice(0, 10)
@@ -66,7 +84,10 @@ export default async function handler(req, res) {
   lastByIp.set(ip, Date.now())
   used += 1
   try {
-    const snapshot = await auditText(body, { chain: TRY_CHAIN })
+    // 목록에 「붙여넣은 글」이 제목으로 또 나오면 같은 말이 두 번이다. 첫 줄을 제목으로 쓴다.
+    const head = body.split('\n').map((l) => l.trim()).find(Boolean) ?? ''
+    const title = head.slice(0, 40) + (head.length > 40 ? '…' : '')
+    const snapshot = await auditText(body, { chain: TRY_CHAIN, baseline: await baseline(), title: title || '붙여넣은 글' })
     return json(res, 200, { ...snapshot, budget: budget() })
   } catch (e) {
     used -= 1

@@ -16,25 +16,40 @@ export const SNAPSHOT_VERSION = 1
  *    문서가 하나뿐이면 「같은 지표를 다른 이름으로 부른 것」을 가를 일도 거의 없다.
  *    (프로젝트 감사는 문서가 여럿이라 그 판단이 필요해서 모델을 쓴다)
  */
-export async function auditText(text, { title = '붙여넣은 글', chain } = {}) {
+export async function auditText(text, { title = '붙여넣은 글', chain, baseline } = {}) {
   const startedAt = Date.now()
   geminiTrace.length = 0
   const usageBefore = { ...usage, byModel: { ...usage.byModel } }
 
-  const docs = [{ docId: 'paste:1', kind: 'post', title, author: '', writtenAt: '', url: '',
-    source: 'paste', raw: { content: text, outContent: '', htmlContent: '' }, text: normalizeText(text) }]
+  const pasteDoc = { docId: 'paste:1', kind: 'post', title, author: '', writtenAt: '', url: '',
+    source: 'paste', raw: { content: text, outContent: '', htmlContent: '' }, text: normalizeText(text) }
 
-  const { claims, rejected, stats } = await extractClaims(docs, { chain })
+  // 🔑 **붙여넣은 글만 새로 뽑는다.** 프로젝트 주장은 이미 뽑아 둔 것을 그대로 쓴다 —
+  //    비교군이 붙여넣은 글 안에만 있으면 「내 초안의 숫자가 이 프로젝트와 맞나」를 못 본다.
+  //    그게 이 도구가 하려던 일 자체다(공지 초안의 250ms).
+  const base = { docs: baseline?.docs ?? [], claims: baseline?.claims ?? [] }
+  const { claims: fresh, rejected, stats } = await extractClaims([pasteDoc], { chain })
 
-  // 지표명이 같으면 한 그룹. 모델을 부르지 않는다.
-  const key = (s) => String(s ?? '').replace(/\s/g, '').toLowerCase()
-  const buckets = new Map()
-  for (const c of claims) {
-    const k = key(c.metric)
-    if (!buckets.has(k)) buckets.set(k, { metric: c.metric, claimIds: [] })
-    buckets.get(k).claimIds.push(c.claimId)
+  // 기존 주장과 id 가 겹치면 안 된다. 붙여넣은 것은 P 로 시작한다.
+  const pasted = fresh.map((c, i) => ({ ...c, claimId: `P${String(i + 1).padStart(3, '0')}` }))
+  const docs = [...base.docs, pasteDoc]
+  const claims = [...base.claims, ...pasted]
+
+  let groups
+  if (base.claims.length) {
+    // 비교군이 있으면 묶기도 모델이 한다 — 지표명 문자열로 얹으면 이름이 조금만 흔들려도 조용히 빠진다.
+    groups = (await clusterClaims(claims)).groups
+  } else {
+    // 비교군이 없으면 글 하나뿐이라 묶을 판단이 거의 없다. 호출을 아낀다.
+    const key = (s) => String(s ?? '').replace(/\s/g, '').toLowerCase()
+    const buckets = new Map()
+    for (const c of claims) {
+      const k = key(c.metric)
+      if (!buckets.has(k)) buckets.set(k, { metric: c.metric, claimIds: [] })
+      buckets.get(k).claimIds.push(c.claimId)
+    }
+    groups = [...buckets.values()]
   }
-  const groups = [...buckets.values()]
   const { verdicts, byUnit } = judgeRoom(claims, groups)
   const draft = {
     docs, claims,
@@ -51,12 +66,13 @@ export async function auditText(text, { title = '붙여넣은 글', chain } = {}
 
   return {
     version: SNAPSHOT_VERSION, at: new Date().toISOString(), ms: Date.now() - startedAt,
-    mode: 'paste', groupedBy: 'code',
+    mode: 'paste', groupedBy: base.claims.length ? 'model' : 'code',
+    pasteDocId: pasteDoc.docId,
     plans: planTasks(draft),
     project: { projectId: null, title },
     docs, claims, rejected, groups, dangling: [], duplicated: [], outOfGroup: [], ungrouped: [],
     verdicts: draft.verdicts, byUnitIds: draft.byUnitIds,
-    stats: { ...stats, docs: 1 },
+    stats: { ...stats, docs: docs.length, pasted: pasted.length },
     model: {
       chain: modelChain(),
       byModel: Object.fromEntries(Object.entries(usage.byModel)

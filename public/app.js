@@ -151,13 +151,14 @@ function paint() {
   const judged = snap.verdicts.some((v) => v.claimIds.some((id) => cs.some((c) => c.claimId === id)))
   // 댓글은 제목이 부모 글 것이라 그대로 두면 같은 줄이 여러 개가 된다. 내용을 제목 자리에 둔다.
   // 본문은 아래 펼치기로 본다 — 앞머리를 같이 보이면 같은 글이 두 번 나온다.
+  const mineNow = d.docId === snap.pasteDocId
   const head = d.kind === 'comment' ? d.text : d.title
   // 수치가 없거나 어느 지표에도 안 묶인 글은 흐리게 둡니다. 목록에서 빼지는 않습니다 —
   // 안 보이면 「없는 것」이 되고, 그건 감사 범위를 숨기는 것입니다.
   return `<div class="docitem">
     <button class="docrow${judged ? '' : ' idle'}" data-i="${i}" aria-current="false">
       <span class="t">${esc(head)}</span>
-      <span class="s"><span class="chip">${d.kind === 'comment' ? '댓글' : '글'}</span>
+      <span class="s"><span class="chip${mineNow ? ' accent' : ''}">${mineNow ? '붙여넣은 글' : d.kind === 'comment' ? '댓글' : '글'}</span>
         수치 ${cs.length}${bad ? ` <span class="chip flag">어떻게 쟀는지 없음 ${bad}</span>` : judged ? '' : ' · 판정 없음'}</span>
     </button>
     <button class="docmore" data-more="${i}" aria-expanded="false">본문 펼치기</button>
@@ -523,7 +524,10 @@ $('#steps').addEventListener('click', async (e) => {
     if (r.budget) tryBudget = r.budget
     if (r.error) { renderPaste(r.error, false, text); return }
     snap = r; derive(); paint()
-    state.doc = 0; state.revealed = 3   // 1·2 는 해당 없음 — 추출부터 편다
+    // 비교군으로 프로젝트 원문이 함께 실린다 — 목록이 사라지지 않는다.
+    // 커서는 **붙여넣은 글**에 둔다. 1·2 단계는 해당 없으니 추출부터 편다.
+    const at = docs.findIndex((d) => d.docId === (r.pasteDocId ?? 'paste:1'))
+    state.doc = at < 0 ? 0 : at; state.revealed = 3
     show()
   } catch {
     renderPaste('서버에 연결하지 못했습니다.', false, text)
