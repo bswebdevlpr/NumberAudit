@@ -1,7 +1,7 @@
 // 저장소 링크 — 화면에서 걷어낸 설명(측정 기록·경계·재현 명령)이 여기 있다.
 // 주소는 빌드가 넣는다(`scripts/build.js`). 박아 두면 포크한 사람 화면이 내 저장소를 가리킨다.
 import { REPO } from './lib/config.js'
-import { checkClaim } from './lib/gate.js'
+import { checkClaim, tight, loose } from './lib/gate.js'
 
 const $ = (s) => document.querySelector(s)
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]))
@@ -411,7 +411,21 @@ function render(i) {
   // 6 업무
   const plans = (snap.plans ?? []).map((p, pi) => ({ p, pi }))
     .filter(({ p }) => p.claimIds.some((id) => mine.some((c) => c.claimId === id)))
-  const s6 = plans.length ? plans.map(({ p, pi }) => `
+
+  // 🔑 **눌러도 막힐 것은 누르기 전에 말한다.**
+  //    서버는 쓰기 전에 인용을 **플로우 원문**에 다시 대조한다(`api/submit.js`). 붙여넣은 글은 플로우에 없으므로
+  //    그 글에서만 나온 인용을 단 업무는 반드시 막힌다 — 게이트가 제 일을 하는 것이지 고장이 아니다.
+  //    실패한 뒤에 이유를 읽게 두지 않고, 같은 대조를 화면에서 미리 돌린다.
+  const inFlow = (snap.docs ?? []).filter((d) => d.docId !== snap.pasteDocId)
+    .map((d) => ({ t: tight(d.text), l: loose(d.text) }))
+  const blocked = ({ task, subtasks }) => {
+    const body = [task?.contents, ...(subtasks ?? []).map((t) => t.contents)].join('\n')
+    return [...body.matchAll(/인용:\s*"([^"]+)"/g)].map((m) => m[1])
+      .filter((q) => !inFlow.some((b) => b.t.includes(tight(q)) || b.l.includes(loose(q))))
+  }
+  const s6 = plans.length ? plans.map(({ p, pi }) => {
+    const no = blocked(p)
+    return `
     <div style="margin-bottom:14px">
       <b>${esc(p.task.title)}</b>
       <div class="task-fields" style="margin:8px 0">
@@ -423,11 +437,15 @@ function render(i) {
       </div>
       <div class="pre">${esc(p.task.contents)}</div>
       <div style="margin-top:10px;display:flex;gap:8px;align-items:center">
-        <button class="btn" data-plan="${pi}">플로우에 등록</button>
+        <button class="btn" data-plan="${pi}"${no.length ? ' disabled' : ''}>플로우에 등록</button>
         <span class="muted" style="font-size:12px">하위업무 ${p.subtasks.length}건이 함께 만들어집니다</span>
       </div>
-      <p class="warnline">⚠️ 플로우에 삭제 API 가 없습니다. 등록하면 웹에서 직접 지워야 합니다.</p>
-    </div>`).join('') : `<div class="empty">${mine.length ? '이 글에서 어긋난 값을 찾지 못했습니다.' : '이 글에는 수치 주장이 없습니다.'}</div>`
+      ${no.length ? `<p class="warnline">🚫 등록할 수 없습니다. 이 업무가 단 인용 ${no.length}건이 <b>플로우 글에 없습니다</b> —
+        붙여넣은 글에만 있는 문장이라, 등록하면 아무도 원문을 찾을 수 없는 업무가 됩니다.
+        서버도 쓰기 전에 같은 대조를 걸어 막습니다.</p>
+        <ul class="whylist">${no.map((q) => `<li>「${esc(q)}」</li>`).join('')}</ul>`
+        : `<p class="warnline">⚠️ 플로우에 삭제 API 가 없습니다. 등록하면 웹에서 직접 지워야 합니다.</p>`}
+    </div>` }).join('') : `<div class="empty">${mine.length ? '이 글에서 어긋난 값을 찾지 못했습니다.' : '이 글에는 수치 주장이 없습니다.'}</div>`
 
   const STEPS = [
     { n: 1, name: '수집', sum: `호출 ${calls.length}회`, body: s1 },
