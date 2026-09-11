@@ -27,7 +27,7 @@ export async function auditText(text, { title = '붙여넣은 글', chain, basel
   // 🔑 **붙여넣은 글만 새로 뽑는다.** 프로젝트 주장은 이미 뽑아 둔 것을 그대로 쓴다 —
   //    비교군이 붙여넣은 글 안에만 있으면 「내 초안의 숫자가 이 프로젝트와 맞나」를 못 본다.
   //    그게 이 도구가 하려던 일 자체다(공지 초안의 250ms).
-  const base = { docs: baseline?.docs ?? [], claims: baseline?.claims ?? [] }
+  const base = { docs: baseline?.docs ?? [], claims: baseline?.claims ?? [], rejected: baseline?.rejected ?? [] }
   const { claims: fresh, rejected, stats } = await extractClaims([pasteDoc], { chain })
 
   // 기존 주장과 id 가 겹치면 안 된다. 붙여넣은 것은 P 로 시작한다.
@@ -70,7 +70,8 @@ export async function auditText(text, { title = '붙여넣은 글', chain, basel
     pasteDocId: pasteDoc.docId,
     plans: planTasks(draft),
     project: { projectId: null, title },
-    docs, claims, rejected, groups, dangling: [], duplicated: [], outOfGroup: [], ungrouped: [],
+    // 비교군의 폐기 기록도 같이 싣는다. 빼면 비교군 글의 게이트 칸이 늘 「폐기 0」이 된다.
+    docs, claims, rejected: [...base.rejected, ...rejected], groups, dangling: [], duplicated: [], outOfGroup: [], ungrouped: [],
     verdicts: draft.verdicts, byUnitIds: draft.byUnitIds,
     // 🔑 `docs` 는 **감사 대상**(비교군 포함), `extracted` 는 **이번에 모델에 넣은** 문서 수다.
     //    붙여넣기는 붙여넣은 글 하나만 넣으므로 둘이 갈린다 — 화면이 그걸 섞으면 거짓말이 된다.

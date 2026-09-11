@@ -270,10 +270,18 @@ function render(i) {
   const d = docs[i]
   document.querySelectorAll('.docrow').forEach((el) => el.setAttribute('aria-current', String(Number(el.dataset.i) === i)))
 
+  // 🔑 **붙여넣기는 스냅샷 전체가 아니라 문서 하나의 성질이다.**
+  //    붙여넣기 결과에는 비교군인 **프로젝트 원문이 함께** 실린다. 그래서 `snap.mode` 로 가르면
+  //    비교군 글을 눌러도 「붙여넣은 글」용 문구가 뜬다 — 그 글은 플로우에서 온 것인데 화면이 거짓말을 한다.
+  const isPasted = d.docId === snap.pasteDocId
+  const fromBase = snap.mode === 'paste' && !isPasted   // 저장된 감사 결과에서 온 비교군
+
   // 1 수집 — 이 문서를 가져온 실제 호출
   const calls = (snap.trace?.flow ?? []).filter((t) => t.path.includes(String(d.postId)))
-  const s1 = snap.mode === 'paste'
+  const s1 = isPasted
     ? '<div class="pre">붙여넣은 글이 플로우에 올라와 있다고 가정하고, 수집을 건너뜁니다.</div>'
+    : fromBase
+    ? '<div class="pre">비교군입니다. 저장된 감사 결과에서 가져왔고, 이번 실행에서는 플로우를 부르지 않았습니다.</div>'
     : calls.length
     ? `<div class="pre">${calls.map((t) => `${t.method} ${esc(t.path)}  → HTTP ${t.http} · success=${t.success} · ${t.ms}ms\n  data: ${esc(t.dataKeys.join(', '))}`).join('\n\n')}</div>`
     : '<div class="pre">상위 글의 응답에 함께 실려 왔습니다.</div>'
@@ -282,7 +290,7 @@ function render(i) {
   const raw = d.raw ?? {}
   const bin = (k, v) => `<div><span class="lbl">${k}${d.source?.startsWith(k) ? ' · 사용' : ''}</span>
     <div class="pre">${v ? esc(v) : '(비어 있음)'}</div></div>`
-  const s2 = snap.mode === 'paste'
+  const s2 = isPasted
     ? `<span class="lbl">붙여넣은 원문</span><div class="pre">${esc(raw.content)}</div>
        <span class="lbl">정제 결과</span><div class="pre">${esc(d.text)}</div>`
     : `<div class="twocol">${bin('content', raw.content)}${bin('outContent', raw.outContent)}</div>
@@ -296,7 +304,27 @@ function render(i) {
   const cluster = (snap.trace?.gemini ?? [])[1]   // 두 번째 호출이 묶기다
   const batched = inPrompt > 1
   const tok = gemini ? `입력 ${gemini.promptTokens.toLocaleString()} · 출력 ${gemini.outputTokens.toLocaleString()} 토큰` : ''
-  const s3 = gemini ? `
+  // 🔑 비교군 글은 **이번 실행에서 모델에 안 들어갔다.** 뽑기 프롬프트에도 없고 응답에도 없다 —
+  //    그 자리에 저장된 주장을 놓고 「응답 JSON」이라고 적으면 화면이 거짓말을 한다.
+  //    묶기는 다르다. 비교군 주장까지 통째로 넣어야 대조가 되므로 **그 프롬프트에는 실제로 들어 있다.**
+  const clusterBox = () => cluster ? `<div class="why" style="border-radius:8px;margin-top:14px">
+      <b>여기서 이 문서 밖과 만납니다.</b> 뽑은 주장 전부를 놓고 <b>같은 지표끼리 묶습니다</b> —
+      비교군은 이 묶기가 정합니다. 아래에서 <mark>강조된 줄</mark>이 이 문서의 주장입니다.
+      <span class="q">${esc(cluster.model)} · 주장 ${snap.claims.length}건</span>
+    </div>
+    ${promptBox(`② 묶기 — 프롬프트 원문 ${String(cluster.prompt).length.toLocaleString()}자 · 이 문서 주장 강조`,
+      highlightClaims(cluster.prompt, mine.map((c) => c.claimId)))}` : ''
+
+  const s3 = fromBase ? `
+    <div class="why">
+      <b>이 글은 이번에 다시 뽑지 않았습니다.</b> 모델에 넣은 것은 붙여넣은 글 하나뿐이고,
+      이 글의 주장은 <b>저장된 감사 결과를 그대로</b> 가져와 비교군으로 씁니다.
+      ${cluster ? '묶기에는 함께 들어갑니다 — 아래에서 확인할 수 있습니다.' : ''}
+    </div>` + clusterBox() + `
+    <span class="lbl">저장된 감사 결과 중 이 문서 몫</span>
+    <div class="pre">${esc(JSON.stringify(mine.map(({ docId, metric, valueText, unit, scope, method, isTarget, quote }) =>
+      ({ docId, metric, valueText, unit, scope, method, isTarget, quote })), null, 1))}</div>`
+    : gemini ? `
     <div class="why">
       ${batched
         ? `<b>${inPrompt}개 문서를 한 번에 넣습니다.</b> 문서당 1회로 부르면 무료 한도(모델당 하루 20회)에서
@@ -306,13 +334,7 @@ function render(i) {
     </div>
     ${promptBox(`① 뽑기 — 프롬프트 원문 ${String(gemini.prompt).length.toLocaleString()}자${batched ? ' · 이 문서 구간 강조' : ''}`,
       highlightSection(String(gemini.prompt), d.docId))}
-    ${cluster ? `<div class="why" style="border-radius:8px;margin-top:14px">
-        <b>여기서 이 문서 밖과 만납니다.</b> 뽑은 주장 전부를 놓고 <b>같은 지표끼리 묶습니다</b> —
-        비교군은 이 묶기가 정합니다. 아래에서 <mark>강조된 줄</mark>이 이 문서의 주장입니다.
-        <span class="q">${esc(cluster.model)} · 주장 ${snap.claims.length}건</span>
-      </div>
-      ${promptBox(`② 묶기 — 프롬프트 원문 ${String(cluster.prompt).length.toLocaleString()}자 · 이 문서 주장 강조`,
-        highlightClaims(cluster.prompt, mine.map((c) => c.claimId)))}` : ''}
+    ${clusterBox()}
     <button class="btn ghost small" data-redo="${esc(d.docId)}">이 글만 다시 돌리기</button>
     <span class="lbl">응답 JSON 중 이 문서 몫</span>
     <div class="pre">${esc(JSON.stringify(mine.map(({ docId, metric, valueText, unit, scope, method, isTarget, quote }) =>
@@ -448,9 +470,10 @@ function render(i) {
     </div>` }).join('') : `<div class="empty">${mine.length ? '이 글에서 어긋난 값을 찾지 못했습니다.' : '이 글에는 수치 주장이 없습니다.'}</div>`
 
   const STEPS = [
-    { n: 1, name: '수집', sum: `호출 ${calls.length}회`, body: s1 },
+    // 요약도 「이번 실행에서 한 일」이다. 비교군은 이번에 부르지도 뽑지도 않았으므로 그렇게 적는다.
+    { n: 1, name: '수집', sum: isPasted ? '건너뜀' : fromBase ? '비교군 · 호출 없음' : `호출 ${calls.length}회`, body: s1 },
     { n: 2, name: '정제', sum: `${esc(d.source ?? '')} → ${d.text.length}자`, body: s2 },
-    { n: 3, name: '추출', sum: `주장 ${mine.length}건 · 배치 1회`, body: s3 },
+    { n: 3, name: '추출', sum: fromBase ? `저장된 주장 ${mine.length}건` : `주장 ${mine.length}건 · 배치 1회`, body: s3 },
     { n: 4, name: '게이트', sum: `통과 ${mine.length} · 폐기 ${rej.length}`, body: s4 },
     { n: 5, name: '판정', sum: s5sum, body: s5, before: '<div class="divider">이 문서 밖 — 프로젝트 전체와 대조</div>' },
     { n: 6, name: '업무', sum: plans.length ? `${plans.length}건` : '없음', body: s6 },
