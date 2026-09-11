@@ -6,6 +6,10 @@
     },
     "api/submit.js": {
       "maxDuration": 30
+    },
+    "api/try.js": {
+      "maxDuration": 60,
+      "includeFiles": "public/snapshot.json"
     }
   },
   "buildCommand": "node scripts/build.js",
@@ -44,7 +48,7 @@
         },
         {
           "key": "Strict-Transport-Security",
-          "value": "max-age=63072000; includeSubDomains; preload"
+          "value": "max-age=63072000; includeSubDomains"
         }
       ]
     }

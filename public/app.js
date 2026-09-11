@@ -616,7 +616,8 @@ const submitted = []
 function renderOut() {
   // 🔑 전에 등록해 둔 것도 같이 보인다. 아무것도 안 눌러도 워크플로의 끝이 화면에 있다.
   //    방금 누른 것과는 갈라서 적는다 — 내가 만든 것처럼 보이면 거짓말이 된다.
-  const before = (snap.toolPosts ?? []).filter((t) => !submitted.some((s) => s.title === t.title))
+  // 붙여넣기 스냅샷에는 도구 출력이 안 실린다 — 저장본 것을 쓴다. 안 그러면 목록이 사라진다.
+  const before = (snap.toolPosts ?? demoSnap.toolPosts ?? []).filter((t) => !submitted.some((s) => s.title === t.title))
   const total = submitted.length + before.length
   $('#outHead').textContent = `되돌린 업무 ${total ? `${total}건` : ''}`
   const card = (title, note, body = '', key = '') => `

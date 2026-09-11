@@ -37,7 +37,13 @@ async function baseline() {
     const url = new URL('../public/snapshot.json', import.meta.url)
     const j = JSON.parse(await readFile(url, 'utf8'))
     cachedBase = { docs: j.docs ?? [], claims: j.claims ?? [] }
-  } catch { cachedBase = { docs: [], claims: [] } }   // 없으면 붙여넣은 글만 본다
+  } catch (e) {
+    // 🔴 조용히 넘기면 **비교군 없이 돈 결과가 정상처럼 보인다.** 로그에 남긴다.
+    //    배포에서 이게 나면 `vercel.json` 의 `includeFiles` 를 확인해야 한다 —
+    //    함수 번들은 정적 파일(`public/`)을 자동으로 안 담는다.
+    console.warn('[비교군] 스냅샷을 못 읽었다 — 붙여넣은 글만 본다:', String(e.message ?? e))
+    cachedBase = { docs: [], claims: [] }
+  }
   return cachedBase
 }
 

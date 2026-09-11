@@ -319,6 +319,13 @@ Cross-Origin-Opener-Policy / Resource-Policy: same-origin   ·   Strict-Transpor
 ```
 
 외부에서 불러오는 스크립트·폰트·이미지가 하나도 없어서 `default-src 'none'` 으로 잠글 수 있었다.
+
+**함수 번들은 정적 파일을 자동으로 안 담는다.** 붙여넣기가 비교군으로 읽는 `public/snapshot.json` 은
+런타임 `readFile` 이라 추적이 안 된다 — `vercel.json` 에 `includeFiles` 로 넣어야 한다.
+안 넣으면 **비교군 없이 돈 결과가 정상처럼 보인다.** 못 읽으면 로그에 남긴다.
+
+**함수마다 상한을 실측에 맞춘다.** 붙여넣기는 비교군을 붙이면서 호출 2회·실측 5.6~21.0초가 됐다 —
+상한을 안 주면 기본값에서 잘리고, 잘리면 호출만 태우고 결과가 없다.
 `style-src` 만 `unsafe-inline` 이다 — 화면 코드가 `style` 속성을 쓴다.
 
 **요청 본문은 읽으면서 자른다.** 다 읽고 길이를 재면 이미 메모리에 올라간 뒤라, 큰 POST 하나로 함수를 밀어낼 수 있다.
