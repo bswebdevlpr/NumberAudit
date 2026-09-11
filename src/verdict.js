@@ -6,6 +6,7 @@
  */
 
 import { valueKey } from './value.js'
+import { NO_CONDITION } from './cluster.js'
 
 const norm = (s) => String(s ?? '').replace(/\s/g, '').replace(/(\d),(?=\d{3}\b)/g, '$1').toLowerCase()
 const valueOf = (c) => valueKey(c)
@@ -82,11 +83,16 @@ export function findDisagreement(groupClaims, contexts) {
  * 모델이 조건을 잘못 갈랐을 때 사람이 뒤집을 수 있어야 한다.
  */
 export function findCrossContext(groupClaims, contexts) {
-  if (!contexts?.length || contexts.length < 2) return []
+  // ⚠️ **조건이 적혀 있지 않은 값은 여기 넣지 않는다.** 그건 조건이 「다른」 게 아니라 「모르는」 것이다.
+  //    화면이 「조건이 달라 견주지 않았다」고 말하는데 사실은 안 적힌 것이면 거짓말이 된다.
+  //    그 값들은 1차 「근거 없음」이 따로 본다.
+  const named = (contexts ?? []).filter((ctx) => ctx.condition !== NO_CONDITION)
+  if (named.length < 2) return []
   const within = new Set(findDisagreement(groupClaims, contexts).map((c) => c.claimId))
+  const inNamed = new Set(named.flatMap((ctx) => ctx.claimIds ?? []))
   const measured = groupClaims.filter((c) => !c.isTarget)
   if ([...new Set(measured.map(valueOf))].length < 2) return []
-  return measured.filter((c) => !within.has(c.claimId))
+  return measured.filter((c) => inNamed.has(c.claimId) && !within.has(c.claimId))
 }
 
 /** 조건 묶음대로 주장을 나눈다. 묶음이 없으면 통째로 한 묶음이다. */

@@ -124,7 +124,7 @@ function traceBlock(cs, here, set) {
     <div class="th"><div>숫자</div><div>적힌 글</div><div>어떻게 쟀다고 적혀 있나</div></div>
     ${grounded.length ? `<div class="cut">측정 기록 — 방법이 함께 적혀 있다${outGroup.length ? ' · 단위가 같은 값을 프로젝트 전체에서 모았습니다' : ''}</div>${groundedRows}` : ''}
     ${bare.length ? `<div class="cut">방법이 적혀 있지 않은 값</div>${bare.map((c) => traceRow(c, here)).join('')}` : ''}
-    ${conds.length > 1 ? '<div class="foot">조건이 서로 다른 값은 <b>견주지 않습니다.</b> 같은 조건으로 잰 값끼리만 비교합니다.</div>' : ''}
+    ${conds.filter((c) => c !== OTHER).length > 1 ? '<div class="foot">조건이 서로 다른 값은 <b>견주지 않습니다.</b> 같은 조건으로 잰 값끼리만 비교합니다.</div>' : ''}
     ${hasMiss ? '<div class="foot">틀렸다는 판정이 아닙니다 — <b>감사한 글에서 근거를 찾지 못했다</b>는 표시입니다.</div>' : ''}
   </div>`
 }

@@ -103,3 +103,35 @@ test('valueText 에 단위가 이미 들어 있으면 다시 붙이지 않는다
   assert.equal(valueLabel({ valueText: '42', unit: '' }), '42')
   assert.equal(valueKey({ valueText: '1,284', unit: '케이스' }), '1284케이스')
 })
+
+// ── 참조 게이트 ③ — 조건 묶음도 코드가 되짚는다 ─────────────────────────────
+test('조건 묶음의 그룹 밖 ID·중복 배정을 걸러내고, 남은 값은 「조건 미기재」로 모은다', async () => {
+  const { cleanContexts, NO_CONDITION } = await import('../src/cluster.js')
+  const out = [], dup = []
+  const got = cleanContexts([
+    { condition: '캐시 미적용', claimIds: ['A', 'ZZZ', 'B'] },   // ZZZ 는 이 그룹에 없다
+    { condition: '캐시 워밍', claimIds: ['B', 'C'] },            // B 는 이미 배정됐다
+  ], ['A', 'B', 'C', 'D'], out, dup)
+  assert.deepEqual(out, ['ZZZ'])
+  assert.deepEqual(dup, ['B'])
+  assert.deepEqual(got, [
+    { condition: '캐시 미적용', claimIds: ['A', 'B'] },
+    { condition: '캐시 워밍', claimIds: ['C'] },
+    { condition: NO_CONDITION, claimIds: ['D'] },                // 어디에도 안 든 값
+  ])
+})
+
+test('조건 묶음이 비면 분할을 만들지 않는다 — 예전 동작으로 떨어진다', async () => {
+  const { cleanContexts } = await import('../src/cluster.js')
+  assert.deepEqual(cleanContexts([], ['A', 'B']), [])
+  assert.deepEqual(cleanContexts(undefined, ['A', 'B']), [])
+})
+
+test('조건이 안 적힌 값은 「조건이 다르다」로 말하지 않는다 — 모르는 것이지 다른 것이 아니다', async () => {
+  const { NO_CONDITION } = await import('../src/cluster.js')
+  const m = (id, v, meth = '') => ({ claimId: id, valueText: v, unit: 'ms', method: meth, isTarget: false, metric: 'X' })
+  const cs = [m('A', '320', '캐시 미적용'), m('B', '820', '캐시 미적용'), m('C', '500')]
+  const ctx = [{ condition: '캐시 미적용', claimIds: ['A', 'B'] }, { condition: NO_CONDITION, claimIds: ['C'] }]
+  assert.deepEqual(findDisagreement(cs, ctx).map((x) => x.claimId), ['A', 'B'])
+  assert.deepEqual(findCrossContext(cs, ctx).map((x) => x.claimId), [])   // C 는 여기 안 온다
+})

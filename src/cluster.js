@@ -85,7 +85,8 @@ export async function clusterClaims(claims) {
   const known = new Set(claims.map((c) => c.claimId))
   const seen = new Set()
   const dangling = []      // 없는 ID를 가리킨 것
-  const duplicated = []    // 두 그룹에 동시에 들어간 것
+  const duplicated = []    // 두 그룹(또는 두 조건 묶음)에 동시에 들어간 것
+  const outOfGroup = []    // 조건 묶음이 **제 그룹 밖** ID를 가리킨 것 — 없는 ID와는 다른 사건이다
 
   const clean = (groups ?? []).map((g) => {
     const ids = []
@@ -94,11 +95,11 @@ export async function clusterClaims(claims) {
       if (seen.has(id)) { duplicated.push(id); continue }
       seen.add(id); ids.push(id)
     }
-    return { metric: g.metric, claimIds: ids, contexts: cleanContexts(g.contexts, ids, dangling, duplicated) }
+    return { metric: g.metric, claimIds: ids, contexts: cleanContexts(g.contexts, ids, outOfGroup, duplicated) }
   }).filter((g) => g.claimIds.length > 0)
 
   const ungrouped = claims.filter((c) => !seen.has(c.claimId)).map((c) => c.claimId)
-  return { groups: clean, dangling, duplicated, ungrouped }
+  return { groups: clean, dangling, duplicated, outOfGroup, ungrouped }
 }
 
 export const NO_CONDITION = '조건 미기재'
@@ -112,7 +113,7 @@ export const NO_CONDITION = '조건 미기재'
  * ⚠️ 모델이 조건을 못 가르면 `contexts` 가 비어서 나온다. 그때는 **조건 축을 안 쓴 것과 같다** —
  *    판정이 예전 동작으로 떨어지고 화면은 그대로 산다.
  */
-function cleanContexts(contexts, groupIds, dangling, duplicated) {
+export function cleanContexts(contexts, groupIds, outOfGroup = [], duplicated = []) {
   if (!Array.isArray(contexts) || contexts.length === 0) return []
   const inGroup = new Set(groupIds)
   const placed = new Set()
@@ -120,7 +121,7 @@ function cleanContexts(contexts, groupIds, dangling, duplicated) {
   for (const c of contexts) {
     const ids = []
     for (const id of c?.claimIds ?? []) {
-      if (!inGroup.has(id)) { dangling.push(id); continue }
+      if (!inGroup.has(id)) { outOfGroup.push(id); continue }
       if (placed.has(id)) { duplicated.push(id); continue }
       placed.add(id); ids.push(id)
     }

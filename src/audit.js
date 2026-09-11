@@ -54,7 +54,7 @@ export async function auditText(text, { title = '붙여넣은 글' } = {}) {
     mode: 'paste', groupedBy: 'code',
     plans: planTasks(draft),
     project: { projectId: null, title },
-    docs, claims, rejected, groups, dangling: [], duplicated: [], ungrouped: [],
+    docs, claims, rejected, groups, dangling: [], duplicated: [], outOfGroup: [], ungrouped: [],
     verdicts: draft.verdicts, byUnitIds: draft.byUnitIds,
     stats: { ...stats, docs: 1 },
     model: {
@@ -95,7 +95,7 @@ export async function auditProject(projectId, { title } = {}) {
 
   const docs = await collectProject(projectId)
   const { claims, rejected, stats, batches } = await extractClaims(docs)
-  const { groups, dangling, duplicated, ungrouped } = await clusterClaims(claims)
+  const { groups, dangling, duplicated, outOfGroup, ungrouped } = await clusterClaims(claims)
   const { verdicts, byUnit } = judgeRoom(claims, groups)
 
   // 참여자는 담당자 지정에 쓴다. 플로우 호출이라 Gemini 예산과 무관하다.
@@ -110,7 +110,7 @@ export async function auditProject(projectId, { title } = {}) {
     docs,
     claims,
     rejected,
-    groups, dangling, duplicated, ungrouped,
+    groups, dangling, duplicated, outOfGroup, ungrouped,
     // 화면은 claimId 로 되짚는다 — 주장 본문을 두 번 담지 않는다
     verdicts: verdicts.map((v) => ({
       metric: v.metric,
