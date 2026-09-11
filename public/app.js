@@ -8,6 +8,8 @@ const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<
 import { valueLabel } from './lib/value.js'
 
 const val = (c) => valueLabel(c)
+/** 플로우가 받는 `20260914` 를 화면에서는 `2026-09-14` 로 보인다. */
+const ymdDash = (s) => String(s ?? '').replace(/^(\d{4})(\d{2})(\d{2})$/, '$1-$2-$3')
 /** 받침에 따라 「(으)로」를 고른다. 「초안로」 같은 문장이 나오면 화면이 대충 만든 티가 난다. */
 function ro(word) {
   const last = String(word ?? '').trim().slice(-1)
@@ -137,7 +139,7 @@ function traceBlock(cs, here, set) {
     ${grounded.length ? `<div class="cut">측정 기록 — 방법이 함께 적혀 있다${outGroup.length ? ' · 단위가 같은 값을 프로젝트 전체에서 모았습니다' : ''}</div>${groundedRows}` : ''}
     ${bare.length ? `<div class="cut">방법이 적혀 있지 않은 값</div>${bare.map((c) => traceRow(c, here, condOf)).join('')}` : ''}
     ${conds.filter((c) => c !== OTHER).length > 1 ? '<div class="foot">조건이 서로 다른 값은 <b>견주지 않습니다.</b> 같은 조건으로 잰 값끼리만 비교합니다.</div>' : ''}
-    ${hasMiss ? '<div class="foot">틀렸다는 판정이 아닙니다 — <b>감사한 글에서 근거를 찾지 못했다</b>는 표시입니다.</div>' : ''}
+    ${hasMiss ? '<div class="foot">틀렸다는 판정이 아닙니다 — <b>감사한 글에서 어떻게 쟀는지를 찾지 못했다</b>는 표시입니다.</div>' : ''}
   </div>`
 }
 
@@ -156,7 +158,7 @@ function paint() {
     <button class="docrow${judged ? '' : ' idle'}" data-i="${i}" aria-current="false">
       <span class="t">${esc(head)}</span>
       <span class="s"><span class="chip">${d.kind === 'comment' ? '댓글' : '글'}</span>
-        수치 ${cs.length}${bad ? ` <span class="chip flag">근거 없음 ${bad}</span>` : judged ? '' : ' · 판정 없음'}</span>
+        수치 ${cs.length}${bad ? ` <span class="chip flag">어떻게 쟀는지 없음 ${bad}</span>` : judged ? '' : ' · 판정 없음'}</span>
     </button>
     <button class="docmore" data-more="${i}" aria-expanded="false">본문 펼치기</button>
     <div class="docbody" data-body="${i}" hidden>${esc(d.text)}</div>
@@ -313,7 +315,7 @@ function render(i) {
       const grounded = [...new Set(set.grounded.map(val))]
       // 범위를 넓혔으면 「같은 단위」, 그룹 안에서만 봤으면 「같은 지표」다. 실제로 견준 것을 그대로 적는다.
       const scope = set.outGroup.length ? `같은 ${esc(unit)} 값` : '같은 지표의 값'
-      return { cls: 'flag', chip: '근거 없음',
+      return { cls: 'flag', chip: '어떻게 쟀는지 없음',
         line: `<b>${esc(vals.join(' · '))}</b>를 어떻게 쟀는지 <b>감사한 글·댓글 ${snap.stats.docs}건</b> 어디에도 적혀 있지 않습니다.`,
         sub: grounded.length ? `${scope} ${grounded.map((g) => esc(g)).join(' · ')}에는 어떻게 쟀는지가 적혀 있습니다.` : '' }
     }
@@ -368,7 +370,7 @@ function render(i) {
     v.disagreementIds
       ? v.disagreementIds.length > 0
       : new Set(v.claimIds.map((id) => claims.get(id)).filter((c) => c && !c.isTarget).map(val)).size > 1)).length
-  const s5sum = [badCount ? `근거 없음 ${badCount}` : '', conflictCount ? `값이 갈림 ${conflictCount}` : '']
+  const s5sum = [badCount ? `어떻게 쟀는지 없음 ${badCount}` : '', conflictCount ? `값이 갈림 ${conflictCount}` : '']
     .filter(Boolean).join(' · ') || `지표 ${groups.length}개`
 
   // 6 업무
@@ -380,14 +382,14 @@ function render(i) {
       <div class="task-fields" style="margin:8px 0">
         <span class="chip accent">상태 ${esc(p.task.status)}</span>
         <span class="chip ${p.task.priority === 'high' ? 'flag' : ''}">우선순위 ${esc(p.task.priority)}</span>
-        <span class="chip">마감 ${esc(p.task.endDate)}</span>
-<span class="chip">담당자 ${p.worker?.name ? esc(p.worker.name) : '등록할 때 글쓴이로 지정'}</span>
+        <span class="chip">마감 ${esc(ymdDash(p.task.endDate))}</span>
+<span class="chip">담당자 ${p.worker?.name ? esc(p.worker.name) : '등록할 때 글쓴이로 정합니다'}</span>
         <span class="chip">${esc(p.tier ?? '')}</span>
       </div>
       <div class="pre">${esc(p.task.contents)}</div>
       <div style="margin-top:10px;display:flex;gap:8px;align-items:center">
         <button class="btn" data-plan="${pi}">플로우에 등록</button>
-        <span class="muted" style="font-size:12px">하위업무 ${p.subtasks.length}건이 함께 만들어진다</span>
+        <span class="muted" style="font-size:12px">하위업무 ${p.subtasks.length}건이 함께 만들어집니다</span>
       </div>
       <p class="warnline">⚠️ 플로우에 삭제 API 가 없습니다. 등록하면 웹에서 직접 지워야 합니다.</p>
     </div>`).join('') : `<div class="empty">${mine.length ? '이 글에서 어긋난 값을 찾지 못했습니다.' : '이 글에는 수치 주장이 없습니다.'}</div>`
@@ -642,7 +644,7 @@ fetch('/api/audit', { method: 'POST' })
     //    숫자만 앞에 세우면 결함 고지처럼 읽힌다.
     // 🔑 배지는 한 줄로 잘리는 자리다. **살아 있다는 증거**만 남기고,
     //    저장본과의 차이는 그 숫자가 실제로 적히는 곳(푸터)으로 내린다.
-    // 방이 안 바뀌어 모델을 안 부른 경우와, 실제로 다시 돌린 경우를 갈라 적는다.
+    // 글이 안 바뀌어 모델을 안 부른 경우와, 실제로 다시 돌린 경우를 갈라 적는다.
     live.textContent = j.unchanged
       ? `방금 플로우를 읽었습니다 · 글이 그대로라 앞서 돌린 결과입니다 · ${j.claims.length}건`
       : `방금 다시 감사했습니다 · ${j.claims.length}건 · 모델 호출 포함 ${sec}초`

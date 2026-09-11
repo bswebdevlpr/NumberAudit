@@ -12,8 +12,8 @@ import { flow } from '../src/flow.js'
 
 const BLOCK = /<\/(?:p|div|h[1-6]|li|tr|blockquote)>|<br\s*\/?>/gi
 
-// 에디터로 쓴 글이 있는 방이어야 한다 — API 로 심은 방은 htmlContent 가 비어 측정이 성립하지 않는다.
-// 2965412 는 플로우가 만든 「시작가이드」 방이고, 라운드 4 측정을 거기서 했다.
+// 에디터로 쓴 글이 있는 프로젝트여야 한다 — API 로 심은 쪽은 htmlContent 가 비어 측정이 성립하지 않는다.
+// 2965412 는 플로우가 만든 「시작가이드」 프로젝트고, 라운드 4 측정을 거기서 했다.
 const projectId = process.argv[2] ?? process.env.FLOW_EDITOR_PROJECT_ID ?? '2965412'
 const list = await flow.listPosts(projectId)
 let posts = 0, seams = 0, fused = 0

@@ -105,12 +105,15 @@ export function planTasks(snapshot, { workers = new Map() } = {}) {
       ...(crossed.length ? [
         `■ 조건이 달라 견주지 않은 값 ${crossed.length}건`,
         ...crossed.map(claimLine),
-        '  ↑ 잰 조건이 서로 달라 값을 견주지 않았습니다. 같은 조건이라면 알려 주세요.',
+        '  ↑ 잰 조건이 서로 달라 값을 견주지 않았다. 같은 조건이면 알려 달라.',
         '',
       ] : []),
-      `■ 같은 지표의 다른 값 ${(v.claimIds?.length ?? 0) - flagged.length - crossed.length}건`,
-      ...(v.claimIds ?? []).filter((id) => !flagged.some((f) => f.claimId === id) && !crossed.some((f) => f.claimId === id))
-        .map((id) => byId.get(id)).filter(Boolean).map(claimLine),
+      ...(() => {
+        const rest = (v.claimIds ?? []).filter((id) => !flagged.some((f) => f.claimId === id) && !crossed.some((f) => f.claimId === id))
+          .map((id) => byId.get(id)).filter(Boolean)
+        // 0건이면 제목만 남은 빈 절이 된다. 안 만든다.
+        return rest.length ? [`■ 같은 지표의 다른 값 ${rest.length}건`, ...rest.map(claimLine)] : []
+      })(),
       ...(targets.length ? ['', `■ 목표값: ${targets.map((t) => valueLabel(t)).join(', ')}`] : []),
       '',
       '---',

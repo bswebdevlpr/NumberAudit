@@ -2,7 +2,7 @@ import { requireEnv } from '../src/env.js'
 
 /**
  * 서버가 만질 수 있는 프로젝트는 **하나로 고정한다.**
- * 클라이언트가 projectId 를 넘기게 두면, 배포된 함수가 내 키로 아무 방이나 읽고 쓰는 통로가 된다.
+ * 클라이언트가 projectId 를 넘기게 두면, 배포된 함수가 내 키로 아무 프로젝트나 읽고 쓰는 통로가 된다.
  */
 export const DEMO_PROJECT_ID = String(process.env.FLOW_DEMO_PROJECT_ID ?? '')
 

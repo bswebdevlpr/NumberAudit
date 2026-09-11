@@ -11,7 +11,7 @@ process.env.GEMINI_MODEL ??= process.env.LIVE_GEMINI_MODEL ?? 'gemini-3.1-flash-
 const { auditProject } = await import('../src/audit.js')
 
 /**
- * 데모 방을 **지금** 다시 감사한다.
+ * 데모 프로젝트를 **지금** 다시 감사한다.
  *
  * 화면은 저장된 스냅샷을 먼저 그리고, 이 응답이 오면 갈아 끼운다.
  * 그래서 링크는 어떤 경우에도 죽지 않고, 살아 있으면 방금 돈 결과가 보인다.
@@ -23,7 +23,7 @@ const { auditProject } = await import('../src/audit.js')
  *
  *    그래서 글 목록만 읽어 **지문**을 만든다(플로우 호출 1회 — Gemini 예산과 무관).
  *    지문이 같으면 모델을 **한 번도 안 부르고** 캐시를 돌려준다.
- *    방이 안 바뀌면 감사 결과도 안 바뀌니, 다시 부를 이유가 없다.
+ *    글이 안 바뀌면 감사 결과도 안 바뀌니, 다시 부를 이유가 없다.
  */
 const TTL_MS = Number(process.env.AUDIT_CACHE_MS ?? 60 * 60 * 1000)
 let cache = null   // { at, fingerprint, snapshot }
