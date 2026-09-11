@@ -72,7 +72,9 @@ export async function auditText(text, { title = '붙여넣은 글', chain, basel
     project: { projectId: null, title },
     docs, claims, rejected, groups, dangling: [], duplicated: [], outOfGroup: [], ungrouped: [],
     verdicts: draft.verdicts, byUnitIds: draft.byUnitIds,
-    stats: { ...stats, docs: docs.length, pasted: pasted.length },
+    // 🔑 `docs` 는 **감사 대상**(비교군 포함), `extracted` 는 **이번에 모델에 넣은** 문서 수다.
+    //    붙여넣기는 붙여넣은 글 하나만 넣으므로 둘이 갈린다 — 화면이 그걸 섞으면 거짓말이 된다.
+    stats: { ...stats, docs: docs.length, extracted: 1, pasted: pasted.length },
     model: {
       chain: modelChain(),
       byModel: Object.fromEntries(Object.entries(usage.byModel)
@@ -143,7 +145,7 @@ export async function auditProject(projectId, { title } = {}) {
     })),
     // 2차 — 그룹 밖 대조(단위만 같음). 1차와 등급이 다르므로 따로 담는다.
     byUnitIds: byUnit.map((c) => c.claimId),
-    stats: { ...stats, docs: docs.length, batches },
+    stats: { ...stats, docs: docs.length, extracted: docs.length, batches },
     model: {
       chain: modelChain(),
       byModel: Object.fromEntries(Object.entries(usage.byModel)

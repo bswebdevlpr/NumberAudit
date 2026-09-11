@@ -1153,7 +1153,8 @@
   "batches": [
    13
   ],
-  "docs": 13
+  "docs": 13,
+  "extracted": 13
  },
  "model": {
   "chain": [

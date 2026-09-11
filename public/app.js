@@ -213,6 +213,20 @@ function stepCard(n, name, summary, body, open) {
  */
 const PROMPT_CAP = 20000
 
+/** 묶기 프롬프트에서 **이 문서의 주장 줄**을 강조한다 — 무엇과 견줬는지가 그 줄들 사이에 있다. */
+function highlightClaims(prompt, ids) {
+  const set = new Set(ids)
+  return String(prompt).slice(0, PROMPT_CAP).split('\n')
+    .map((line) => set.has(line.split('|')[0].trim()) ? `<mark>${esc(line)}</mark>` : esc(line))
+    .join('\n')
+}
+
+/** 프롬프트 상자 한 벌 — 넘치면 아래에 펼치기가 붙는다(스크롤바가 안 보이는 환경 때문). */
+const promptBox = (label, html) => `
+    <span class="lbl">${label}</span>
+    <div class="promptwrap"><div class="pre promptbox">${html}</div></div>
+    <button class="docmore" data-promptmore aria-expanded="false" hidden>프롬프트 전체 펼치기</button>`
+
 function highlightSection(prompt, docId) {
   const text = prompt.length > PROMPT_CAP ? prompt.slice(0, PROMPT_CAP) : prompt
   const tail = prompt.length > PROMPT_CAP ? `\n…(${(prompt.length - PROMPT_CAP).toLocaleString()}자 더)` : ''
@@ -270,19 +284,28 @@ function render(i) {
 
   // 3 추출 — 배치다. 이 문서 구간만 강조한다
   const mine = claimsOf(d.docId)
-  const batched = snap.stats.docs > 1
+  // 프롬프트에 실제로 들어간 문서 수. 비교군까지 센 `docs` 와 다를 수 있다(붙여넣기).
+  const inPrompt = snap.stats.extracted ?? snap.stats.docs
+  const cluster = (snap.trace?.gemini ?? [])[1]   // 두 번째 호출이 묶기다
+  const batched = inPrompt > 1
   const tok = gemini ? `입력 ${gemini.promptTokens.toLocaleString()} · 출력 ${gemini.outputTokens.toLocaleString()} 토큰` : ''
   const s3 = gemini ? `
     <div class="why">
       ${batched
-        ? `<b>${snap.stats.docs}개 문서를 한 번에 넣습니다.</b> 문서당 1회로 부르면 무료 한도(모델당 하루 20회)에서
+        ? `<b>${inPrompt}개 문서를 한 번에 넣습니다.</b> 문서당 1회로 부르면 무료 한도(모델당 하루 20회)에서
            <b>하루 20문서까지만</b> 읽을 수 있어 프로젝트 하나를 다 못 봅니다.`
-        : '<b>붙여넣은 글 하나만 넣습니다.</b>'}
+        : `<b>이 글 하나만 넣습니다.</b> 비교군이 되는 프로젝트 주장은 이미 뽑아 둔 것을 쓰므로 다시 넣지 않습니다.`}
       <span class="q">${esc(gemini.model)} · 배치 ${JSON.stringify(snap.stats.batches)} · ${esc(tok)}</span>
     </div>
-    <span class="lbl">프롬프트 원문 ${String(gemini.prompt).length.toLocaleString()}자${batched ? ' — 이 문서 구간 강조 · 스크롤됩니다' : ''}</span>
-    <div class="promptwrap"><div class="pre promptbox">${highlightSection(String(gemini.prompt), d.docId)}</div></div>
-    <button class="docmore" data-promptmore aria-expanded="false">프롬프트 전체 펼치기</button>
+    ${promptBox(`① 뽑기 — 프롬프트 원문 ${String(gemini.prompt).length.toLocaleString()}자${batched ? ' · 이 문서 구간 강조' : ''}`,
+      highlightSection(String(gemini.prompt), d.docId))}
+    ${cluster ? `<div class="why" style="border-radius:8px;margin-top:14px">
+        <b>여기서 이 문서 밖과 만납니다.</b> 뽑은 주장 전부를 놓고 <b>같은 지표끼리 묶습니다</b> —
+        비교군은 이 묶기가 정합니다. 아래에서 <mark>강조된 줄</mark>이 이 문서의 주장입니다.
+        <span class="q">${esc(cluster.model)} · 주장 ${snap.claims.length}건</span>
+      </div>
+      ${promptBox(`② 묶기 — 프롬프트 원문 ${String(cluster.prompt).length.toLocaleString()}자 · 이 문서 주장 강조`,
+        highlightClaims(cluster.prompt, mine.map((c) => c.claimId)))}` : ''}
     <button class="btn ghost small" data-redo="${esc(d.docId)}">이 글만 다시 돌리기</button>
     <span class="lbl">응답 JSON 중 이 문서 몫</span>
     <div class="pre">${esc(JSON.stringify(mine.map(({ docId, metric, valueText, unit, scope, method, isTarget, quote }) =>
@@ -498,6 +521,8 @@ function show() {
     }
     box.addEventListener('scroll', paint, { passive: true })
     paint()
+    const btn = box.parentElement?.nextElementSibling
+    if (btn?.hasAttribute('data-promptmore')) btn.hidden = box.scrollHeight <= box.clientHeight + 1
   })
 }
 
