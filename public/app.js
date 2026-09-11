@@ -280,8 +280,8 @@ function render(i) {
         : '<b>붙여넣은 글 하나만 넣습니다.</b>'}
       <span class="q">${esc(gemini.model)} · 배치 ${JSON.stringify(snap.stats.batches)} · ${esc(tok)}</span>
     </div>
-    <span class="lbl">프롬프트 원문 ${String(gemini.prompt).length.toLocaleString()}자${batched ? ' — 이 문서 구간 강조' : ''}</span>
-    <div class="pre promptbox">${highlightSection(String(gemini.prompt), d.docId)}</div>
+    <span class="lbl">프롬프트 원문 ${String(gemini.prompt).length.toLocaleString()}자${batched ? ' — 이 문서 구간 강조 · 스크롤됩니다' : ''}</span>
+    <div class="promptwrap"><div class="pre promptbox">${highlightSection(String(gemini.prompt), d.docId)}</div></div>
     <button class="btn ghost small" data-redo="${esc(d.docId)}">이 글만 다시 돌리기</button>
     <span class="lbl">응답 JSON 중 이 문서 몫</span>
     <div class="pre">${esc(JSON.stringify(mine.map(({ docId, metric, valueText, unit, scope, method, isTarget, quote }) =>
@@ -486,9 +486,17 @@ function show() {
   paintMap()
   document.querySelectorAll('.playpen').forEach(runPlayground)
   // 프롬프트 상자는 전문이라 길다. 이 문서 구간이 보이도록 상자 안에서만 스크롤한다.
-  document.querySelectorAll('.promptbox mark').forEach((m) => {
-    const box = m.closest('.promptbox')
-    if (box) box.scrollTop = Math.max(0, m.offsetTop - box.offsetTop - 40)
+  document.querySelectorAll('.promptbox').forEach((box) => {
+    const m = box.querySelector('mark')
+    if (m) box.scrollTop = Math.max(0, m.offsetTop - box.offsetTop - 40)
+    const paint = () => {
+      const wrap = box.parentElement
+      if (!wrap) return
+      wrap.classList.toggle('more-up', box.scrollTop > 4)
+      wrap.classList.toggle('more-down', box.scrollTop + box.clientHeight < box.scrollHeight - 4)
+    }
+    box.addEventListener('scroll', paint, { passive: true })
+    paint()
   })
 }
 

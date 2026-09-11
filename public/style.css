@@ -146,7 +146,19 @@ mark{background:var(--mark);color:inherit;padding:2px 1px;border-radius:2px;
 .flowmap .mapkey{margin-left:10px;font-size:11.5px;color:var(--muted);gap:5px}
 .flowmap .dot-model{width:7px;height:7px;border-radius:50%;border:1.5px solid var(--accent);display:inline-block}
 
-.pre.promptbox{max-height:360px;overflow:auto;position:relative}
+/* 🔑 맥은 스크롤바를 숨긴다 — 잘린 게 아니라 **끝난 것처럼** 보인다.
+   내용이 넘치는 상자는 스크롤바를 늘 보이게 해서 더 있다는 걸 알린다. */
+/* 🔑 맥은 스크롤바를 숨긴다 — 넘치는 상자가 **잘린 게 아니라 끝난 것처럼** 보인다.
+   `::-webkit-scrollbar` 는 환경에 따라 안 먹어서, 렌더링에 안 기대는 방법을 쓴다:
+   위아래를 흐리게 해서 더 있다는 것을 보이고, 끝에 닿으면 그쪽 흐림을 끈다. */
+.promptwrap{position:relative}
+.promptwrap::before,.promptwrap::after{content:"";position:absolute;left:1px;right:1px;height:34px;
+  pointer-events:none;opacity:0;transition:opacity .12s;border-radius:8px}
+.promptwrap::before{top:1px;background:linear-gradient(var(--surface-2),transparent)}
+.promptwrap::after{bottom:1px;background:linear-gradient(transparent,var(--surface-2))}
+.promptwrap.more-up::before,.promptwrap.more-down::after{opacity:1}
+
+.pre.promptbox{max-height:360px;overflow:auto}
 
 .trace .borrowed{color:var(--accent);font-style:normal}
 
