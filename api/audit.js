@@ -28,13 +28,25 @@ const { auditProject } = await import('../src/audit.js')
 const TTL_MS = Number(process.env.AUDIT_CACHE_MS ?? 60 * 60 * 1000)
 let cache = null   // { at, fingerprint, snapshot }
 
-/** 글 목록의 지문 — 글이 늘거나 수정되거나 댓글이 붙으면 달라진다. */
-async function fingerprint() {
+/**
+ * 글 목록을 한 번 읽어 **지문과 「되돌린 업무」를 같이** 만든다.
+ * 지문은 글이 늘거나 수정되거나 댓글이 붙으면 달라진다.
+ *
+ * 🔑 **같은 응답에서 둘을 뽑는다.** 예전에는 지문만 만들고 목록을 버렸는데,
+ *    그러면 플로우에서 업무를 지워도 화면에는 저장본 시점의 목록이 남는다 —
+ *    실제로 6건을 1건으로 줄였는데 화면이 6건인 채였다.
+ *    이 목록은 모델과 무관하므로(글 목록만 있으면 된다) 저장본과 수명이 다르다.
+ */
+async function readList() {
   const { flow } = await import('../src/flow.js')
+  const { isToolPost, toolPostOf } = await import('../src/collect.js')
   const list = await flow.listPosts(DEMO_PROJECT_ID)
-  return list
-    .map((p) => `${p.postId}:${p.editedDateTime ?? p.registeredDateTime ?? ''}:${p.remarkCount ?? 0}`)
-    .sort().join('|')
+  return {
+    fingerprint: list
+      .map((p) => `${p.postId}:${p.editedDateTime ?? p.registeredDateTime ?? ''}:${p.remarkCount ?? 0}`)
+      .sort().join('|'),
+    toolPosts: list.filter(isToolPost).map(toolPostOf),
+  }
 }
 
 /**
@@ -107,11 +119,14 @@ export default async function handler(req, res) {
 
     let now = null
     // 플로우 조회가 실패해도 라이브 경로 전체가 죽지는 않는다. 「읽었다」만 못 말할 뿐이다.
-    try { now = await fingerprint() } catch { /* 아래에서 read:false 로 나간다 */ }
+    try { now = await readList() } catch { /* 아래에서 read:false 로 나간다 */ }
     return json(res, 200, {
-      ...base.snapshot, live: true, cached: true, force: forceBudget(),
+      ...base.snapshot,
+      // 읽었으면 「되돌린 업무」는 **지금 것**으로 간다. 감사 결과는 저장본 그대로다 — 수명이 다르다.
+      ...(now ? { toolPosts: now.toolPosts } : {}),
+      live: true, cached: true, force: forceBudget(),
       read: now !== null,                      // 플로우를 실제로 읽었나
-      unchanged: now !== null && now === base.fp,
+      unchanged: now !== null && now.fingerprint === base.fp,
       cachedAt: base.at ? new Date(base.at).toISOString() : null,
     })
   }
@@ -119,7 +134,7 @@ export default async function handler(req, res) {
   try {
     const snapshot = await auditProject(DEMO_PROJECT_ID)
     let fp = null
-    try { fp = await fingerprint() } catch { /* 지문을 못 만들면 다음 요청이 다시 감사한다 */ }
+    try { fp = (await readList()).fingerprint } catch { /* 지문을 못 만들면 다음 요청이 다시 감사한다 */ }
     cache = { at: Date.now(), fingerprint: fp, snapshot }
     return json(res, 200, { ...snapshot, live: true, cached: false, force: forceBudget() })
   } catch (e) {

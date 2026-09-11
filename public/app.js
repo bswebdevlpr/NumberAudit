@@ -48,6 +48,13 @@ function locateQuote(source, quote) {
  */
 let snap = await fetch('snapshot.json').then((r) => r.json())
 let demoSnap = snap
+/**
+ * 🔑 「되돌린 업무」만 따로 들고 있는다. **감사 결과와 수명이 다르기 때문이다.**
+ * 감사 결과는 모델을 불러야 갱신되는데 이 목록은 글 목록만 읽으면 갱신된다 —
+ * 라이브 경로가 지문을 만들려고 부른 응답에 같이 실려 온다.
+ * `snap` 에 얹어 두면 붙여넣기로 갔다 오거나 저장본으로 되돌릴 때 같이 사라져서, 지운 업무가 화면에 되살아난다.
+ */
+let liveTool = null
 let claims, flagged, docs, byUnitSet, writtenAt, gemini
 const claimsOf = (docId) => snap.claims.filter((c) => c.docId === docId)
 const rejectedOf = (docId) => snap.rejected.filter((c) => c.docId === docId)
@@ -656,7 +663,7 @@ function renderOut() {
   // 🔑 전에 등록해 둔 것도 같이 보인다. 아무것도 안 눌러도 워크플로의 끝이 화면에 있다.
   //    방금 누른 것과는 갈라서 적는다 — 내가 만든 것처럼 보이면 거짓말이 된다.
   // 붙여넣기 스냅샷에는 도구 출력이 안 실린다 — 저장본 것을 쓴다. 안 그러면 목록이 사라진다.
-  const before = (snap.toolPosts ?? demoSnap.toolPosts ?? []).filter((t) => !submitted.some((s) => s.title === t.title))
+  const before = (liveTool ?? snap.toolPosts ?? demoSnap.toolPosts ?? []).filter((t) => !submitted.some((s) => s.title === t.title))
   const total = submitted.length + before.length
   $('#outHead').textContent = `되돌린 업무 ${total ? `${total}건` : ''}`
   const card = (title, note, body = '', key = '') => `
@@ -736,6 +743,8 @@ function runLive({ force = false } = {}) {
       return
     }
     snap = j
+    // 플로우를 실제로 읽었을 때만 갈아 끼운다. 못 읽었으면 저장본 목록이 그대로 맞다.
+    if (j.toolPosts) { liveTool = j.toolPosts; renderOut() }
     derive(); paint()
     // 🔴 **붙여넣기 화면은 건드리지 않는다.** 사용자가 자기 글을 감사해 결과를 보고 있는데
     //    프로젝트 감사 결과가 돌아와 덮으면, 방금 한 일이 눈앞에서 사라진다.

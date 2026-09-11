@@ -128,6 +128,24 @@ export function normalizeText(s) {
  */
 const projectUrl = (projectId) => `https://flow.team/main.act?projectId=${projectId}`
 
+/**
+ * 목록 응답 한 줄 → 「되돌린 업무」 한 칸.
+ *
+ * 🔑 **감사 결과와 수명이 다르다.** 감사 결과는 모델을 불러야 갱신되는데, 이 목록은 글 목록만 읽으면 된다.
+ *    그래서 라이브 경로가 지문을 만들려고 이미 부른 응답으로 이것만 따로 갈아 끼운다(`api/audit.js`).
+ *    안 그러면 플로우에서 업무를 지워도 화면에는 저장본 시점의 목록이 계속 남는다.
+ */
+export const toolPostOf = (item) => ({
+  postId: String(item.postId), title: String(item.title ?? ''),
+  writtenAt: String(item.registeredDateTime ?? ''),
+  subTaskCount: Number(item.subTaskCount ?? 0),
+  // 본문도 목록 응답에 실려 온다. 화면에서 펼쳐 보이려고 담는다 —
+  // 플로우 링크는 참여자가 아니면 안 열리므로 링크 대신 내용을 보인다.
+  contents: normalizeText(String(item.content ?? '')).slice(0, 4000),
+})
+
+export const isToolPost = (item) => String(item.title ?? '').startsWith(TOOL_TITLE_PREFIX)
+
 export async function collectProject(projectId, { client = flow } = {}) {
   const list = await client.listPosts(projectId)
   const docs = []
@@ -137,17 +155,7 @@ export async function collectProject(projectId, { client = flow } = {}) {
 
   for (const item of list) {
     // 도구가 만든 업무는 감사하지 않는다. 자기 출력을 다시 읽으면 같은 수치가 무한히 번식한다.
-    if (String(item.title ?? '').startsWith(TOOL_TITLE_PREFIX)) {
-      toolPosts.push({
-        postId: String(item.postId), title: String(item.title ?? ''),
-        writtenAt: String(item.registeredDateTime ?? ''),
-        subTaskCount: Number(item.subTaskCount ?? 0),
-        // 본문도 목록 응답에 실려 온다. 화면에서 펼쳐 보이려고 담는다 —
-        // 플로우 링크는 참여자가 아니면 안 열리므로 링크 대신 내용을 보인다.
-        contents: normalizeText(String(item.content ?? '')).slice(0, 4000),
-      })
-      continue
-    }
+    if (isToolPost(item)) { toolPosts.push(toolPostOf(item)); continue }
     const post = await client.getPost(item.postId)
     const plain = plainText(post)
     docs.push({
