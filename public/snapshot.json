@@ -1,12 +1,27 @@
 {
   "version": 1,
-  "at": "2026-09-11T05:24:57.869Z",
-  "ms": 66192,
+  "at": "2026-09-11T05:48:27.310Z",
+  "ms": 72638,
   "project": {
     "projectId": "2969679",
     "title": "[데모] 검색 응답 개선 스프린트"
   },
   "docs": [
+    {
+      "docId": "post:85043486",
+      "kind": "post",
+      "postId": "85043486",
+      "title": "[주간] 4주차 리뷰 지표 정리",
+      "writtenAt": "20260911144414",
+      "url": "https://flow.team/main.act?projectId=2969679",
+      "source": "htmlContent",
+      "raw": {
+        "content": "{\"COMPS\":[{\"COMP_TYPE\":\"TEXT\",\"COMP_DETAIL\":{\"PRODUCT_MENTIONS\":[],\"MENTIONS\":[],\"HASHTAGS\":[],\"CONTENTS\":\"이번 주 숫자코드리뷰 평균 대기 6시간 배포 3회, 롤백 1회 \\n어떻게 쟀나리뷰 대기는 영업일 기준, 최근 2주 평균입니다.\\n \\n \\n\"}},{\"COMP_TYPE\":\"TEXT\",\"COMP_DETAIL\":{\"SHAPE\":\"TABLE\",\"PRODUCT_MENTIONS\":[],\"MENTIONS\":[],\"HASHTAGS\":[],\"CONTENTS\":\"항목값코드리뷰 평균 대기4시간배포3회\"}}]}",
+        "outContent": "이번 주 숫자코드리뷰 평균 대기 6시간 배포 3회, 롤백 1회 \n어떻게 쟀나리뷰 대기는 영업일 기준, 최근 2주 평균입니다.\n \n \n항목값코드리뷰 평균 대기4시간배포3회",
+        "htmlContent": "<h2 class=\"js-format-h2\">이번 주 숫자</h2><ul><li>코드리뷰 평균 대기 6시간&nbsp;</li><li>배포 3회, 롤백 1회</li></ul><p>&nbsp;</p><h2 class=\"js-format-h2\">어떻게 쟀나</h2><div>리뷰 대기는 영업일 기준, 최근 2주 평균입니다.</div><p>&nbsp;</p><div class=\"editor-table-wrap\" contenteditable=\"false\"><table border=\"1\" cellspacing=\"1\" cellpadding=\"1\" style=\"width:198px\"><tbody><tr><td style=\"width:134px\"><strong>항목</strong></td><td style=\"width:62px\"><strong>값</strong></td></tr><tr><td style=\"width:134px\"><font color=\"#616161\" style=\"color:#616161\">코드리뷰 평균 대기</font></td><td style=\"width:62px\"><font color=\"#616161\" style=\"color:#616161\">4시간</font></td></tr><tr><td style=\"width:134px\"><font color=\"#616161\" style=\"color:#616161\">배포</font></td><td style=\"width:62px\"><font color=\"#616161\" style=\"color:#616161\">3회</font></td></tr></tbody></table></div><p>&nbsp;</p>"
+      },
+      "text": "이번 주 숫자\n코드리뷰 평균 대기 6시간\n배포 3회, 롤백 1회\n\n어떻게 쟀나\n리뷰 대기는 영업일 기준, 최근 2주 평균입니다.\n\n항목\n값\n\n코드리뷰 평균 대기\n4시간\n\n배포\n3회"
+    },
     {
       "docId": "post:84932350",
       "kind": "post",
@@ -190,23 +205,68 @@
   ],
   "claims": [
     {
-      "docId": "post:84932350",
-      "metric": "참석 인원",
-      "valueText": "5",
-      "unit": "명",
+      "docId": "post:85043486",
+      "metric": "코드리뷰 평균 대기시간",
+      "valueText": "6",
+      "unit": "시간",
       "scope": "",
-      "method": "",
+      "method": "영업일 기준, 최근 2주 평균",
       "isTarget": false,
-      "quote": "참석 5명",
-      "title": "[회의록] 릴리스 판정 🗓️",
+      "quote": "코드리뷰 평균 대기 6시간",
+      "title": "[주간] 4주차 리뷰 지표 정리",
       "url": "https://flow.team/main.act?projectId=2969679",
       "kind": "post",
       "claimId": "C001",
       "gateTier": "1차"
     },
     {
+      "docId": "post:85043486",
+      "metric": "배포 횟수",
+      "valueText": "3",
+      "unit": "회",
+      "scope": "",
+      "method": "",
+      "isTarget": false,
+      "quote": "배포 3회",
+      "title": "[주간] 4주차 리뷰 지표 정리",
+      "url": "https://flow.team/main.act?projectId=2969679",
+      "kind": "post",
+      "claimId": "C002",
+      "gateTier": "1차"
+    },
+    {
+      "docId": "post:85043486",
+      "metric": "롤백 횟수",
+      "valueText": "1",
+      "unit": "회",
+      "scope": "",
+      "method": "",
+      "isTarget": false,
+      "quote": "롤백 1회",
+      "title": "[주간] 4주차 리뷰 지표 정리",
+      "url": "https://flow.team/main.act?projectId=2969679",
+      "kind": "post",
+      "claimId": "C003",
+      "gateTier": "1차"
+    },
+    {
       "docId": "post:84932350",
-      "metric": "통과 테스트 수",
+      "metric": "참석 인원",
+      "valueText": "5",
+      "unit": "명",
+      "scope": "릴리스 판정 회의",
+      "method": "",
+      "isTarget": false,
+      "quote": "참석 5명",
+      "title": "[회의록] 릴리스 판정 🗓️",
+      "url": "https://flow.team/main.act?projectId=2969679",
+      "kind": "post",
+      "claimId": "C004",
+      "gateTier": "1차"
+    },
+    {
+      "docId": "post:84932350",
+      "metric": "통과한 테스트 수",
       "valueText": "1,200여",
       "unit": "개",
       "scope": "",
@@ -216,7 +276,7 @@
       "title": "[회의록] 릴리스 판정 🗓️",
       "url": "https://flow.team/main.act?projectId=2969679",
       "kind": "post",
-      "claimId": "C002",
+      "claimId": "C005",
       "gateTier": "1차"
     },
     {
@@ -227,11 +287,11 @@
       "scope": "",
       "method": "",
       "isTarget": false,
-      "quote": "p95 320ms로 목표 300ms에는 못 미칩니다.",
+      "quote": "p95 320ms",
       "title": "[회의록] 릴리스 판정 🗓️",
       "url": "https://flow.team/main.act?projectId=2969679",
       "kind": "post",
-      "claimId": "C003",
+      "claimId": "C006",
       "gateTier": "1차"
     },
     {
@@ -242,16 +302,16 @@
       "scope": "",
       "method": "",
       "isTarget": true,
-      "quote": "p95 320ms로 목표 300ms에는 못 미칩니다.",
+      "quote": "목표 300ms",
       "title": "[회의록] 릴리스 판정 🗓️",
       "url": "https://flow.team/main.act?projectId=2969679",
       "kind": "post",
-      "claimId": "C004",
+      "claimId": "C007",
       "gateTier": "1차"
     },
     {
       "docId": "post:84932350",
-      "metric": "릴리스 일자",
+      "metric": "릴리스 확정일",
       "valueText": "9월 13일",
       "unit": "",
       "scope": "",
@@ -261,37 +321,37 @@
       "title": "[회의록] 릴리스 판정 🗓️",
       "url": "https://flow.team/main.act?projectId=2969679",
       "kind": "post",
-      "claimId": "C005",
+      "claimId": "C008",
       "gateTier": "1차"
     },
     {
       "docId": "post:84932348",
-      "metric": "실행 시간",
+      "metric": "회귀 테스트 실행 시간",
       "valueText": "4분 12초",
       "unit": "",
-      "scope": "개편 범위 회귀",
+      "scope": "QA 회귀 테스트",
       "method": "",
       "isTarget": false,
-      "quote": "개편 범위 회귀를 돌렸습니다. 실행 시간은 4분 12초입니다.",
+      "quote": "실행 시간은 4분 12초입니다.",
       "title": "[업무] QA 회귀 테스트 결과 ✅",
       "url": "https://flow.team/main.act?projectId=2969679",
       "kind": "post",
-      "claimId": "C006",
+      "claimId": "C009",
       "gateTier": "1차"
     },
     {
       "docId": "post:84932348",
-      "metric": "통과 테스트 케이스 수",
+      "metric": "통과한 테스트 케이스 수",
       "valueText": "1,284",
       "unit": "케이스",
-      "scope": "",
+      "scope": "개편 범위 회귀",
       "method": "",
       "isTarget": false,
       "quote": "테스트 1,284 케이스 전부 통과",
       "title": "[업무] QA 회귀 테스트 결과 ✅",
       "url": "https://flow.team/main.act?projectId=2969679",
       "kind": "post",
-      "claimId": "C007",
+      "claimId": "C010",
       "gateTier": "1차"
     },
     {
@@ -306,42 +366,42 @@
       "title": "[업무] QA 회귀 테스트 결과 ✅",
       "url": "https://flow.team/main.act?projectId=2969679",
       "kind": "post",
-      "claimId": "C008",
+      "claimId": "C011",
       "gateTier": "1차"
     },
     {
       "docId": "post:84932348",
-      "metric": "3주차 공유 테스트 수",
+      "metric": "파일 수",
       "valueText": "42",
       "unit": "개",
       "scope": "3주차 공유",
       "method": "",
       "isTarget": false,
-      "quote": "3주차 공유의 「42개」는 케이스 수가 아니라 파일 수입니다.",
+      "quote": "3주차 공유의 「42개」는",
       "title": "[업무] QA 회귀 테스트 결과 ✅",
       "url": "https://flow.team/main.act?projectId=2969679",
       "kind": "post",
-      "claimId": "C009",
+      "claimId": "C012",
       "gateTier": "1차"
     },
     {
       "docId": "comment:198835127",
-      "metric": "회의록 언급 테스트 수",
+      "metric": "테스트 케이스 수",
       "valueText": "1,200여",
       "unit": "개",
       "scope": "회의록",
       "method": "",
       "isTarget": false,
-      "quote": "그럼 회의록의 「1,200여 개」는 케이스 기준이 맞습니다.",
+      "quote": "「1,200여 개」",
       "title": "[업무] QA 회귀 테스트 결과 ✅ — 댓글",
       "url": "https://flow.team/main.act?projectId=2969679",
       "kind": "comment",
-      "claimId": "C010",
+      "claimId": "C013",
       "gateTier": "1차"
     },
     {
       "docId": "post:84932347",
-      "metric": "검색 응답시간",
+      "metric": "응답시간",
       "valueText": "250",
       "unit": "ms",
       "scope": "검색",
@@ -351,7 +411,7 @@
       "title": "[공지] 고객 공지 문구 초안 — 검토 부탁드립니다 📢",
       "url": "https://flow.team/main.act?projectId=2969679",
       "kind": "post",
-      "claimId": "C011",
+      "claimId": "C014",
       "gateTier": "1차"
     },
     {
@@ -366,7 +426,7 @@
       "title": "[공지] 고객 공지 문구 초안 — 검토 부탁드립니다 📢",
       "url": "https://flow.team/main.act?projectId=2969679",
       "kind": "post",
-      "claimId": "C012",
+      "claimId": "C015",
       "gateTier": "1차"
     },
     {
@@ -381,27 +441,27 @@
       "title": "[공지] 고객 공지 문구 초안 — 검토 부탁드립니다 📢",
       "url": "https://flow.team/main.act?projectId=2969679",
       "kind": "post",
-      "claimId": "C013",
+      "claimId": "C016",
       "gateTier": "1차"
     },
     {
       "docId": "comment:198835124",
-      "metric": "검색 응답시간",
+      "metric": "응답시간",
       "valueText": "250",
       "unit": "ms",
       "scope": "",
       "method": "",
       "isTarget": false,
-      "quote": "250ms는 어디서 나온 숫자인가요?",
+      "quote": "250ms는",
       "title": "[공지] 고객 공지 문구 초안 — 검토 부탁드립니다 📢 — 댓글",
       "url": "https://flow.team/main.act?projectId=2969679",
       "kind": "comment",
-      "claimId": "C014",
+      "claimId": "C017",
       "gateTier": "1차"
     },
     {
       "docId": "post:84932346",
-      "metric": "응답 속도 개선 배율",
+      "metric": "응답 속도 개선율",
       "valueText": "2",
       "unit": "배",
       "scope": "",
@@ -411,12 +471,12 @@
       "title": "[업무] 3주차 중간 점검 📊",
       "url": "https://flow.team/main.act?projectId=2969679",
       "kind": "post",
-      "claimId": "C015",
+      "claimId": "C018",
       "gateTier": "1차"
     },
     {
       "docId": "post:84932346",
-      "metric": "추가 테스트 수",
+      "metric": "추가된 테스트 수",
       "valueText": "42",
       "unit": "개",
       "scope": "",
@@ -426,12 +486,12 @@
       "title": "[업무] 3주차 중간 점검 📊",
       "url": "https://flow.team/main.act?projectId=2969679",
       "kind": "post",
-      "claimId": "C016",
+      "claimId": "C019",
       "gateTier": "1차"
     },
     {
       "docId": "post:84932346",
-      "metric": "배포일",
+      "metric": "배포 예정일",
       "valueText": "9월 13일",
       "unit": "",
       "scope": "",
@@ -441,37 +501,37 @@
       "title": "[업무] 3주차 중간 점검 📊",
       "url": "https://flow.team/main.act?projectId=2969679",
       "kind": "post",
-      "claimId": "C017",
+      "claimId": "C020",
       "gateTier": "1차"
     },
     {
       "docId": "post:84932344",
-      "metric": "개선 전 요청당 쿼리 수",
+      "metric": "요청당 쿼리 수",
       "valueText": "47",
       "unit": "회",
       "scope": "",
       "method": "",
       "isTarget": false,
-      "quote": "요청당 쿼리 47회에서 3회로 줄었습니다.",
+      "quote": "요청당 쿼리 47회에서",
       "title": "[업무] 인덱스 추가 + N+1 제거 ⚡",
       "url": "https://flow.team/main.act?projectId=2969679",
       "kind": "post",
-      "claimId": "C018",
+      "claimId": "C021",
       "gateTier": "1차"
     },
     {
       "docId": "post:84932344",
-      "metric": "개선 후 요청당 쿼리 수",
+      "metric": "요청당 쿼리 수",
       "valueText": "3",
       "unit": "회",
       "scope": "",
       "method": "",
       "isTarget": false,
-      "quote": "요청당 쿼리 47회에서 3회로 줄었습니다.",
+      "quote": "3회로 줄었습니다.",
       "title": "[업무] 인덱스 추가 + N+1 제거 ⚡",
       "url": "https://flow.team/main.act?projectId=2969679",
       "kind": "post",
-      "claimId": "C019",
+      "claimId": "C022",
       "gateTier": "1차"
     },
     {
@@ -486,7 +546,7 @@
       "title": "[업무] 인덱스 추가 + N+1 제거 ⚡",
       "url": "https://flow.team/main.act?projectId=2969679",
       "kind": "post",
-      "claimId": "C020",
+      "claimId": "C023",
       "gateTier": "1차"
     },
     {
@@ -497,11 +557,11 @@
       "scope": "",
       "method": "캐시 워밍 후 3회 평균",
       "isTarget": false,
-      "quote": "재측정했더니 p95 280ms 나왔습니다. 캐시 워밍 후 3회 평균입니다.",
+      "quote": "p95 280ms 나왔습니다. 캐시 워밍 후 3회 평균입니다.",
       "title": "[업무] 인덱스 추가 + N+1 제거 ⚡ — 댓글",
       "url": "https://flow.team/main.act?projectId=2969679",
       "kind": "comment",
-      "claimId": "C021",
+      "claimId": "C024",
       "gateTier": "1차"
     },
     {
@@ -516,7 +576,7 @@
       "title": "[업무] 쿼리 프로파일링 🔍",
       "url": "https://flow.team/main.act?projectId=2969679",
       "kind": "post",
-      "claimId": "C022",
+      "claimId": "C025",
       "gateTier": "1차"
     },
     {
@@ -531,22 +591,7 @@
       "title": "[업무] 쿼리 프로파일링 🔍",
       "url": "https://flow.team/main.act?projectId=2969679",
       "kind": "post",
-      "claimId": "C023",
-      "gateTier": "1차"
-    },
-    {
-      "docId": "comment:198835115",
-      "metric": "요청당 쿼리 수",
-      "valueText": "47",
-      "unit": "회",
-      "scope": "",
-      "method": "",
-      "isTarget": false,
-      "quote": "47회면 손볼 만하네요.",
-      "title": "[업무] 쿼리 프로파일링 🔍 — 댓글",
-      "url": "https://flow.team/main.act?projectId=2969679",
-      "kind": "comment",
-      "claimId": "C024",
+      "claimId": "C026",
       "gateTier": "1차"
     },
     {
@@ -554,14 +599,14 @@
       "metric": "참여 인원",
       "valueText": "3",
       "unit": "명",
-      "scope": "",
+      "scope": "검색 응답 개선 스프린트",
       "method": "",
       "isTarget": false,
       "quote": "참여 인원은 3명입니다.",
       "title": "[필독] 검색 응답 개선 스프린트 목표 🎯",
       "url": "https://flow.team/main.act?projectId=2969679",
       "kind": "post",
-      "claimId": "C025",
+      "claimId": "C027",
       "gateTier": "1차"
     },
     {
@@ -576,7 +621,7 @@
       "title": "[필독] 검색 응답 개선 스프린트 목표 🎯",
       "url": "https://flow.team/main.act?projectId=2969679",
       "kind": "post",
-      "claimId": "C026",
+      "claimId": "C028",
       "gateTier": "1차"
     },
     {
@@ -584,14 +629,14 @@
       "metric": "p95 응답시간 목표",
       "valueText": "300",
       "unit": "ms",
-      "scope": "",
+      "scope": "검색 API",
       "method": "",
       "isTarget": true,
       "quote": "목표는 300ms입니다.",
       "title": "[필독] 검색 응답 개선 스프린트 목표 🎯",
       "url": "https://flow.team/main.act?projectId=2969679",
       "kind": "post",
-      "claimId": "C027",
+      "claimId": "C029",
       "gateTier": "1차"
     },
     {
@@ -606,172 +651,81 @@
       "title": "[필독] 검색 응답 개선 스프린트 목표 🎯",
       "url": "https://flow.team/main.act?projectId=2969679",
       "kind": "post",
-      "claimId": "C028",
+      "claimId": "C030",
       "gateTier": "1차"
     }
   ],
-  "rejected": [],
+  "rejected": [
+    {
+      "docId": "post:85043486",
+      "metric": "코드리뷰 평균 대기시간",
+      "valueText": "4",
+      "unit": "시간",
+      "scope": "",
+      "method": "영업일 기준, 최근 2주 평균",
+      "isTarget": false,
+      "quote": "4시간",
+      "title": "[주간] 4주차 리뷰 지표 정리",
+      "reason": "문맥 없음 (값 외 2자)"
+    },
+    {
+      "docId": "post:85043486",
+      "metric": "배포 횟수",
+      "valueText": "3",
+      "unit": "회",
+      "scope": "",
+      "method": "",
+      "isTarget": false,
+      "quote": "3회",
+      "title": "[주간] 4주차 리뷰 지표 정리",
+      "reason": "문맥 없음 (값 외 1자)"
+    },
+    {
+      "docId": "comment:198835115",
+      "metric": "요청당 쿼리 수",
+      "valueText": "47",
+      "unit": "회",
+      "scope": "",
+      "method": "",
+      "isTarget": false,
+      "quote": "47회면",
+      "title": "[업무] 쿼리 프로파일링 🔍 — 댓글",
+      "reason": "문맥 없음 (값 외 2자)"
+    }
+  ],
   "groups": [
-    {
-      "metric": "참석 인원",
-      "claimIds": [
-        "C001"
-      ],
-      "contexts": [
-        {
-          "condition": "조건 미기재",
-          "claimIds": [
-            "C001"
-          ]
-        }
-      ]
-    },
-    {
-      "metric": "통과 테스트 케이스 수",
-      "claimIds": [
-        "C002",
-        "C007",
-        "C010"
-      ],
-      "contexts": [
-        {
-          "condition": "조건 미기재",
-          "claimIds": [
-            "C002",
-            "C007",
-            "C010"
-          ]
-        }
-      ]
-    },
     {
       "metric": "p95 응답시간",
       "claimIds": [
-        "C003",
-        "C004",
-        "C020",
-        "C021",
+        "C006",
+        "C007",
         "C023",
+        "C024",
         "C026",
-        "C027"
+        "C028",
+        "C029"
       ],
       "contexts": [
         {
           "condition": "조건 미기재",
           "claimIds": [
-            "C003",
-            "C004",
-            "C026",
-            "C027"
+            "C006",
+            "C007",
+            "C028",
+            "C029"
           ]
         },
         {
           "condition": "스테이징 · 동시 10 · 캐시 미적용",
           "claimIds": [
-            "C020",
-            "C023"
+            "C023",
+            "C026"
           ]
         },
         {
           "condition": "캐시 워밍 후 3회 평균",
           "claimIds": [
-            "C021"
-          ]
-        }
-      ]
-    },
-    {
-      "metric": "릴리스 일자",
-      "claimIds": [
-        "C005",
-        "C013",
-        "C017",
-        "C028"
-      ],
-      "contexts": [
-        {
-          "condition": "조건 미기재",
-          "claimIds": [
-            "C005",
-            "C013",
-            "C017",
-            "C028"
-          ]
-        }
-      ]
-    },
-    {
-      "metric": "실행 시간",
-      "claimIds": [
-        "C006"
-      ],
-      "contexts": [
-        {
-          "condition": "조건 미기재",
-          "claimIds": [
-            "C006"
-          ]
-        }
-      ]
-    },
-    {
-      "metric": "테스트 커버리지",
-      "claimIds": [
-        "C008",
-        "C012"
-      ],
-      "contexts": [
-        {
-          "condition": "조건 미기재",
-          "claimIds": [
-            "C008",
-            "C012"
-          ]
-        }
-      ]
-    },
-    {
-      "metric": "추가 테스트 수",
-      "claimIds": [
-        "C009",
-        "C016"
-      ],
-      "contexts": [
-        {
-          "condition": "조건 미기재",
-          "claimIds": [
-            "C009",
-            "C016"
-          ]
-        }
-      ]
-    },
-    {
-      "metric": "검색 응답시간",
-      "claimIds": [
-        "C011",
-        "C014"
-      ],
-      "contexts": [
-        {
-          "condition": "조건 미기재",
-          "claimIds": [
-            "C011",
-            "C014"
-          ]
-        }
-      ]
-    },
-    {
-      "metric": "응답 속도 개선 배율",
-      "claimIds": [
-        "C015"
-      ],
-      "contexts": [
-        {
-          "condition": "조건 미기재",
-          "claimIds": [
-            "C015"
+            "C024"
           ]
         }
       ]
@@ -779,33 +733,87 @@
     {
       "metric": "요청당 쿼리 수",
       "claimIds": [
-        "C018",
-        "C019",
+        "C021",
         "C022",
-        "C024"
-      ],
-      "contexts": [
-        {
-          "condition": "조건 미기재",
-          "claimIds": [
-            "C018",
-            "C019",
-            "C022",
-            "C024"
-          ]
-        }
-      ]
-    },
-    {
-      "metric": "참여 인원",
-      "claimIds": [
         "C025"
       ],
       "contexts": [
         {
           "condition": "조건 미기재",
           "claimIds": [
+            "C021",
+            "C022",
             "C025"
+          ]
+        }
+      ]
+    },
+    {
+      "metric": "응답시간",
+      "claimIds": [
+        "C014",
+        "C017"
+      ],
+      "contexts": [
+        {
+          "condition": "조건 미기재",
+          "claimIds": [
+            "C014",
+            "C017"
+          ]
+        }
+      ]
+    },
+    {
+      "metric": "테스트 케이스 수",
+      "claimIds": [
+        "C005",
+        "C010",
+        "C013"
+      ],
+      "contexts": [
+        {
+          "condition": "조건 미기재",
+          "claimIds": [
+            "C005",
+            "C010",
+            "C013"
+          ]
+        }
+      ]
+    },
+    {
+      "metric": "테스트 커버리지",
+      "claimIds": [
+        "C011",
+        "C015"
+      ],
+      "contexts": [
+        {
+          "condition": "조건 미기재",
+          "claimIds": [
+            "C011",
+            "C015"
+          ]
+        }
+      ]
+    },
+    {
+      "metric": "배포 예정일",
+      "claimIds": [
+        "C008",
+        "C016",
+        "C020",
+        "C030"
+      ],
+      "contexts": [
+        {
+          "condition": "조건 미기재",
+          "claimIds": [
+            "C008",
+            "C016",
+            "C020",
+            "C030"
           ]
         }
       ]
@@ -813,71 +821,137 @@
   ],
   "dangling": [],
   "duplicated": [],
-  "ungrouped": [],
+  "outOfGroup": [],
+  "ungrouped": [
+    "C001",
+    "C002",
+    "C003",
+    "C004",
+    "C009",
+    "C012",
+    "C018",
+    "C019",
+    "C027"
+  ],
   "verdicts": [
     {
       "metric": "p95 응답시간",
       "claimIds": [
-        "C003",
-        "C004",
-        "C020",
-        "C021",
+        "C006",
+        "C007",
         "C023",
+        "C024",
         "C026",
-        "C027"
+        "C028",
+        "C029"
       ],
       "unsourcedIds": [],
       "disagreementIds": [
-        "C003",
-        "C026",
-        "C020",
-        "C023"
+        "C006",
+        "C028",
+        "C023",
+        "C026"
       ],
       "crossContextIds": [
-        "C021"
+        "C024"
       ],
       "contexts": [
         {
           "condition": "조건 미기재",
           "claimIds": [
-            "C003",
-            "C004",
-            "C026",
-            "C027"
+            "C006",
+            "C007",
+            "C028",
+            "C029"
           ]
         },
         {
           "condition": "스테이징 · 동시 10 · 캐시 미적용",
           "claimIds": [
-            "C020",
-            "C023"
+            "C023",
+            "C026"
           ]
         },
         {
           "condition": "캐시 워밍 후 3회 평균",
           "claimIds": [
-            "C021"
+            "C024"
           ]
         }
       ],
       "targetIds": [
-        "C004",
-        "C027"
+        "C007",
+        "C029"
       ]
     },
     {
-      "metric": "릴리스 일자",
+      "metric": "배포 예정일",
+      "claimIds": [
+        "C008",
+        "C016",
+        "C020",
+        "C030"
+      ],
+      "unsourcedIds": [],
+      "disagreementIds": [
+        "C008",
+        "C016",
+        "C020"
+      ],
+      "crossContextIds": [],
+      "contexts": [
+        {
+          "condition": "조건 미기재",
+          "claimIds": [
+            "C008",
+            "C016",
+            "C020",
+            "C030"
+          ]
+        }
+      ],
+      "targetIds": [
+        "C030"
+      ]
+    },
+    {
+      "metric": "요청당 쿼리 수",
+      "claimIds": [
+        "C021",
+        "C022",
+        "C025"
+      ],
+      "unsourcedIds": [],
+      "disagreementIds": [
+        "C021",
+        "C022",
+        "C025"
+      ],
+      "crossContextIds": [],
+      "contexts": [
+        {
+          "condition": "조건 미기재",
+          "claimIds": [
+            "C021",
+            "C022",
+            "C025"
+          ]
+        }
+      ],
+      "targetIds": []
+    },
+    {
+      "metric": "테스트 케이스 수",
       "claimIds": [
         "C005",
-        "C013",
-        "C017",
-        "C028"
+        "C010",
+        "C013"
       ],
       "unsourcedIds": [],
       "disagreementIds": [
         "C005",
-        "C013",
-        "C017"
+        "C010",
+        "C013"
       ],
       "crossContextIds": [],
       "contexts": [
@@ -885,66 +959,28 @@
           "condition": "조건 미기재",
           "claimIds": [
             "C005",
-            "C013",
-            "C017",
-            "C028"
-          ]
-        }
-      ],
-      "targetIds": [
-        "C028"
-      ]
-    },
-    {
-      "metric": "요청당 쿼리 수",
-      "claimIds": [
-        "C018",
-        "C019",
-        "C022",
-        "C024"
-      ],
-      "unsourcedIds": [],
-      "disagreementIds": [
-        "C018",
-        "C019",
-        "C022",
-        "C024"
-      ],
-      "crossContextIds": [],
-      "contexts": [
-        {
-          "condition": "조건 미기재",
-          "claimIds": [
-            "C018",
-            "C019",
-            "C022",
-            "C024"
+            "C010",
+            "C013"
           ]
         }
       ],
       "targetIds": []
     },
     {
-      "metric": "통과 테스트 케이스 수",
+      "metric": "응답시간",
       "claimIds": [
-        "C002",
-        "C007",
-        "C010"
+        "C014",
+        "C017"
       ],
       "unsourcedIds": [],
-      "disagreementIds": [
-        "C002",
-        "C007",
-        "C010"
-      ],
+      "disagreementIds": [],
       "crossContextIds": [],
       "contexts": [
         {
           "condition": "조건 미기재",
           "claimIds": [
-            "C002",
-            "C007",
-            "C010"
+            "C014",
+            "C017"
           ]
         }
       ],
@@ -953,133 +989,21 @@
     {
       "metric": "테스트 커버리지",
       "claimIds": [
-        "C008",
-        "C012"
+        "C011",
+        "C015"
       ],
       "unsourcedIds": [],
       "disagreementIds": [
-        "C008",
-        "C012"
-      ],
-      "crossContextIds": [],
-      "contexts": [
-        {
-          "condition": "조건 미기재",
-          "claimIds": [
-            "C008",
-            "C012"
-          ]
-        }
-      ],
-      "targetIds": []
-    },
-    {
-      "metric": "추가 테스트 수",
-      "claimIds": [
-        "C009",
-        "C016"
-      ],
-      "unsourcedIds": [],
-      "disagreementIds": [],
-      "crossContextIds": [],
-      "contexts": [
-        {
-          "condition": "조건 미기재",
-          "claimIds": [
-            "C009",
-            "C016"
-          ]
-        }
-      ],
-      "targetIds": []
-    },
-    {
-      "metric": "검색 응답시간",
-      "claimIds": [
         "C011",
-        "C014"
+        "C015"
       ],
-      "unsourcedIds": [],
-      "disagreementIds": [],
       "crossContextIds": [],
       "contexts": [
         {
           "condition": "조건 미기재",
           "claimIds": [
             "C011",
-            "C014"
-          ]
-        }
-      ],
-      "targetIds": []
-    },
-    {
-      "metric": "참석 인원",
-      "claimIds": [
-        "C001"
-      ],
-      "unsourcedIds": [],
-      "disagreementIds": [],
-      "crossContextIds": [],
-      "contexts": [
-        {
-          "condition": "조건 미기재",
-          "claimIds": [
-            "C001"
-          ]
-        }
-      ],
-      "targetIds": []
-    },
-    {
-      "metric": "실행 시간",
-      "claimIds": [
-        "C006"
-      ],
-      "unsourcedIds": [],
-      "disagreementIds": [],
-      "crossContextIds": [],
-      "contexts": [
-        {
-          "condition": "조건 미기재",
-          "claimIds": [
-            "C006"
-          ]
-        }
-      ],
-      "targetIds": []
-    },
-    {
-      "metric": "응답 속도 개선 배율",
-      "claimIds": [
-        "C015"
-      ],
-      "unsourcedIds": [],
-      "disagreementIds": [],
-      "crossContextIds": [],
-      "contexts": [
-        {
-          "condition": "조건 미기재",
-          "claimIds": [
             "C015"
-          ]
-        }
-      ],
-      "targetIds": []
-    },
-    {
-      "metric": "참여 인원",
-      "claimIds": [
-        "C025"
-      ],
-      "unsourcedIds": [],
-      "disagreementIds": [],
-      "crossContextIds": [],
-      "contexts": [
-        {
-          "condition": "조건 미기재",
-          "claimIds": [
-            "C025"
           ]
         }
       ],
@@ -1087,20 +1011,23 @@
     }
   ],
   "byUnitIds": [
-    "C011",
-    "C014"
+    "C014",
+    "C017"
   ],
   "stats": {
-    "raw": 28,
-    "tier1": 28,
+    "raw": 33,
+    "tier1": 30,
     "tier2": 0,
     "misattributed": 0,
     "unknownDoc": 0,
-    "byReason": {},
+    "byReason": {
+      "문맥 없음 (값 외 2자)": 2,
+      "문맥 없음 (값 외 1자)": 1
+    },
     "batches": [
-      12
+      13
     ],
-    "docs": 12
+    "docs": 13
   },
   "model": {
     "chain": [
@@ -1109,12 +1036,13 @@
       "gemini-3.1-flash-lite"
     ],
     "byModel": {
-      "gemini-3.6-flash": 2
+      "gemini-3.6-flash": 1,
+      "gemini-3.5-flash": 1
     },
     "calls": 2,
-    "promptTokens": 3640,
-    "outputTokens": 2392,
-    "retries": 0
+    "promptTokens": 3771,
+    "outputTokens": 4001,
+    "retries": 1
   },
   "trace": {
     "flow": [
@@ -1127,7 +1055,7 @@
         "http": 200,
         "success": true,
         "code": 200,
-        "ms": 118,
+        "ms": 89,
         "dataKeys": [
           "hasNext",
           "lastCursor",
@@ -1144,7 +1072,7 @@
         "http": 200,
         "success": true,
         "code": 200,
-        "ms": 140,
+        "ms": 72,
         "dataKeys": [
           "projectId",
           "hasNext",
@@ -1154,12 +1082,53 @@
       },
       {
         "method": "GET",
+        "path": "/user/posts/85043486",
+        "query": {},
+        "http": 200,
+        "success": true,
+        "code": 200,
+        "ms": 753,
+        "dataKeys": [
+          "projectId",
+          "postId",
+          "remarkSrno",
+          "templateType",
+          "title",
+          "content",
+          "commentContent",
+          "outContent",
+          "htmlContent",
+          "contentJsonYn",
+          "registerId",
+          "registerName",
+          "registeredDateTime",
+          "connectUrl",
+          "remarkCount",
+          "existYn",
+          "nextYn",
+          "totalCount",
+          "sectionCount",
+          "remarks",
+          "attachments",
+          "imageAttachments",
+          "todos",
+          "schedules",
+          "tasks",
+          "subTasks",
+          "upLinkTasks",
+          "votes",
+          "projectColumns",
+          "editedDateTime"
+        ]
+      },
+      {
+        "method": "GET",
         "path": "/user/posts/84932350",
         "query": {},
         "http": 200,
         "success": true,
         "code": 200,
-        "ms": 94,
+        "ms": 73,
         "dataKeys": [
           "projectId",
           "postId",
@@ -1200,7 +1169,7 @@
         "http": 200,
         "success": true,
         "code": 200,
-        "ms": 74,
+        "ms": 106,
         "dataKeys": [
           "projectId",
           "postId",
@@ -1245,7 +1214,7 @@
         "http": 200,
         "success": true,
         "code": 200,
-        "ms": 83,
+        "ms": 90,
         "dataKeys": [
           "hasNext",
           "lastCursor",
@@ -1259,7 +1228,7 @@
         "http": 200,
         "success": true,
         "code": 200,
-        "ms": 89,
+        "ms": 72,
         "dataKeys": [
           "projectId",
           "postId",
@@ -1304,7 +1273,7 @@
         "http": 200,
         "success": true,
         "code": 200,
-        "ms": 67,
+        "ms": 64,
         "dataKeys": [
           "hasNext",
           "lastCursor",
@@ -1318,7 +1287,7 @@
         "http": 200,
         "success": true,
         "code": 200,
-        "ms": 84,
+        "ms": 65,
         "dataKeys": [
           "projectId",
           "postId",
@@ -1363,7 +1332,7 @@
         "http": 200,
         "success": true,
         "code": 200,
-        "ms": 95,
+        "ms": 87,
         "dataKeys": [
           "hasNext",
           "lastCursor",
@@ -1377,7 +1346,7 @@
         "http": 200,
         "success": true,
         "code": 200,
-        "ms": 81,
+        "ms": 72,
         "dataKeys": [
           "projectId",
           "postId",
@@ -1422,7 +1391,7 @@
         "http": 200,
         "success": true,
         "code": 200,
-        "ms": 85,
+        "ms": 92,
         "dataKeys": [
           "hasNext",
           "lastCursor",
@@ -1436,7 +1405,7 @@
         "http": 200,
         "success": true,
         "code": 200,
-        "ms": 114,
+        "ms": 85,
         "dataKeys": [
           "projectId",
           "postId",
@@ -1481,7 +1450,7 @@
         "http": 200,
         "success": true,
         "code": 200,
-        "ms": 76,
+        "ms": 125,
         "dataKeys": [
           "hasNext",
           "lastCursor",
@@ -1495,7 +1464,7 @@
         "http": 200,
         "success": true,
         "code": 200,
-        "ms": 79,
+        "ms": 60,
         "dataKeys": [
           "projectId",
           "postId",
@@ -1536,7 +1505,7 @@
         "http": 200,
         "success": true,
         "code": 200,
-        "ms": 53,
+        "ms": 54,
         "dataKeys": [
           "participants"
         ]
@@ -1546,20 +1515,20 @@
       {
         "model": "gemini-3.6-flash",
         "system": "너는 여러 글에서 「수치 주장」을 한 번에 뽑는 추출기다.\n- 글에 실제로 적힌 수치만 뽑는다. 계산하거나 환산하지 않는다.\n- quote 는 그 문서의 원문을 글자 그대로 복사한다. valueText 는 quote 안에 있어야 한다.\n- docId 는 그 수치가 실제로 나온 문서의 것이어야 한다. 다른 문서 ID를 붙이지 않는다.\n\nscope 와 method 를 엄격히 가른다.\n- scope = 이 숫자가 **어디의 것인가**. 단계·구간·대상. 예: \"요구사항 정의 단계\", \"검색 API\"\n- method = **무엇과 비교해 어떤 환경·표본으로 쟀는가**. 예: \"스테이징 · 동시 10 · 캐시 미적용\", \"3회 평균\"\n- 단계 이름·구간 이름은 method 가 아니다. scope 다.\n- 원문에 측정 방법이 안 적혀 있으면 method 는 **반드시 빈 문자열**이다. 추측해서 채우지 않는다.\n\nisTarget 은 「목표로 내건 값」일 때만 true 다.\n- 목표·목표치·달성 기준처럼 **아직 이루지 않은 값**으로 적힌 것만 true.\n- 예정·계획·확정·현재값처럼 **사실로 적힌 값**은 false 다. 날짜도 같다.\n- 애매하면 false 다. 목표로 잘못 보면 **그 값이 대조에서 통째로 빠진다.**",
-        "prompt": "다음 문서들에서 수치 주장을 전부 뽑아라.\n\n### post:84932350\n제목: [회의록] 릴리스 판정 🗓️\n본문:\n릴리스 여부를 논의했습니다. 참석 5명.\n◾ 테스트 1,200여 개 통과 확인\n◾ p95 320ms로 목표 300ms에는 못 미칩니다.\n◾ 릴리스는 9월 13일로 확정합니다.\n\n### post:84932348\n제목: [업무] QA 회귀 테스트 결과 ✅\n본문:\n개편 범위 회귀를 돌렸습니다. 실행 시간은 4분 12초입니다.\n◾ 테스트 1,284 케이스 전부 통과\n◾ 스테이트먼트 커버리지 96.4%\n◾ 3주차 공유의 「42개」는 케이스 수가 아니라 파일 수입니다.\n\n### comment:198835127\n제목: [업무] QA 회귀 테스트 결과 ✅ — 댓글\n본문:\n그럼 회의록의 「1,200여 개」는 케이스 기준이 맞습니다.\n\n### post:84932347\n제목: [공지] 고객 공지 문구 초안 — 검토 부탁드립니다 📢\n본문:\n공지에 나갈 문구 초안입니다. 검토 부탁드립니다.\n◾ 검색 응답 250ms로 개선\n◾ 테스트 커버리지 99%\n◾ 릴리스 예정일 9월 20일\n\n### comment:198835124\n제목: [공지] 고객 공지 문구 초안 — 검토 부탁드립니다 📢 — 댓글\n본문:\n250ms는 어디서 나온 숫자인가요? 처음 봅니다.\n\n### post:84932346\n제목: [업무] 3주차 중간 점검 📊\n본문:\n진행 상황 공유합니다.\n◾ 응답 속도가 2배 이상 빨라졌습니다.\n◾ 테스트는 42개 추가했습니다.\n◾ 배포는 9월 13일로 당깁니다.\n\n### post:84932344\n제목: [업무] 인덱스 추가 + N+1 제거 ⚡\n본문:\n조인으로 묶고 인덱스를 붙였습니다. PR #412 입니다.\n◾ 요청당 쿼리 47회에서 3회로 줄었습니다.\n◾ p95 320ms. 스테이징 · 동시 10 · 캐시 미적용 기준입니다.\n\n### comment:198835117\n제목: [업무] 인덱스 추가 + N+1 제거 ⚡ — 댓글\n본문:\n재측정했더니 p95 280ms 나왔습니다. 캐시 워밍 후 3회 평균입니다.\n\n### comment:198835118\n제목: [업무] 인덱스 추가 + N+1 제거 ⚡ — 댓글\n본문:\n수치 갱신은 이 댓글에만 남깁니다. 본문은 그대로 두겠습니다.\n\n### post:84932342\n제목: [업무] 쿼리 프로파일링 🔍\n본문:\n느린 구간을 뜯어봤습니다. 로컬은 8080 포트로 띄웠습니다.\n◾ 목록 조회에서 N+1이 납니다. 요청당 쿼리가 47회 나갑니다.\n◾ p95 820ms. 스테이징 · 동시 10 · 캐시 미적용 기준입니다.\n\n### comment:198835115\n제목: [업무] 쿼리 프로파일링 🔍 — 댓글\n본문:\n47회면 손볼 만하네요. 진행 부탁드립니다.\n\n### post:84932341\n제목: [필독] 검색 응답 개선 스프린트 목표 🎯\n본문:\n이번 스프린트 목표를 공유합니다. 참여 인원은 3명입니다.\n◾ 검색 API p95 응답시간이 현재 820ms입니다.\n◾ 목표는 300ms입니다.\n◾ 배포 목표일은 9월 20일입니다.\n◾ 대상 브랜치는 release/2.4.0 입니다.",
-        "promptTokens": 1327,
-        "outputTokens": 1798,
+        "prompt": "다음 문서들에서 수치 주장을 전부 뽑아라.\n\n### post:85043486\n제목: [주간] 4주차 리뷰 지표 정리\n본문:\n이번 주 숫자\n코드리뷰 평균 대기 6시간\n배포 3회, 롤백 1회\n\n어떻게 쟀나\n리뷰 대기는 영업일 기준, 최근 2주 평균입니다.\n\n항목\n값\n\n코드리뷰 평균 대기\n4시간\n\n배포\n3회\n\n### post:84932350\n제목: [회의록] 릴리스 판정 🗓️\n본문:\n릴리스 여부를 논의했습니다. 참석 5명.\n◾ 테스트 1,200여 개 통과 확인\n◾ p95 320ms로 목표 300ms에는 못 미칩니다.\n◾ 릴리스는 9월 13일로 확정합니다.\n\n### post:84932348\n제목: [업무] QA 회귀 테스트 결과 ✅\n본문:\n개편 범위 회귀를 돌렸습니다. 실행 시간은 4분 12초입니다.\n◾ 테스트 1,284 케이스 전부 통과\n◾ 스테이트먼트 커버리지 96.4%\n◾ 3주차 공유의 「42개」는 케이스 수가 아니라 파일 수입니다.\n\n### comment:198835127\n제목: [업무] QA 회귀 테스트 결과 ✅ — 댓글\n본문:\n그럼 회의록의 「1,200여 개」는 케이스 기준이 맞습니다.\n\n### post:84932347\n제목: [공지] 고객 공지 문구 초안 — 검토 부탁드립니다 📢\n본문:\n공지에 나갈 문구 초안입니다. 검토 부탁드립니다.\n◾ 검색 응답 250ms로 개선\n◾ 테스트 커버리지 99%\n◾ 릴리스 예정일 9월 20일\n\n### comment:198835124\n제목: [공지] 고객 공지 문구 초안 — 검토 부탁드립니다 📢 — 댓글\n본문:\n250ms는 어디서 나온 숫자인가요? 처음 봅니다.\n\n### post:84932346\n제목: [업무] 3주차 중간 점검 📊\n본문:\n진행 상황 공유합니다.\n◾ 응답 속도가 2배 이상 빨라졌습니다.\n◾ 테스트는 42개 추가했습니다.\n◾ 배포는 9월 13일로 당깁니다.\n\n### post:84932344\n제목: [업무] 인덱스 추가 + N+1 제거 ⚡\n본문:\n조인으로 묶고 인덱스를 붙였습니다. PR #412 입니다.\n◾ 요청당 쿼리 47회에서 3회로 줄었습니다.\n◾ p95 320ms. 스테이징 · 동시 10 · 캐시 미적용 기준입니다.\n\n### comment:198835117\n제목: [업무] 인덱스 추가 + N+1 제거 ⚡ — 댓글\n본문:\n재측정했더니 p95 280ms 나왔습니다. 캐시 워밍 후 3회 평균입니다.\n\n### comment:198835118\n제목: [업무] 인덱스 추가 + N+1 제거 ⚡ — 댓글\n본문:\n수치 갱신은 이 댓글에만 남깁니다. 본문은 그대로 두겠습니다.\n\n### post:84932342\n제목: [업무] 쿼리 프로파일링 🔍\n본문:\n느린 구간을 뜯어봤습니다. 로컬은 8080 포트로 띄웠습니다.\n◾ 목록 조회에서 N+1이 납니다. 요청당 쿼리가 47회 나갑니다.\n◾ p95 820ms. 스테이징 · 동시 10 · 캐시 미적용 기준입니다.\n\n### comment:198835115\n제목: [업무] 쿼리 프로파일링 🔍 — 댓글\n본문:\n47회면 손볼 만하네요. 진행 부탁드립니다.\n\n### post:84932341\n제목: [필독] 검색 응답 개선 스프린트 목표 🎯\n본문:\n이번 스프린트 목표를 공유합니다. 참여 인원은 3명입니다.\n◾ 검색 API p95 응답시간이 현재 820ms입니다.\n◾ 목표는 300ms입니다.\n◾ 배포 목표일은 9월 20일입니다.\n◾ 대상 브랜치는 release/2.4.0 입니다.",
+        "promptTokens": 1431,
+        "outputTokens": 3199,
         "finishReason": "STOP",
-        "response": "{\"claims\":[{\"docId\":\"post:84932350\",\"metric\":\"참석 인원\",\"valueText\":\"5\",\"unit\":\"명\",\"scope\":\"\",\"method\":\"\",\"isTarget\":false,\"quote\":\"참석 5명\"},{\"docId\":\"post:84932350\",\"metric\":\"통과 테스트 수\",\"valueText\":\"1,200여\",\"unit\":\"개\",\"scope\":\"\",\"method\":\"\",\"isTarget\":false,\"quote\":\"테스트 1,200여 개 통과 확인\"},{\"docId\":\"post:84932350\",\"metric\":\"p95 응답시간\",\"valueText\":\"320\",\"unit\":\"ms\",\"scope\":\"\",\"method\":\"\",\"isTarget\":false,\"quote\":\"p95 320ms로 목표 300ms에는 못 미칩니다.\"},{\"docId\":\"post:84932350\",\"metric\":\"p95 응답시간 목표\",\"valueText\":\"300\",\"unit\":\"ms\",\"scope\":\"\",\"method\":\"\",\"isTarget\":true,\"quote\":\"p95 320ms로 목표 300ms에는 못 미칩니다.\"},{\"docId\":\"post:84932350\",\"metric\":\"릴리스 일자\",\"valueText\":\"9월 13일\",\"unit\":\"\",\"scope\":\"\",\"method\":\"\",\"isTarget\":false,\"quote\":\"릴리스는 9월 13일로 확정합니다.\"},{\"docId\":\"post:84932348\",\"metric\":\"실행 시간\",\"valueText\":\"4분 12초\",\"unit\":\"\",\"scope\":\"개편 범위 회귀\",\"method\":\"\",\"isTarget\":false,\"quote\":\"개편 범위 회귀를 돌렸습니다. 실행 시간은 4분 12초입니다.\"},{\"docId\":\"post:84932348\",\"metric\":\"통과 테스트 케이스 수\",\"valueText\":\"1,284\",\"unit\":\"케이스\",\"scope\":\"\",\"method\":\"\",\"isTarget\":false,\"quote\":\"테스트 1,284 케이스 전부 통과\"},{\"docId\":\"post:84932348\",\"metric\":\"스테이트먼트 커버리지\",\"valueText\":\"96.4\",\"unit\":\"%\",\"scope\":\"\",\"method\":\"\",\"isTarget\":false,\"quote\":\"스테이트먼트 커버리지 96.4%\"},{\"docId\":\"post:84932348\",\"metric\":\"3주차 공유 테스트 수\",\"valueText\":\"42\",\"unit\":\"개\",\"scope\":\"3주차 공유\",\"method\":\"\",\"isTarget\":false,\"quote\":\"3주차 공유의 「42개」는 케이스 수가 아니라 파일 수입니다.\"},{\"docId\":\"comment:198835127\",\"metric\":\"회의록 언급 테스트 수\",\"valueText\":\"1,200여\",\"unit\":\"개\",\"scope\":\"회의록\",\"method\":\"\",\"isTarget\":false,\"quote\":\"그럼 회의록의 「1,200여 개」는 케이스 기준이 맞습니다.\"},{\"docId\":\"post:84932347\",\"metric\":\"검색 응답시간\",\"valueText\":\"250\",\"unit\":\"ms\",\"scope\":\"검색\",\"method\":\"\",\"isTarget\":false,\"quote\":\"검색 응답 250ms로 개선\"},{\"docId\":\"post:84932347\",\"metric\":\"테스트 커버리지\",\"valueText\":\"99\",\"unit\":\"%\",\"scope\":\"\",\"method\":\"\",\"isTarget\":false,\"quote\":\"테스트 커버리지 99%\"},{\"docId\":\"post:84932347\",\"metric\":\"릴리스 예정일\",\"valueText\":\"9월 20일\",\"unit\":\"\",\"scope\":\"\",\"method\":\"\",\"isTarget\":false,\"quote\":\"릴리스 예정일 9월 20일\"},{\"docId\":\"comment:198835124\",\"metric\":\"검색 응답시간\",\"valueText\":\"250\",\"unit\":\"ms\",\"scope\":\"\",\"method\":\"\",\"isTarget\":false,\"quote\":\"250ms는 어디서 나온 숫자인가요?\"},{\"docId\":\"post:84932346\",\"metric\":\"응답 속도 개선 배율\",\"valueText\":\"2\",\"unit\":\"배\",\"scope\":\"\",\"method\":\"\",\"isTarget\":false,\"quote\":\"응답 속도가 2배 이상 빨라졌습니다.\"},{\"docId\":\"post:84932346\",\"metric\":\"추가 테스트 수\",\"valueText\":\"42\",\"unit\":\"개\",\"scope\":\"\",\"method\":\"\",\"isTarget\":false,\"quote\":\"테스트는 42개 추가했습니다.\"},{\"docId\":\"post:84932346\",\"metric\":\"배포일\",\"valueText\":\"9월 13일\",\"unit\":\"\",\"scope\":\"\",\"method\":\"\",\"isTarget\":false,\"quote\":\"배포는 9월 13일로 당깁니다.\"},{\"docId\":\"post:84932344\",\"metric\":\"개선 전 요청당 쿼리 수\",\"valueText\":\"47\",\"unit\":\"회\",\"scope\":\"\",\"method\":\"\",\"isTarget\":false,\"quote\":\"요청당 쿼리 47회에서 3회로 줄었습니다.\"},{\"docId\":\"post:84932344\",\"metric\":\"개선 후 요청당 쿼리 수\",\"valueText\":\"3\",\"unit\":\"회\",\"scope\":\"\",\"method\":\"\",\"isTarget\":false,\"quote\":\"요청당 쿼리 47회에서 3회로 줄었습니다.\"},{\"docId\":\"post:84932344\",\"metric\":\"p95 응답시간\",\"valueText\":\"320\",\"unit\":\"ms\",\"scope\":\"\",\"method\":\"스테이징 · 동시 10 · 캐시 미적용\",\"isTarget\":false,\"quote\":\"p95 320ms. 스테이징 · 동시 10 · 캐시 미적용 기준입니다.\"},{\"docId\":\"comment:198835117\",\"metric\":\"p95 응답시간\",\"valueText\":\"280\",\"unit\":\"ms\",\"scope\":\"\",\"method\":\"캐시 워밍 후 3회 평균\",\"isTarget\":false,\"quote\":\"재측정했더니 p95 280ms 나왔습니다. 캐시 워밍 후 3회 평균입니다.\"},{\"docId\":\"post:84932342\",\"metric\":\"요청당 쿼리 수\",\"valueText\":\"47\",\"unit\":\"회\",\"scope\":\"목록 조회\",\"method\":\"\",\"isTarget\":false,\"quote\":\"목록 조회에서 N+1이 납니다. 요청당 쿼리가 47회 나갑니다.\"},{\"docId\":\"post:84932342\",\"metric\":\"p95 응답시간\",\"valueText\":\"820\",\"unit\":\"ms\",\"scope\":\"\",\"method\":\"스테이징 · 동시 10 · 캐시 미적용\",\"isTarget\":false,\"quote\":\"p95 820ms. 스테이징 · 동시 10 · 캐시 미적용 기준입니다.\"},{\"docId\":\"comment:198835115\",\"metric\":\"요청당 쿼리 수\",\"valueText\":\"47\",\"unit\":\"회\",\"scope\":\"\",\"method\":\"\",\"isTarget\":false,\"quote\":\"47회면 손볼 만하네요.\"},{\"docId\":\"post:84932341\",\"metric\":\"참여 인원\",\"valueText\":\"3\",\"unit\":\"명\",\"scope\":\"\",\"method\":\"\",\"isTarget\":false,\"quote\":\"참여 인원은 3명입니다.\"},{\"docId\":\"post:84932341\",\"metric\":\"p95 응답시간\",\"valueText\":\"820\",\"unit\":\"ms\",\"scope\":\"검색 API\",\"method\":\"\",\"isTarget\":false,\"quote\":\"검색 API p95 응답시간이 현재 820ms입니다.\"},{\"docId\":\"post:84932341\",\"metric\":\"p95 응답시간 목표\",\"valueText\":\"300\",\"unit\":\"ms\",\"scope\":\"\",\"method\":\"\",\"isTarget\":true,\"quote\":\"목표는 300ms입니다.\"},{\"docId\":\"post:84932341\",\"metric\":\"배포 목표일\",\"valueText\":\"9월 20일\",\"unit\":\"\",\"scope\":\"\",\"method\":\"\",\"isTarget\":true,\"quote\":\"배포 목표일은 9월 20일입니다.\"}]}"
+        "response": "{\n  \"claims\": [\n    {\n      \"docId\": \"post:85043486\",\n      \"metric\": \"코드리뷰 평균 대기시간\",\n      \"valueText\": \"6\",\n      \"unit\": \"시간\",\n      \"scope\": \"\",\n      \"method\": \"영업일 기준, 최근 2주 평균\",\n      \"isTarget\": false,\n      \"quote\": \"코드리뷰 평균 대기 6시간\"\n    },\n    {\n      \"docId\": \"post:85043486\",\n      \"metric\": \"배포 횟수\",\n      \"valueText\": \"3\",\n      \"unit\": \"회\",\n      \"scope\": \"\",\n      \"method\": \"\",\n      \"isTarget\": false,\n      \"quote\": \"배포 3회\"\n    },\n    {\n      \"docId\": \"post:85043486\",\n      \"metric\": \"롤백 횟수\",\n      \"valueText\": \"1\",\n      \"unit\": \"회\",\n      \"scope\": \"\",\n      \"method\": \"\",\n      \"isTarget\": false,\n      \"quote\": \"롤백 1회\"\n    },\n    {\n      \"docId\": \"post:85043486\",\n      \"metric\": \"코드리뷰 평균 대기시간\",\n      \"valueText\": \"4\",\n      \"unit\": \"시간\",\n      \"scope\": \"\",\n      \"method\": \"영업일 기준, 최근 2주 평균\",\n      \"isTarget\": false,\n      \"quote\": \"4시간\"\n    },\n    {\n      \"docId\": \"post:85043486\",\n      \"metric\": \"배포 횟수\",\n      \"valueText\": \"3\",\n      \"unit\": \"회\",\n      \"scope\": \"\",\n      \"method\": \"\",\n      \"isTarget\": false,\n      \"quote\": \"3회\"\n    },\n    {\n      \"docId\": \"post:84932350\",\n      \"metric\": \"참석 인원\",\n      \"valueText\": \"5\",\n      \"unit\": \"명\",\n      \"scope\": \"릴리스 판정 회의\",\n      \"method\": \"\",\n      \"isTarget\": false,\n      \"quote\": \"참석 5명\"\n    },\n    {\n      \"docId\": \"post:84932350\",\n      \"metric\": \"통과한 테스트 수\",\n      \"valueText\": \"1,200여\",\n      \"unit\": \"개\",\n      \"scope\": \"\",\n      \"method\": \"\",\n      \"isTarget\": false,\n      \"quote\": \"테스트 1,200여 개 통과 확인\"\n    },\n    {\n      \"docId\": \"post:84932350\",\n      \"metric\": \"p95 응답시간\",\n      \"valueText\": \"320\",\n      \"unit\": \"ms\",\n      \"scope\": \"\",\n      \"method\": \"\",\n      \"isTarget\": false,\n      \"quote\": \"p95 320ms\"\n    },\n    {\n      \"docId\": \"post:84932350\",\n      \"metric\": \"p95 응답시간 목표\",\n      \"valueText\": \"300\",\n      \"unit\": \"ms\",\n      \"scope\": \"\",\n      \"method\": \"\",\n      \"isTarget\": true,\n      \"quote\": \"목표 300ms\"\n    },\n    {\n      \"docId\": \"post:84932350\",\n      \"metric\": \"릴리스 확정일\",\n      \"valueText\": \"9월 13일\",\n      \"unit\": \"\",\n      \"scope\": \"\",\n      \"method\": \"\",\n      \"isTarget\": false,\n      \"quote\": \"릴리스는 9월 13일로 확정합니다.\"\n    },\n    {\n      \"docId\": \"post:84932348\",\n      \"metric\": \"회귀 테스트 실행 시간\",\n      \"valueText\": \"4분 12초\",\n      \"unit\": \"\",\n      \"scope\": \"QA 회귀 테스트\",\n      \"method\": \"\",\n      \"isTarget\": false,\n      \"quote\": \"실행 시간은 4분 12초입니다.\"\n    },\n    {\n      \"docId\": \"post:84932348\",\n      \"metric\": \"통과한 테스트 케이스 수\",\n      \"valueText\": \"1,284\",\n      \"unit\": \"케이스\",\n      \"scope\": \"개편 범위 회귀\",\n      \"method\": \"\",\n      \"isTarget\": false,\n      \"quote\": \"테스트 1,284 케이스 전부 통과\"\n    },\n    {\n      \"docId\": \"post:84932348\",\n      \"metric\": \"스테이트먼트 커버리지\",\n      \"valueText\": \"96.4\",\n      \"unit\": \"%\",\n      \"scope\": \"\",\n      \"method\": \"\",\n      \"isTarget\": false,\n      \"quote\": \"스테이트먼트 커버리지 96.4%\"\n    },\n    {\n      \"docId\": \"post:84932348\",\n      \"metric\": \"파일 수\",\n      \"valueText\": \"42\",\n      \"unit\": \"개\",\n      \"scope\": \"3주차 공유\",\n      \"method\": \"\",\n      \"isTarget\": false,\n      \"quote\": \"3주차 공유의 「42개」는\"\n    },\n    {\n      \"docId\": \"comment:198835127\",\n      \"metric\": \"테스트 케이스 수\",\n      \"valueText\": \"1,200여\",\n      \"unit\": \"개\",\n      \"scope\": \"회의록\",\n      \"method\": \"\",\n      \"isTarget\": false,\n      \"quote\": \"「1,200여 개」\"\n    },\n    {\n      \"docId\": \"post:84932347\",\n      \"metric\": \"응답시간\",\n      \"valueText\": \"250\",\n      \"unit\": \"ms\",\n      \"scope\": \"검색\",\n      \"method\": \"\",\n      \"isTarget\": false,\n      \"quote\": \"검색 응답 250ms로 개선\"\n    },\n    {\n      \"docId\": \"post:84932347\",\n      \"metric\": \"테스트 커버리지\",\n      \"valueText\": \"99\",\n      \"unit\": \"%\",\n      \"scope\": \"\",\n      \"method\": \"\",\n      \"isTarget\": false,\n      \"quote\": \"테스트 커버리지 99%\"\n    },\n    {\n      \"docId\": \"post:84932347\",\n      \"metric\": \"릴리스 예정일\",\n      \"valueText\": \"9월 20일\",\n      \"unit\": \"\",\n      \"scope\": \"\",\n      \"method\": \"\",\n      \"isTarget\": false,\n      \"quote\": \"릴리스 예정일 9월 20일\"\n    },\n    {\n      \"docId\": \"comment:198835124\",\n      \"metric\": \"응답시간\",\n      \"valueText\": \"250\",\n      \"unit\": \"ms\",\n      \"scope\": \"\",\n      \"method\": \"\",\n      \"isTarget\": false,\n      \"quote\": \"250ms는\"\n    },\n    {\n      \"docId\": \"post:84932346\",\n      \"metric\": \"응답 속도 개선율\",\n      \"valueText\": \"2\",\n      \"unit\": \"배\",\n      \"scope\": \"\",\n      \"method\": \"\",\n      \"isTarget\": false,\n      \"quote\": \"응답 속도가 2배 이상 빨라졌습니다.\"\n    },\n    {\n      \"docId\": \"post:84932346\",\n      \"metric\": \"추가된 테스트 수\",\n      \"valueText\": \"42\",\n      \"unit\": \"개\",\n      \"scope\": \"\",\n      \"method\": \"\",\n      \"isTarget\": false,\n      \"quote\": \"테스트는 42개 추가했습니다.\"\n    },\n    {\n      \"docId\": \"post:84932346\",\n      \"metric\": \"배포 예정일\",\n      \"valueText\": \"9월 13일\",\n      \"unit\": \"\",\n      \"scope\": \"\",\n      \"method\": \"\",\n      \"isTarget\": false,\n      \"quote\": \"배포는 9월 13일로 당깁니다.\"\n    },\n    {\n      \"docId\": \"post:84932344\",\n      \"metric\": \"요청당 쿼리 수\",\n      \"valueText\": \"47\",\n      \"unit\": \"회\",\n      \"scope\": \"\",\n      \"method\": \"\",\n      \"isTarget\": false,\n      \"quote\": \"요청당 쿼리 47회에서\"\n    },\n    {\n      \"docId\": \"post:84932344\",\n      \"metric\": \"요청당 쿼리 수\",\n      \"valueText\": \"3\",\n      \"unit\": \"회\",\n      \"scope\": \"\",\n      \"method\": \"\",\n      \"isTarget\": false,\n      \"quote\": \"3회로 줄었습니다.\"\n    },\n    {\n      \"docId\": \"post:84932344\",\n      \"metric\": \"p95 응답시간\",\n      \"valueText\": \"320\",\n      \"unit\": \"ms\",\n      \"scope\": \"\",\n      \"method\": \"스테이징 · 동시 10 · 캐시 미적용\",\n      \"isTarget\": false,\n      \"quote\": \"p95 320ms. 스테이징 · 동시 10 · 캐시 미적용 기준입니다.\"\n    },\n    {\n      \"docId\": \"comment:198835117\",\n      \"metric\": \"p95 응답시간\",\n      \"valueText\": \"280\",\n      \"unit\": \"ms\",\n      \"scope\": \"\",\n      \"method\": \"캐시 워밍 후 3회 평균\",\n      \"isTarget\": false,\n      \"quote\": \"p95 280ms 나왔습니다. 캐시 워밍 후 3회 평균입니다.\"\n    },\n    {\n      \"docId\": \"post:84932342\",\n      \"metric\": \"요청당 쿼리 수\",\n      \"valueText\": \"47\",\n      \"unit\": \"회\",\n      \"scope\": \"목록 조회\",\n      \"method\": \"\",\n      \"isTarget\": false,\n      \"quote\": \"목록 조회에서 N+1이 납니다. 요청당 쿼리가 47회 나갑니다.\"\n    },\n    {\n      \"docId\": \"post:84932342\",\n      \"metric\": \"p95 응답시간\",\n      \"valueText\": \"820\",\n      \"unit\": \"ms\",\n      \"scope\": \"\",\n      \"method\": \"스테이징 · 동시 10 · 캐시 미적용\",\n      \"isTarget\": false,\n      \"quote\": \"p95 820ms. 스테이징 · 동시 10 · 캐시 미적용 기준입니다.\"\n    },\n    {\n      \"docId\": \"comment:198835115\",\n      \"metric\": \"요청당 쿼리 수\",\n      \"valueText\": \"47\",\n      \"unit\": \"회\",\n      \"scope\": \"\",\n      \"method\": \"\",\n      \"isTarget\": false,\n      \"quote\": \"47회면\"\n    },\n    {\n      \"docId\": \"post:84932341\",\n      \"metric\": \"참여 인원\",\n      \"valueText\": \"3\",\n      \"unit\": \"명\",\n      \"scope\": \"검색 응답 개선 스프린트\",\n      \"method\": \"\",\n      \"isTarget\": false,\n      \"quote\": \"참여 인원은 3명입니다.\"\n    },\n    {\n      \"docId\": \"post:84932341\",\n      \"metric\": \"p95 응답시간\",\n      \"valueText\": \"820\",\n      \"unit\": \"ms\",\n      \"scope\": \"검색 API\",\n      \"method\": \"\",\n      \"isTarget\": false,\n      \"quote\": \"검색 API p95 응답시간이 현재 820ms입니다.\"\n    },\n    {\n      \"docId\": \"post:84932341\",\n      \"metric\": \"p95 응답시간 목표\",\n      \"valueText\": \"300\",\n      \"unit\": \"ms\",\n      \"scope\": \"검색 API\",\n      \"method\": \"\",\n      \"isTarget\": true,\n      \"quote\": \"목표는 300ms입니다.\"\n    },\n    {\n      \"docId\": \"post:84932341\",\n      \"metric\": \"배포 목표일\",\n      \"valueText\": \"9월 20일\",\n      \"unit\": \"\",\n      \"scope\": \"\",\n      \"method\": \"\",\n      \"isTarget\": true,\n      \"quote\": \"배포 목표일은 9월 20일입니다.\"\n    }\n  ]\n}"
       },
       {
-        "model": "gemini-3.6-flash",
+        "model": "gemini-3.5-flash",
         "system": "너는 여러 글에서 뽑은 수치 주장들을 「같은 지표끼리」 묶는 분류기다.\n- 같은 대상을 가리키면 **이름이 달라도 한 그룹**이다. 수식어가 붙거나 빠진 것, 줄여 부른 것,\n  띄어쓰기만 다른 것은 전부 같은 지표다. 이름이 아니라 **무엇을 잰 숫자인가**로 판단한다.\n- 반대로 단위가 같아도 잰 대상이 다르면 다른 그룹이다. 예: 응답시간과 타임아웃 설정값은 다르다.\n- 같은 종류를 세더라도 **센 자리가 다르면** 다른 그룹이다 — 다른 회의, 다른 기간, 다른 모집단.\n- 목표값과 측정값은 같은 지표로 묶는다. 어느 쪽인지는 이미 표시돼 있다.\n- 어느 그룹에도 안 들어가는 주장은 그대로 둔다. 억지로 묶지 않는다.\n- 주어진 claimId 만 쓴다. 없는 ID를 만들지 않는다.\n- 각 줄의 원문 구절을 보고 판단한다. 글쓴이가 수식어를 생략했어도 같은 것을 가리키면 같은 그룹이다.\n\n그리고 **각 그룹 안에서 같은 조건으로 잰 값끼리 다시 묶어라**(contexts).\n- 조건은 원문에 적힌 측정 방법·기준이다. 표현이 달라도 같은 조건을 가리키면 한 묶음이다.\n- 조건이 원문에 안 적힌 값들은 「조건 미기재」 한 묶음으로 모은다.\n- **조건을 지어내지 않는다.** 원문에 없으면 미기재다.\n- 한 그룹의 claimId 는 정확히 한 묶음에만 들어간다. 그룹 밖 ID 를 넣지 않는다.",
-        "prompt": "다음 수치 주장들을 같은 지표끼리 묶어라.\n\nC001 | 참석 인원 | 5명 | 범위:없음 | 측정 | 방법:원문에 없음 | 「[회의록] 릴리스 판정 🗓️」 | 원문: 참석 5명\nC002 | 통과 테스트 수 | 1,200여개 | 범위:없음 | 측정 | 방법:원문에 없음 | 「[회의록] 릴리스 판정 🗓️」 | 원문: 테스트 1,200여 개 통과 확인\nC003 | p95 응답시간 | 320ms | 범위:없음 | 측정 | 방법:원문에 없음 | 「[회의록] 릴리스 판정 🗓️」 | 원문: p95 320ms로 목표 300ms에는 못 미칩니다.\nC004 | p95 응답시간 목표 | 300ms | 범위:없음 | 목표 | 방법:원문에 없음 | 「[회의록] 릴리스 판정 🗓️」 | 원문: p95 320ms로 목표 300ms에는 못 미칩니다.\nC005 | 릴리스 일자 | 9월 13일 | 범위:없음 | 측정 | 방법:원문에 없음 | 「[회의록] 릴리스 판정 🗓️」 | 원문: 릴리스는 9월 13일로 확정합니다.\nC006 | 실행 시간 | 4분 12초 | 범위:개편 범위 회귀 | 측정 | 방법:원문에 없음 | 「[업무] QA 회귀 테스트 결과 ✅」 | 원문: 개편 범위 회귀를 돌렸습니다. 실행 시간은 4분 12초입니다.\nC007 | 통과 테스트 케이스 수 | 1,284케이스 | 범위:없음 | 측정 | 방법:원문에 없음 | 「[업무] QA 회귀 테스트 결과 ✅」 | 원문: 테스트 1,284 케이스 전부 통과\nC008 | 스테이트먼트 커버리지 | 96.4% | 범위:없음 | 측정 | 방법:원문에 없음 | 「[업무] QA 회귀 테스트 결과 ✅」 | 원문: 스테이트먼트 커버리지 96.4%\nC009 | 3주차 공유 테스트 수 | 42개 | 범위:3주차 공유 | 측정 | 방법:원문에 없음 | 「[업무] QA 회귀 테스트 결과 ✅」 | 원문: 3주차 공유의 「42개」는 케이스 수가 아니라 파일 수입니다.\nC010 | 회의록 언급 테스트 수 | 1,200여개 | 범위:회의록 | 측정 | 방법:원문에 없음 | 「[업무] QA 회귀 테스트 결과 ✅ — 댓글」 | 원문: 그럼 회의록의 「1,200여 개」는 케이스 기준이 맞습니다.\nC011 | 검색 응답시간 | 250ms | 범위:검색 | 측정 | 방법:원문에 없음 | 「[공지] 고객 공지 문구 초안 — 검토 부탁드립니다 📢」 | 원문: 검색 응답 250ms로 개선\nC012 | 테스트 커버리지 | 99% | 범위:없음 | 측정 | 방법:원문에 없음 | 「[공지] 고객 공지 문구 초안 — 검토 부탁드립니다 📢」 | 원문: 테스트 커버리지 99%\nC013 | 릴리스 예정일 | 9월 20일 | 범위:없음 | 측정 | 방법:원문에 없음 | 「[공지] 고객 공지 문구 초안 — 검토 부탁드립니다 📢」 | 원문: 릴리스 예정일 9월 20일\nC014 | 검색 응답시간 | 250ms | 범위:없음 | 측정 | 방법:원문에 없음 | 「[공지] 고객 공지 문구 초안 — 검토 부탁드립니다 📢 — 댓글」 | 원문: 250ms는 어디서 나온 숫자인가요?\nC015 | 응답 속도 개선 배율 | 2배 | 범위:없음 | 측정 | 방법:원문에 없음 | 「[업무] 3주차 중간 점검 📊」 | 원문: 응답 속도가 2배 이상 빨라졌습니다.\nC016 | 추가 테스트 수 | 42개 | 범위:없음 | 측정 | 방법:원문에 없음 | 「[업무] 3주차 중간 점검 📊」 | 원문: 테스트는 42개 추가했습니다.\nC017 | 배포일 | 9월 13일 | 범위:없음 | 측정 | 방법:원문에 없음 | 「[업무] 3주차 중간 점검 📊」 | 원문: 배포는 9월 13일로 당깁니다.\nC018 | 개선 전 요청당 쿼리 수 | 47회 | 범위:없음 | 측정 | 방법:원문에 없음 | 「[업무] 인덱스 추가 + N+1 제거 ⚡」 | 원문: 요청당 쿼리 47회에서 3회로 줄었습니다.\nC019 | 개선 후 요청당 쿼리 수 | 3회 | 범위:없음 | 측정 | 방법:원문에 없음 | 「[업무] 인덱스 추가 + N+1 제거 ⚡」 | 원문: 요청당 쿼리 47회에서 3회로 줄었습니다.\nC020 | p95 응답시간 | 320ms | 범위:없음 | 측정 | 방법:스테이징 · 동시 10 · 캐시 미적용 | 「[업무] 인덱스 추가 + N+1 제거 ⚡」 | 원문: p95 320ms. 스테이징 · 동시 10 · 캐시 미적용 기준입니다.\nC021 | p95 응답시간 | 280ms | 범위:없음 | 측정 | 방법:캐시 워밍 후 3회 평균 | 「[업무] 인덱스 추가 + N+1 제거 ⚡ — 댓글」 | 원문: 재측정했더니 p95 280ms 나왔습니다. 캐시 워밍 후 3회 평균입니다.\nC022 | 요청당 쿼리 수 | 47회 | 범위:목록 조회 | 측정 | 방법:원문에 없음 | 「[업무] 쿼리 프로파일링 🔍」 | 원문: 목록 조회에서 N+1이 납니다. 요청당 쿼리가 47회 나갑니다.\nC023 | p95 응답시간 | 820ms | 범위:없음 | 측정 | 방법:스테이징 · 동시 10 · 캐시 미적용 | 「[업무] 쿼리 프로파일링 🔍」 | 원문: p95 820ms. 스테이징 · 동시 10 · 캐시 미적용 기준입니다.\nC024 | 요청당 쿼리 수 | 47회 | 범위:없음 | 측정 | 방법:원문에 없음 | 「[업무] 쿼리 프로파일링 🔍 — 댓글」 | 원문: 47회면 손볼 만하네요.\nC025 | 참여 인원 | 3명 | 범위:없음 | 측정 | 방법:원문에 없음 | 「[필독] 검색 응답 개선 스프린트 목표 🎯」 | 원문: 참여 인원은 3명입니다.\nC026 | p95 응답시간 | 820ms | 범위:검색 API | 측정 | 방법:원문에 없음 | 「[필독] 검색 응답 개선 스프린트 목표 🎯」 | 원문: 검색 API p95 응답시간이 현재 820ms입니다.\nC027 | p95 응답시간 목표 | 300ms | 범위:없음 | 목표 | 방법:원문에 없음 | 「[필독] 검색 응답 개선 스프린트 목표 🎯」 | 원문: 목표는 300ms입니다.\nC028 | 배포 목표일 | 9월 20일 | 범위:없음 | 목표 | 방법:원문에 없음 | 「[필독] 검색 응답 개선 스프린트 목표 🎯」 | 원문: 배포 목표일은 9월 20일입니다.",
-        "promptTokens": 2313,
-        "outputTokens": 594,
+        "prompt": "다음 수치 주장들을 같은 지표끼리 묶어라.\n\nC001 | 코드리뷰 평균 대기시간 | 6시간 | 범위:없음 | 측정 | 방법:영업일 기준, 최근 2주 평균 | 「[주간] 4주차 리뷰 지표 정리」 | 원문: 코드리뷰 평균 대기 6시간\nC002 | 배포 횟수 | 3회 | 범위:없음 | 측정 | 방법:원문에 없음 | 「[주간] 4주차 리뷰 지표 정리」 | 원문: 배포 3회\nC003 | 롤백 횟수 | 1회 | 범위:없음 | 측정 | 방법:원문에 없음 | 「[주간] 4주차 리뷰 지표 정리」 | 원문: 롤백 1회\nC004 | 참석 인원 | 5명 | 범위:릴리스 판정 회의 | 측정 | 방법:원문에 없음 | 「[회의록] 릴리스 판정 🗓️」 | 원문: 참석 5명\nC005 | 통과한 테스트 수 | 1,200여개 | 범위:없음 | 측정 | 방법:원문에 없음 | 「[회의록] 릴리스 판정 🗓️」 | 원문: 테스트 1,200여 개 통과 확인\nC006 | p95 응답시간 | 320ms | 범위:없음 | 측정 | 방법:원문에 없음 | 「[회의록] 릴리스 판정 🗓️」 | 원문: p95 320ms\nC007 | p95 응답시간 목표 | 300ms | 범위:없음 | 목표 | 방법:원문에 없음 | 「[회의록] 릴리스 판정 🗓️」 | 원문: 목표 300ms\nC008 | 릴리스 확정일 | 9월 13일 | 범위:없음 | 측정 | 방법:원문에 없음 | 「[회의록] 릴리스 판정 🗓️」 | 원문: 릴리스는 9월 13일로 확정합니다.\nC009 | 회귀 테스트 실행 시간 | 4분 12초 | 범위:QA 회귀 테스트 | 측정 | 방법:원문에 없음 | 「[업무] QA 회귀 테스트 결과 ✅」 | 원문: 실행 시간은 4분 12초입니다.\nC010 | 통과한 테스트 케이스 수 | 1,284케이스 | 범위:개편 범위 회귀 | 측정 | 방법:원문에 없음 | 「[업무] QA 회귀 테스트 결과 ✅」 | 원문: 테스트 1,284 케이스 전부 통과\nC011 | 스테이트먼트 커버리지 | 96.4% | 범위:없음 | 측정 | 방법:원문에 없음 | 「[업무] QA 회귀 테스트 결과 ✅」 | 원문: 스테이트먼트 커버리지 96.4%\nC012 | 파일 수 | 42개 | 범위:3주차 공유 | 측정 | 방법:원문에 없음 | 「[업무] QA 회귀 테스트 결과 ✅」 | 원문: 3주차 공유의 「42개」는\nC013 | 테스트 케이스 수 | 1,200여개 | 범위:회의록 | 측정 | 방법:원문에 없음 | 「[업무] QA 회귀 테스트 결과 ✅ — 댓글」 | 원문: 「1,200여 개」\nC014 | 응답시간 | 250ms | 범위:검색 | 측정 | 방법:원문에 없음 | 「[공지] 고객 공지 문구 초안 — 검토 부탁드립니다 📢」 | 원문: 검색 응답 250ms로 개선\nC015 | 테스트 커버리지 | 99% | 범위:없음 | 측정 | 방법:원문에 없음 | 「[공지] 고객 공지 문구 초안 — 검토 부탁드립니다 📢」 | 원문: 테스트 커버리지 99%\nC016 | 릴리스 예정일 | 9월 20일 | 범위:없음 | 측정 | 방법:원문에 없음 | 「[공지] 고객 공지 문구 초안 — 검토 부탁드립니다 📢」 | 원문: 릴리스 예정일 9월 20일\nC017 | 응답시간 | 250ms | 범위:없음 | 측정 | 방법:원문에 없음 | 「[공지] 고객 공지 문구 초안 — 검토 부탁드립니다 📢 — 댓글」 | 원문: 250ms는\nC018 | 응답 속도 개선율 | 2배 | 범위:없음 | 측정 | 방법:원문에 없음 | 「[업무] 3주차 중간 점검 📊」 | 원문: 응답 속도가 2배 이상 빨라졌습니다.\nC019 | 추가된 테스트 수 | 42개 | 범위:없음 | 측정 | 방법:원문에 없음 | 「[업무] 3주차 중간 점검 📊」 | 원문: 테스트는 42개 추가했습니다.\nC020 | 배포 예정일 | 9월 13일 | 범위:없음 | 측정 | 방법:원문에 없음 | 「[업무] 3주차 중간 점검 📊」 | 원문: 배포는 9월 13일로 당깁니다.\nC021 | 요청당 쿼리 수 | 47회 | 범위:없음 | 측정 | 방법:원문에 없음 | 「[업무] 인덱스 추가 + N+1 제거 ⚡」 | 원문: 요청당 쿼리 47회에서\nC022 | 요청당 쿼리 수 | 3회 | 범위:없음 | 측정 | 방법:원문에 없음 | 「[업무] 인덱스 추가 + N+1 제거 ⚡」 | 원문: 3회로 줄었습니다.\nC023 | p95 응답시간 | 320ms | 범위:없음 | 측정 | 방법:스테이징 · 동시 10 · 캐시 미적용 | 「[업무] 인덱스 추가 + N+1 제거 ⚡」 | 원문: p95 320ms. 스테이징 · 동시 10 · 캐시 미적용 기준입니다.\nC024 | p95 응답시간 | 280ms | 범위:없음 | 측정 | 방법:캐시 워밍 후 3회 평균 | 「[업무] 인덱스 추가 + N+1 제거 ⚡ — 댓글」 | 원문: p95 280ms 나왔습니다. 캐시 워밍 후 3회 평균입니다.\nC025 | 요청당 쿼리 수 | 47회 | 범위:목록 조회 | 측정 | 방법:원문에 없음 | 「[업무] 쿼리 프로파일링 🔍」 | 원문: 목록 조회에서 N+1이 납니다. 요청당 쿼리가 47회 나갑니다.\nC026 | p95 응답시간 | 820ms | 범위:없음 | 측정 | 방법:스테이징 · 동시 10 · 캐시 미적용 | 「[업무] 쿼리 프로파일링 🔍」 | 원문: p95 820ms. 스테이징 · 동시 10 · 캐시 미적용 기준입니다.\nC027 | 참여 인원 | 3명 | 범위:검색 응답 개선 스프린트 | 측정 | 방법:원문에 없음 | 「[필독] 검색 응답 개선 스프린트 목표 🎯」 | 원문: 참여 인원은 3명입니다.\nC028 | p95 응답시간 | 820ms | 범위:검색 API | 측정 | 방법:원문에 없음 | 「[필독] 검색 응답 개선 스프린트 목표 🎯」 | 원문: 검색 API p95 응답시간이 현재 820ms입니다.\nC029 | p95 응답시간 목표 | 300ms | 범위:검색 API | 목표 | 방법:원문에 없음 | 「[필독] 검색 응답 개선 스프린트 목표 🎯」 | 원문: 목표는 300ms입니다.\nC030 | 배포 목표일 | 9월 20일 | 범위:없음 | 목표 | 방법:원문에 없음 | 「[필독] 검색 응답 개선 스프린트 목표 🎯」 | 원문: 배포 목표일은 9월 20일입니다.",
+        "promptTokens": 2340,
+        "outputTokens": 802,
         "finishReason": "STOP",
-        "response": "{\"groups\":[{\"metric\":\"참석 인원\",\"claimIds\":[\"C001\"],\"contexts\":[{\"condition\":\"조건 미기재\",\"claimIds\":[\"C001\"]}]},{\"metric\":\"통과 테스트 케이스 수\",\"claimIds\":[\"C002\",\"C007\",\"C010\"],\"contexts\":[{\"condition\":\"조건 미기재\",\"claimIds\":[\"C002\",\"C007\",\"C010\"]}]},{\"metric\":\"p95 응답시간\",\"claimIds\":[\"C003\",\"C004\",\"C020\",\"C021\",\"C023\",\"C026\",\"C027\"],\"contexts\":[{\"condition\":\"조건 미기재\",\"claimIds\":[\"C003\",\"C004\",\"C026\",\"C027\"]},{\"condition\":\"스테이징 · 동시 10 · 캐시 미적용\",\"claimIds\":[\"C020\",\"C023\"]},{\"condition\":\"캐시 워밍 후 3회 평균\",\"claimIds\":[\"C021\"]}]},{\"metric\":\"릴리스 일자\",\"claimIds\":[\"C005\",\"C013\",\"C017\",\"C028\"],\"contexts\":[{\"condition\":\"조건 미기재\",\"claimIds\":[\"C005\",\"C013\",\"C017\",\"C028\"]}]},{\"metric\":\"실행 시간\",\"claimIds\":[\"C006\"],\"contexts\":[{\"condition\":\"조건 미기재\",\"claimIds\":[\"C006\"]}]},{\"metric\":\"테스트 커버리지\",\"claimIds\":[\"C008\",\"C012\"],\"contexts\":[{\"condition\":\"조건 미기재\",\"claimIds\":[\"C008\",\"C012\"]}]},{\"metric\":\"추가 테스트 수\",\"claimIds\":[\"C009\",\"C016\"],\"contexts\":[{\"condition\":\"조건 미기재\",\"claimIds\":[\"C009\",\"C016\"]}]},{\"metric\":\"검색 응답시간\",\"claimIds\":[\"C011\",\"C014\"],\"contexts\":[{\"condition\":\"조건 미기재\",\"claimIds\":[\"C011\",\"C014\"]}]},{\"metric\":\"응답 속도 개선 배율\",\"claimIds\":[\"C015\"],\"contexts\":[{\"condition\":\"조건 미기재\",\"claimIds\":[\"C015\"]}]},{\"metric\":\"요청당 쿼리 수\",\"claimIds\":[\"C018\",\"C019\",\"C022\",\"C024\"],\"contexts\":[{\"condition\":\"조건 미기재\",\"claimIds\":[\"C018\",\"C019\",\"C022\",\"C024\"]}]},{\"metric\":\"참여 인원\",\"claimIds\":[\"C025\"],\"contexts\":[{\"condition\":\"조건 미기재\",\"claimIds\":[\"C025\"]}]}]}"
+        "response": "{\n  \"groups\": [\n    {\n      \"metric\": \"p95 응답시간\",\n      \"claimIds\": [\n        \"C006\",\n        \"C007\",\n        \"C023\",\n        \"C024\",\n        \"C026\",\n        \"C028\",\n        \"C029\"\n      ],\n      \"contexts\": [\n        {\n          \"condition\": \"조건 미기재\",\n          \"claimIds\": [\n            \"C006\",\n            \"C007\",\n            \"C028\",\n            \"C029\"\n          ]\n        },\n        {\n          \"condition\": \"스테이징 · 동시 10 · 캐시 미적용\",\n          \"claimIds\": [\n            \"C023\",\n            \"C026\"\n          ]\n        },\n        {\n          \"condition\": \"캐시 워밍 후 3회 평균\",\n          \"claimIds\": [\n            \"C024\"\n          ]\n        }\n      ]\n    },\n    {\n      \"metric\": \"요청당 쿼리 수\",\n      \"claimIds\": [\n        \"C021\",\n        \"C022\",\n        \"C025\"\n      ],\n      \"contexts\": [\n        {\n          \"condition\": \"조건 미기재\",\n          \"claimIds\": [\n            \"C021\",\n            \"C022\",\n            \"C025\"\n          ]\n        }\n      ]\n    },\n    {\n      \"metric\": \"응답시간\",\n      \"claimIds\": [\n        \"C014\",\n        \"C017\"\n      ],\n      \"contexts\": [\n        {\n          \"condition\": \"조건 미기재\",\n          \"claimIds\": [\n            \"C014\",\n            \"C017\"\n          ]\n        }\n      ]\n    },\n    {\n      \"metric\": \"테스트 케이스 수\",\n      \"claimIds\": [\n        \"C005\",\n        \"C010\",\n        \"C013\"\n      ],\n      \"contexts\": [\n        {\n          \"condition\": \"조건 미기재\",\n          \"claimIds\": [\n            \"C005\",\n            \"C010\",\n            \"C013\"\n          ]\n        }\n      ]\n    },\n    {\n      \"metric\": \"테스트 커버리지\",\n      \"claimIds\": [\n        \"C011\",\n        \"C015\"\n      ],\n      \"contexts\": [\n        {\n          \"condition\": \"조건 미기재\",\n          \"claimIds\": [\n            \"C011\",\n            \"C015\"\n          ]\n        }\n      ]\n    },\n    {\n      \"metric\": \"배포 예정일\",\n      \"claimIds\": [\n        \"C008\",\n        \"C016\",\n        \"C020\",\n        \"C030\"\n      ],\n      \"contexts\": [\n        {\n          \"condition\": \"조건 미기재\",\n          \"claimIds\": [\n            \"C008\",\n            \"C016\",\n            \"C020\",\n            \"C030\"\n          ]\n        }\n      ]\n    }\n  ]\n}"
       }
     ]
   },
@@ -1573,10 +1542,10 @@
     {
       "kind": "UNSOURCED",
       "tier": "2차(단위 대조)",
-      "metric": "검색 응답시간",
+      "metric": "응답시간",
       "task": {
-        "title": "[수치 감사] 검색 응답시간 250ms — 측정 방법을 못 찾음",
-        "contents": "지표: 검색 응답시간\n\n■ 어떻게 쟀는지가 없음 (2건)\n- 250ms · 「[공지] 고객 공지 문구 초안 — 검토 부탁드립니다 📢」 · 범위: 검색 · 방법: 원문에 없음\n  인용: \"검색 응답 250ms로 개선\"\n- 250ms · 「[공지] 고객 공지 문구 초안 — 검토 부탁드립니다 📢 — 댓글」 · 방법: 원문에 없음\n  인용: \"250ms는 어디서 나온 숫자인가요?\"\n\n■ 같은 단위(ms)로 「어떻게 쟀는지」가 적힌 값\n- 320ms · 「[업무] 인덱스 추가 + N+1 제거 ⚡」 · 방법: 스테이징 · 동시 10 · 캐시 미적용\n  인용: \"p95 320ms. 스테이징 · 동시 10 · 캐시 미적용 기준입니다.\"\n- 280ms · 「[업무] 인덱스 추가 + N+1 제거 ⚡ — 댓글」 · 방법: 캐시 워밍 후 3회 평균\n  인용: \"재측정했더니 p95 280ms 나왔습니다. 캐시 워밍 후 3회 평균입니다.\"\n- 820ms · 「[업무] 쿼리 프로파일링 🔍」 · 방법: 스테이징 · 동시 10 · 캐시 미적용\n  인용: \"p95 820ms. 스테이징 · 동시 10 · 캐시 미적용 기준입니다.\"\n\n---\n이 판정은 그룹 밖 대조다. 지표 이름이 아니라 단위만 같은 값들과 견줬다.\n글쓴이가 수식어를 생략하면(「p95 응답시간」 → 「검색 응답」) 지표 묶기가 갈라져\n그룹 안에서는 대조할 상대가 사라지기 때문이다. 대신 단위만 같고 다른 지표일 수 있다 —\n그래서 「숫자가 틀렸다」가 아니라 「이 프로젝트의 글에서 어떻게 쟀는지를 못 찾았다」까지만 말한다.",
+        "title": "[수치 감사] 응답시간 250ms — 측정 방법을 못 찾음",
+        "contents": "지표: 응답시간\n\n■ 어떻게 쟀는지가 없음 (2건)\n- 250ms · 「[공지] 고객 공지 문구 초안 — 검토 부탁드립니다 📢」 · 범위: 검색 · 방법: 원문에 없음\n  인용: \"검색 응답 250ms로 개선\"\n- 250ms · 「[공지] 고객 공지 문구 초안 — 검토 부탁드립니다 📢 — 댓글」 · 방법: 원문에 없음\n  인용: \"250ms는\"\n\n■ 같은 단위(ms)로 「어떻게 쟀는지」가 적힌 값\n- 320ms · 「[업무] 인덱스 추가 + N+1 제거 ⚡」 · 방법: 스테이징 · 동시 10 · 캐시 미적용\n  인용: \"p95 320ms. 스테이징 · 동시 10 · 캐시 미적용 기준입니다.\"\n- 280ms · 「[업무] 인덱스 추가 + N+1 제거 ⚡ — 댓글」 · 방법: 캐시 워밍 후 3회 평균\n  인용: \"p95 280ms 나왔습니다. 캐시 워밍 후 3회 평균입니다.\"\n- 820ms · 「[업무] 쿼리 프로파일링 🔍」 · 방법: 스테이징 · 동시 10 · 캐시 미적용\n  인용: \"p95 820ms. 스테이징 · 동시 10 · 캐시 미적용 기준입니다.\"\n\n---\n이 판정은 그룹 밖 대조다. 지표 이름이 아니라 단위만 같은 값들과 견줬다.\n글쓴이가 수식어를 생략하면(「p95 응답시간」 → 「검색 응답」) 지표 묶기가 갈라져\n그룹 안에서는 대조할 상대가 사라지기 때문이다. 대신 단위만 같고 다른 지표일 수 있다 —\n그래서 「숫자가 틀렸다」가 아니라 「이 프로젝트의 글에서 어떻게 쟀는지를 못 찾았다」까지만 말한다.",
         "status": "request",
         "priority": "high",
         "endDate": "20260914"
@@ -1584,13 +1553,13 @@
       "subtasks": [
         {
           "title": "250ms — 2곳 근거 확인",
-          "contents": "- 250ms · 「[공지] 고객 공지 문구 초안 — 검토 부탁드립니다 📢」 · 범위: 검색 · 방법: 원문에 없음\n  인용: \"검색 응답 250ms로 개선\"\n- 250ms · 「[공지] 고객 공지 문구 초안 — 검토 부탁드립니다 📢 — 댓글」 · 방법: 원문에 없음\n  인용: \"250ms는 어디서 나온 숫자인가요?\""
+          "contents": "- 250ms · 「[공지] 고객 공지 문구 초안 — 검토 부탁드립니다 📢」 · 범위: 검색 · 방법: 원문에 없음\n  인용: \"검색 응답 250ms로 개선\"\n- 250ms · 「[공지] 고객 공지 문구 초안 — 검토 부탁드립니다 📢 — 댓글」 · 방법: 원문에 없음\n  인용: \"250ms는\""
         }
       ],
       "worker": null,
       "claimIds": [
-        "C011",
-        "C014"
+        "C014",
+        "C017"
       ],
       "docIds": [
         "post:84932347",
@@ -1603,7 +1572,7 @@
       "metric": "p95 응답시간",
       "task": {
         "title": "[수치 감사] p95 응답시간 — 값이 갈림 4건",
-        "contents": "지표: p95 응답시간\n\n■ 값이 갈림 (4건)\n- 320ms · 「[회의록] 릴리스 판정 🗓️」 · 방법: 원문에 없음\n  인용: \"p95 320ms로 목표 300ms에는 못 미칩니다.\"\n- 820ms · 「[필독] 검색 응답 개선 스프린트 목표 🎯」 · 범위: 검색 API · 방법: 원문에 없음\n  인용: \"검색 API p95 응답시간이 현재 820ms입니다.\"\n- 320ms · 「[업무] 인덱스 추가 + N+1 제거 ⚡」 · 방법: 스테이징 · 동시 10 · 캐시 미적용\n  인용: \"p95 320ms. 스테이징 · 동시 10 · 캐시 미적용 기준입니다.\"\n- 820ms · 「[업무] 쿼리 프로파일링 🔍」 · 방법: 스테이징 · 동시 10 · 캐시 미적용\n  인용: \"p95 820ms. 스테이징 · 동시 10 · 캐시 미적용 기준입니다.\"\n\n■ 조건이 달라 견주지 않은 값 1건\n- 280ms · 「[업무] 인덱스 추가 + N+1 제거 ⚡ — 댓글」 · 방법: 캐시 워밍 후 3회 평균\n  인용: \"재측정했더니 p95 280ms 나왔습니다. 캐시 워밍 후 3회 평균입니다.\"\n  ↑ 잰 조건이 서로 달라 값을 견주지 않았습니다. 같은 조건이라면 알려 주세요.\n\n■ 같은 지표의 다른 값 2건\n- 300ms · 「[회의록] 릴리스 판정 🗓️」 · 방법: 원문에 없음\n  인용: \"p95 320ms로 목표 300ms에는 못 미칩니다.\"\n- 300ms · 「[필독] 검색 응답 개선 스프린트 목표 🎯」 · 방법: 원문에 없음\n  인용: \"목표는 300ms입니다.\"\n\n■ 목표값: 300ms, 300ms\n\n---\n이 업무는 수치 감사 도구가 만들었다. 판정은 다음 두 가지만 본다 —\n「인용이 원문에 실재하나」와 「같은 값이 측정 방법과 함께 적힌 곳이 있나」.\n값을 견줄 때는 같은 조건으로 잰 값끼리만 견준다.\n숫자가 틀렸다는 뜻이 아니다. 이 프로젝트의 글에서 어떻게 쟀는지를 못 찾았다는 뜻이다.",
+        "contents": "지표: p95 응답시간\n\n■ 값이 갈림 (4건)\n- 320ms · 「[회의록] 릴리스 판정 🗓️」 · 방법: 원문에 없음\n  인용: \"p95 320ms\"\n- 820ms · 「[필독] 검색 응답 개선 스프린트 목표 🎯」 · 범위: 검색 API · 방법: 원문에 없음\n  인용: \"검색 API p95 응답시간이 현재 820ms입니다.\"\n- 320ms · 「[업무] 인덱스 추가 + N+1 제거 ⚡」 · 방법: 스테이징 · 동시 10 · 캐시 미적용\n  인용: \"p95 320ms. 스테이징 · 동시 10 · 캐시 미적용 기준입니다.\"\n- 820ms · 「[업무] 쿼리 프로파일링 🔍」 · 방법: 스테이징 · 동시 10 · 캐시 미적용\n  인용: \"p95 820ms. 스테이징 · 동시 10 · 캐시 미적용 기준입니다.\"\n\n■ 조건이 달라 견주지 않은 값 1건\n- 280ms · 「[업무] 인덱스 추가 + N+1 제거 ⚡ — 댓글」 · 방법: 캐시 워밍 후 3회 평균\n  인용: \"p95 280ms 나왔습니다. 캐시 워밍 후 3회 평균입니다.\"\n  ↑ 잰 조건이 서로 달라 값을 견주지 않았습니다. 같은 조건이라면 알려 주세요.\n\n■ 같은 지표의 다른 값 2건\n- 300ms · 「[회의록] 릴리스 판정 🗓️」 · 방법: 원문에 없음\n  인용: \"목표 300ms\"\n- 300ms · 「[필독] 검색 응답 개선 스프린트 목표 🎯」 · 범위: 검색 API · 방법: 원문에 없음\n  인용: \"목표는 300ms입니다.\"\n\n■ 목표값: 300ms, 300ms\n\n---\n이 업무는 수치 감사 도구가 만들었다. 판정은 다음 두 가지만 본다 —\n「인용이 원문에 실재하나」와 「같은 값이 측정 방법과 함께 적힌 곳이 있나」.\n값을 견줄 때는 같은 조건으로 잰 값끼리만 견준다.\n숫자가 틀렸다는 뜻이 아니다. 이 프로젝트의 글에서 어떻게 쟀는지를 못 찾았다는 뜻이다.",
         "status": "request",
         "priority": "normal",
         "endDate": "20260918"
@@ -1611,7 +1580,7 @@
       "subtasks": [
         {
           "title": "320ms — 2곳 확인",
-          "contents": "- 320ms · 「[회의록] 릴리스 판정 🗓️」 · 방법: 원문에 없음\n  인용: \"p95 320ms로 목표 300ms에는 못 미칩니다.\"\n- 320ms · 「[업무] 인덱스 추가 + N+1 제거 ⚡」 · 방법: 스테이징 · 동시 10 · 캐시 미적용\n  인용: \"p95 320ms. 스테이징 · 동시 10 · 캐시 미적용 기준입니다.\""
+          "contents": "- 320ms · 「[회의록] 릴리스 판정 🗓️」 · 방법: 원문에 없음\n  인용: \"p95 320ms\"\n- 320ms · 「[업무] 인덱스 추가 + N+1 제거 ⚡」 · 방법: 스테이징 · 동시 10 · 캐시 미적용\n  인용: \"p95 320ms. 스테이징 · 동시 10 · 캐시 미적용 기준입니다.\""
         },
         {
           "title": "820ms — 2곳 확인",
@@ -1620,10 +1589,10 @@
       ],
       "worker": null,
       "claimIds": [
-        "C003",
-        "C026",
-        "C020",
-        "C023"
+        "C006",
+        "C028",
+        "C023",
+        "C026"
       ],
       "docIds": [
         "post:84932350",
@@ -1635,10 +1604,10 @@
     {
       "kind": "CONFLICT",
       "tier": "1차(그룹 안)",
-      "metric": "릴리스 일자",
+      "metric": "배포 예정일",
       "task": {
-        "title": "[수치 감사] 릴리스 일자 — 값이 갈림 3건",
-        "contents": "지표: 릴리스 일자\n\n■ 값이 갈림 (3건)\n- 9월 13일 · 「[회의록] 릴리스 판정 🗓️」 · 방법: 원문에 없음\n  인용: \"릴리스는 9월 13일로 확정합니다.\"\n- 9월 20일 · 「[공지] 고객 공지 문구 초안 — 검토 부탁드립니다 📢」 · 방법: 원문에 없음\n  인용: \"릴리스 예정일 9월 20일\"\n- 9월 13일 · 「[업무] 3주차 중간 점검 📊」 · 방법: 원문에 없음\n  인용: \"배포는 9월 13일로 당깁니다.\"\n\n■ 같은 지표의 다른 값 1건\n- 9월 20일 · 「[필독] 검색 응답 개선 스프린트 목표 🎯」 · 방법: 원문에 없음\n  인용: \"배포 목표일은 9월 20일입니다.\"\n\n■ 목표값: 9월 20일\n\n---\n이 업무는 수치 감사 도구가 만들었다. 판정은 다음 두 가지만 본다 —\n「인용이 원문에 실재하나」와 「같은 값이 측정 방법과 함께 적힌 곳이 있나」.\n값을 견줄 때는 같은 조건으로 잰 값끼리만 견준다.\n숫자가 틀렸다는 뜻이 아니다. 이 프로젝트의 글에서 어떻게 쟀는지를 못 찾았다는 뜻이다.",
+        "title": "[수치 감사] 배포 예정일 — 값이 갈림 3건",
+        "contents": "지표: 배포 예정일\n\n■ 값이 갈림 (3건)\n- 9월 13일 · 「[회의록] 릴리스 판정 🗓️」 · 방법: 원문에 없음\n  인용: \"릴리스는 9월 13일로 확정합니다.\"\n- 9월 20일 · 「[공지] 고객 공지 문구 초안 — 검토 부탁드립니다 📢」 · 방법: 원문에 없음\n  인용: \"릴리스 예정일 9월 20일\"\n- 9월 13일 · 「[업무] 3주차 중간 점검 📊」 · 방법: 원문에 없음\n  인용: \"배포는 9월 13일로 당깁니다.\"\n\n■ 같은 지표의 다른 값 1건\n- 9월 20일 · 「[필독] 검색 응답 개선 스프린트 목표 🎯」 · 방법: 원문에 없음\n  인용: \"배포 목표일은 9월 20일입니다.\"\n\n■ 목표값: 9월 20일\n\n---\n이 업무는 수치 감사 도구가 만들었다. 판정은 다음 두 가지만 본다 —\n「인용이 원문에 실재하나」와 「같은 값이 측정 방법과 함께 적힌 곳이 있나」.\n값을 견줄 때는 같은 조건으로 잰 값끼리만 견준다.\n숫자가 틀렸다는 뜻이 아니다. 이 프로젝트의 글에서 어떻게 쟀는지를 못 찾았다는 뜻이다.",
         "status": "request",
         "priority": "normal",
         "endDate": "20260918"
@@ -1655,9 +1624,9 @@
       ],
       "worker": null,
       "claimIds": [
-        "C005",
-        "C013",
-        "C017"
+        "C008",
+        "C016",
+        "C020"
       ],
       "docIds": [
         "post:84932350",
@@ -1670,42 +1639,40 @@
       "tier": "1차(그룹 안)",
       "metric": "요청당 쿼리 수",
       "task": {
-        "title": "[수치 감사] 요청당 쿼리 수 — 값이 갈림 4건",
-        "contents": "지표: 요청당 쿼리 수\n\n■ 값이 갈림 (4건)\n- 47회 · 「[업무] 인덱스 추가 + N+1 제거 ⚡」 · 방법: 원문에 없음\n  인용: \"요청당 쿼리 47회에서 3회로 줄었습니다.\"\n- 3회 · 「[업무] 인덱스 추가 + N+1 제거 ⚡」 · 방법: 원문에 없음\n  인용: \"요청당 쿼리 47회에서 3회로 줄었습니다.\"\n- 47회 · 「[업무] 쿼리 프로파일링 🔍」 · 범위: 목록 조회 · 방법: 원문에 없음\n  인용: \"목록 조회에서 N+1이 납니다. 요청당 쿼리가 47회 나갑니다.\"\n- 47회 · 「[업무] 쿼리 프로파일링 🔍 — 댓글」 · 방법: 원문에 없음\n  인용: \"47회면 손볼 만하네요.\"\n\n■ 같은 지표의 다른 값 0건\n\n---\n이 업무는 수치 감사 도구가 만들었다. 판정은 다음 두 가지만 본다 —\n「인용이 원문에 실재하나」와 「같은 값이 측정 방법과 함께 적힌 곳이 있나」.\n값을 견줄 때는 같은 조건으로 잰 값끼리만 견준다.\n숫자가 틀렸다는 뜻이 아니다. 이 프로젝트의 글에서 어떻게 쟀는지를 못 찾았다는 뜻이다.",
+        "title": "[수치 감사] 요청당 쿼리 수 — 값이 갈림 3건",
+        "contents": "지표: 요청당 쿼리 수\n\n■ 값이 갈림 (3건)\n- 47회 · 「[업무] 인덱스 추가 + N+1 제거 ⚡」 · 방법: 원문에 없음\n  인용: \"요청당 쿼리 47회에서\"\n- 3회 · 「[업무] 인덱스 추가 + N+1 제거 ⚡」 · 방법: 원문에 없음\n  인용: \"3회로 줄었습니다.\"\n- 47회 · 「[업무] 쿼리 프로파일링 🔍」 · 범위: 목록 조회 · 방법: 원문에 없음\n  인용: \"목록 조회에서 N+1이 납니다. 요청당 쿼리가 47회 나갑니다.\"\n\n■ 같은 지표의 다른 값 0건\n\n---\n이 업무는 수치 감사 도구가 만들었다. 판정은 다음 두 가지만 본다 —\n「인용이 원문에 실재하나」와 「같은 값이 측정 방법과 함께 적힌 곳이 있나」.\n값을 견줄 때는 같은 조건으로 잰 값끼리만 견준다.\n숫자가 틀렸다는 뜻이 아니다. 이 프로젝트의 글에서 어떻게 쟀는지를 못 찾았다는 뜻이다.",
         "status": "request",
         "priority": "normal",
         "endDate": "20260918"
       },
       "subtasks": [
         {
-          "title": "47회 — 3곳 확인",
-          "contents": "- 47회 · 「[업무] 인덱스 추가 + N+1 제거 ⚡」 · 방법: 원문에 없음\n  인용: \"요청당 쿼리 47회에서 3회로 줄었습니다.\"\n- 47회 · 「[업무] 쿼리 프로파일링 🔍」 · 범위: 목록 조회 · 방법: 원문에 없음\n  인용: \"목록 조회에서 N+1이 납니다. 요청당 쿼리가 47회 나갑니다.\"\n- 47회 · 「[업무] 쿼리 프로파일링 🔍 — 댓글」 · 방법: 원문에 없음\n  인용: \"47회면 손볼 만하네요.\""
+          "title": "47회 — 2곳 확인",
+          "contents": "- 47회 · 「[업무] 인덱스 추가 + N+1 제거 ⚡」 · 방법: 원문에 없음\n  인용: \"요청당 쿼리 47회에서\"\n- 47회 · 「[업무] 쿼리 프로파일링 🔍」 · 범위: 목록 조회 · 방법: 원문에 없음\n  인용: \"목록 조회에서 N+1이 납니다. 요청당 쿼리가 47회 나갑니다.\""
         },
         {
           "title": "3회 — 「인덱스 추가 + N+1 제거」 확인",
-          "contents": "- 3회 · 「[업무] 인덱스 추가 + N+1 제거 ⚡」 · 방법: 원문에 없음\n  인용: \"요청당 쿼리 47회에서 3회로 줄었습니다.\""
+          "contents": "- 3회 · 「[업무] 인덱스 추가 + N+1 제거 ⚡」 · 방법: 원문에 없음\n  인용: \"3회로 줄었습니다.\""
         }
       ],
       "worker": null,
       "claimIds": [
-        "C018",
-        "C019",
+        "C021",
         "C022",
-        "C024"
+        "C025"
       ],
       "docIds": [
         "post:84932344",
-        "post:84932342",
-        "comment:198835115"
+        "post:84932342"
       ]
     },
     {
       "kind": "CONFLICT",
       "tier": "1차(그룹 안)",
-      "metric": "통과 테스트 케이스 수",
+      "metric": "테스트 케이스 수",
       "task": {
-        "title": "[수치 감사] 통과 테스트 케이스 수 — 값이 갈림 3건",
-        "contents": "지표: 통과 테스트 케이스 수\n\n■ 값이 갈림 (3건)\n- 1,200여개 · 「[회의록] 릴리스 판정 🗓️」 · 방법: 원문에 없음\n  인용: \"테스트 1,200여 개 통과 확인\"\n- 1,284케이스 · 「[업무] QA 회귀 테스트 결과 ✅」 · 방법: 원문에 없음\n  인용: \"테스트 1,284 케이스 전부 통과\"\n- 1,200여개 · 「[업무] QA 회귀 테스트 결과 ✅ — 댓글」 · 범위: 회의록 · 방법: 원문에 없음\n  인용: \"그럼 회의록의 「1,200여 개」는 케이스 기준이 맞습니다.\"\n\n■ 같은 지표의 다른 값 0건\n\n---\n이 업무는 수치 감사 도구가 만들었다. 판정은 다음 두 가지만 본다 —\n「인용이 원문에 실재하나」와 「같은 값이 측정 방법과 함께 적힌 곳이 있나」.\n값을 견줄 때는 같은 조건으로 잰 값끼리만 견준다.\n숫자가 틀렸다는 뜻이 아니다. 이 프로젝트의 글에서 어떻게 쟀는지를 못 찾았다는 뜻이다.",
+        "title": "[수치 감사] 테스트 케이스 수 — 값이 갈림 3건",
+        "contents": "지표: 테스트 케이스 수\n\n■ 값이 갈림 (3건)\n- 1,200여개 · 「[회의록] 릴리스 판정 🗓️」 · 방법: 원문에 없음\n  인용: \"테스트 1,200여 개 통과 확인\"\n- 1,284케이스 · 「[업무] QA 회귀 테스트 결과 ✅」 · 범위: 개편 범위 회귀 · 방법: 원문에 없음\n  인용: \"테스트 1,284 케이스 전부 통과\"\n- 1,200여개 · 「[업무] QA 회귀 테스트 결과 ✅ — 댓글」 · 범위: 회의록 · 방법: 원문에 없음\n  인용: \"「1,200여 개」\"\n\n■ 같은 지표의 다른 값 0건\n\n---\n이 업무는 수치 감사 도구가 만들었다. 판정은 다음 두 가지만 본다 —\n「인용이 원문에 실재하나」와 「같은 값이 측정 방법과 함께 적힌 곳이 있나」.\n값을 견줄 때는 같은 조건으로 잰 값끼리만 견준다.\n숫자가 틀렸다는 뜻이 아니다. 이 프로젝트의 글에서 어떻게 쟀는지를 못 찾았다는 뜻이다.",
         "status": "request",
         "priority": "normal",
         "endDate": "20260918"
@@ -1713,18 +1680,18 @@
       "subtasks": [
         {
           "title": "1,200여개 — 2곳 확인",
-          "contents": "- 1,200여개 · 「[회의록] 릴리스 판정 🗓️」 · 방법: 원문에 없음\n  인용: \"테스트 1,200여 개 통과 확인\"\n- 1,200여개 · 「[업무] QA 회귀 테스트 결과 ✅ — 댓글」 · 범위: 회의록 · 방법: 원문에 없음\n  인용: \"그럼 회의록의 「1,200여 개」는 케이스 기준이 맞습니다.\""
+          "contents": "- 1,200여개 · 「[회의록] 릴리스 판정 🗓️」 · 방법: 원문에 없음\n  인용: \"테스트 1,200여 개 통과 확인\"\n- 1,200여개 · 「[업무] QA 회귀 테스트 결과 ✅ — 댓글」 · 범위: 회의록 · 방법: 원문에 없음\n  인용: \"「1,200여 개」\""
         },
         {
           "title": "1,284케이스 — 「QA 회귀 테스트 결과」 확인",
-          "contents": "- 1,284케이스 · 「[업무] QA 회귀 테스트 결과 ✅」 · 방법: 원문에 없음\n  인용: \"테스트 1,284 케이스 전부 통과\""
+          "contents": "- 1,284케이스 · 「[업무] QA 회귀 테스트 결과 ✅」 · 범위: 개편 범위 회귀 · 방법: 원문에 없음\n  인용: \"테스트 1,284 케이스 전부 통과\""
         }
       ],
       "worker": null,
       "claimIds": [
-        "C002",
-        "C007",
-        "C010"
+        "C005",
+        "C010",
+        "C013"
       ],
       "docIds": [
         "post:84932350",
@@ -1755,8 +1722,8 @@
       ],
       "worker": null,
       "claimIds": [
-        "C008",
-        "C012"
+        "C011",
+        "C015"
       ],
       "docIds": [
         "post:84932348",

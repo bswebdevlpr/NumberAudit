@@ -71,3 +71,22 @@ test('connectUrl 을 쓰지 않는다 — 플로우 내부 호스트가 새어 �
   const docs = await collectProject('p', { client: leaky })
   assert.equal(docs.every((d) => !String(d.url).includes('amazonaws')), true)
 })
+
+// ── 표 — 융합은 게이트를 뚫고, 과분할은 게이트에 걸린다. 행으로 잇는다 ────────
+test('표는 행 단위로 이어 붙인다 — 값 옆에 그 값이 무엇인지가 남는다', async () => {
+  const { fromHtml, normalizeText } = await import('../src/collect.js')
+  const html = '<h2>이번 주 숫자</h2><table><tbody>' +
+    '<tr><td><strong>항목</strong></td><td><strong>값</strong></td></tr>' +
+    '<tr><td>코드리뷰 평균 대기</td><td>4시간</td></tr>' +
+    '<tr><td>배포</td><td>3회</td></tr></tbody></table>'
+  const text = normalizeText(fromHtml(html))
+  assert.match(text, /코드리뷰 평균 대기 · 4시간/)
+  assert.match(text, /배포 · 3회/)
+  assert.doesNotMatch(text, /4시간배포/)          // 융합되지 않는다
+  assert.doesNotMatch(text, /\n4시간\n/)          // 홀로 남지도 않는다
+})
+
+test('표가 없으면 건드리지 않는다', async () => {
+  const { fromHtml } = await import('../src/collect.js')
+  assert.match(fromHtml('<p>p95 320ms</p><p>스테이징 기준</p>'), /p95 320ms\n스테이징 기준/)
+})

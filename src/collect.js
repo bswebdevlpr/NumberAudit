@@ -6,6 +6,38 @@ const BLOCK_END = /<(?:br|\/p|\/div|\/h[1-6]|\/li|\/ul|\/ol|\/tr|\/td|\/th|\/tab
 
 const ENTITIES = { nbsp: ' ', amp: '&', lt: '<', gt: '>', quot: '"', '#39': "'" }
 
+const ROW = /<tr[^>]*>([\s\S]*?)<\/tr>/gi
+const CELL = /<(?:td|th)[^>]*>([\s\S]*?)<\/(?:td|th)>/gi
+
+/**
+ * 🔑 표는 **행 단위로 다시 잇는다.** 셀을 그냥 개행으로 끊으면 값이 홀로 남는다.
+ *
+ * 실측(이 데모 방의 에디터 글): 표 한 개가 `outContent` 에서 `"항목값코드리뷰 평균 대기4시간배포3회"`
+ * 한 덩어리로 왔다. 셀 경계가 하나도 안 남는다.
+ *
+ * 그렇다고 셀마다 개행을 넣으면 반대로 진다 — 값이 `"4시간"` 한 줄이 되고,
+ * 모델이 낼 수 있는 인용도 `"4시간"` 뿐이라 **게이트 조건 ③(값 외 문맥 3자)에 걸려 폐기된다.**
+ * 실제로 그렇게 2건을 잃었다. 융합은 게이트를 뚫고, 과분할은 게이트에 걸린다.
+ *
+ * 그래서 행을 한 줄로 만든다 — `코드리뷰 평균 대기 · 4시간`.
+ * 값 옆에 그 값이 무엇인지가 남고, 그게 인용의 문맥이 된다.
+ *
+ * (`content` 의 COMPS 에는 `SHAPE: "TABLE"` 이라는 표식이 오지만 CONTENTS 는 이미 뭉개져 있다.
+ *  셀 경계가 남아 있는 곳은 `htmlContent` 뿐이라 여기서 푼다.)
+ */
+function tablesToRows(html) {
+  return html.replace(/<table[^>]*>[\s\S]*?<\/table>/gi, (table) => {
+    const rows = []
+    for (const m of table.matchAll(ROW)) {
+      const cells = [...m[1].matchAll(CELL)]
+        .map((c) => c[1].replace(/<[^>]*>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim())
+        .filter(Boolean)
+      if (cells.length) rows.push(cells.join(' · '))
+    }
+    return rows.length ? `<p>${rows.join('</p><p>')}</p>` : ''
+  })
+}
+
 /**
  * htmlContent 를 블록 경계가 살아 있는 플레인으로 푼다.
  *
@@ -18,7 +50,7 @@ const ENTITIES = { nbsp: ' ', amp: '&', lt: '<', gt: '>', quot: '"', '#39': "'" 
 export function fromHtml(html) {
   let s = String(html)
   try { s = decodeURIComponent(s) } catch { /* 이미 디코드됐거나 깨진 인코딩 — 원문 그대로 간다 */ }
-  return s
+  return tablesToRows(s)
     .replace(BLOCK_END, '\n')
     .replace(/<[^>]*>/g, '')
     .replace(/&(nbsp|amp|lt|gt|quot|#39);/g, (_, e) => ENTITIES[e] ?? _)
