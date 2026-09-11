@@ -776,11 +776,14 @@ function runLive({ force = false } = {}) {
       ? '글이 바뀌었습니다 — 「다시 감사」를 눌러 주세요'
       : `저장된 결과입니다 · ${j.claims.length}건`
     if (j.cached && j.read && !j.unchanged) { live.className = 'livebadge warn'; return }
+    // 🔑 `model` · `ms` 는 **이 결과를 만든 감사**의 기록이지 방금 한 일이 아니다.
+    //    자동 경로는 모델을 안 부르는데 그냥 붙이면 「모델은 부르지 않았습니다」 밑에 「호출 2회」가 와서
+    //    배지가 스스로 모순된다. 언제 적 숫자인지 말머리에 적는다.
+    const run = `${ran} · 호출 ${j.model.calls ?? '?'}회 · ${sec}초`
     live.title = (j.cached
-      ? (j.unchanged ? '플로우 글 목록을 방금 읽었고 저장된 감사 결과와 같은 상태입니다. 모델은 부르지 않았습니다.\n'
-        : j.read ? '플로우 글이 바뀌었습니다. 「다시 감사」를 누르면 지금 기준으로 다시 돌립니다.\n' : '')
-      : '모델 호출을 포함한 전체 소요입니다.\n')
-      + `${ran} · 호출 ${j.model.calls ?? '?'}회 · ${sec}초` +
+      ? (j.unchanged ? '플로우 글 목록을 방금 읽었고 저장된 감사 결과와 같은 상태입니다. 모델은 부르지 않았습니다.\n' : '')
+        + `이 결과를 만든 감사: ${run}`
+      : `모델 호출을 포함한 전체 소요입니다.\n${run}`) +
       (j.claims.length !== demoSnap.claims.length
         ? ` — 라이브는 함수 상한(60초) 안에 들어와야 해서 빠른 모델로 돕니다. 저장본은 상위 모델로 만든 것이라 ${demoSnap.claims.length}건입니다.`
         : '')
