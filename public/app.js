@@ -136,7 +136,7 @@ function traceBlock(cs, here, set) {
     : grounded.map((c) => traceRow(c, here, condOf)).join('')
   return `<div class="trace">
     <div class="th"><div>숫자</div><div>적힌 글</div><div>어떻게 쟀다고 적혀 있나</div></div>
-    ${grounded.length ? `<div class="cut">측정 기록 — 방법이 함께 적혀 있다${outGroup.length ? ' · 단위가 같은 값을 프로젝트 전체에서 모았습니다' : ''}</div>${groundedRows}` : ''}
+    ${grounded.length ? `<div class="cut">측정 기록 — 방법이 함께 적혀 있습니다${outGroup.length ? ' · 단위가 같은 값을 프로젝트 전체에서 모았습니다' : ''}</div>${groundedRows}` : ''}
     ${bare.length ? `<div class="cut">방법이 적혀 있지 않은 값</div>${bare.map((c) => traceRow(c, here, condOf)).join('')}` : ''}
     ${conds.filter((c) => c !== OTHER).length > 1 ? '<div class="foot">조건이 서로 다른 값은 <b>견주지 않습니다.</b> 같은 조건으로 잰 값끼리만 비교합니다.</div>' : ''}
     ${hasMiss ? '<div class="foot">틀렸다는 판정이 아닙니다 — <b>감사한 글에서 어떻게 쟀는지를 찾지 못했다</b>는 표시입니다.</div>' : ''}
@@ -188,7 +188,7 @@ function paintMap() {
       : n < state.revealed ? 'done' : n === state.revealed ? 'current' : ''
     const who = BY_MODEL.has(n) ? 'model' : 'code'
     return `<li class="${cls}"><button data-step="${n}" class="${who}"><b>${n}</b>${name}</button></li>`
-  }).join('') + '<li class="mapkey"><span class="dot-model"></span>모델이 뽑고 묶는다 · 나머지는 코드가 판정한다</li>'
+  }).join('') + '<li class="mapkey"><span class="dot-model"></span>모델이 뽑고 묶습니다 · 판정은 코드가 합니다</li>'
 }
 
 $('#flowMap').addEventListener('click', (e) => {
@@ -282,6 +282,7 @@ function render(i) {
     </div>
     <span class="lbl">프롬프트 원문 ${String(gemini.prompt).length.toLocaleString()}자${batched ? ' — 이 문서 구간 강조 · 스크롤됩니다' : ''}</span>
     <div class="promptwrap"><div class="pre promptbox">${highlightSection(String(gemini.prompt), d.docId)}</div></div>
+    <button class="docmore" data-promptmore aria-expanded="false">프롬프트 전체 펼치기</button>
     <button class="btn ghost small" data-redo="${esc(d.docId)}">이 글만 다시 돌리기</button>
     <span class="lbl">응답 JSON 중 이 문서 몫</span>
     <div class="pre">${esc(JSON.stringify(mine.map(({ docId, metric, valueText, unit, scope, method, isTarget, quote }) =>
@@ -573,6 +574,19 @@ $('#steps').addEventListener('click', (e) => {
     state.revealed = Math.min(6, state.revealed + 1); show()
     return requestAnimationFrame(() => $('#steps').lastElementChild?.scrollIntoView({ behavior: 'smooth', block: 'center' }))
   }
+  // 🔑 스크롤바에 기대지 않는다. 맥 기본 오버레이는 안 건드리면 안 보이고,
+  //    `::-webkit-scrollbar` 는 환경에 따라 아예 안 먹는다 — 「스크롤이 안 된다」로 읽힌다.
+  //    그래서 **펼쳐서 전부 보는 길**을 따로 둔다.
+  const pm = e.target.closest('[data-promptmore]')
+  if (pm) {
+    const wrap = pm.previousElementSibling
+    const open = !wrap.classList.contains('open')
+    wrap.classList.toggle('open', open)
+    pm.setAttribute('aria-expanded', String(open))
+    pm.textContent = open ? '프롬프트 접기' : '프롬프트 전체 펼치기'
+    if (!open) wrap.querySelector('.promptbox')?.scrollIntoView({ block: 'nearest' })
+    return
+  }
   if (e.target.closest('[data-restart]')) { state.doc = null; state.revealed = 0; return show() }
 })
 
@@ -721,14 +735,18 @@ function runLive({ force = false } = {}) {
     // 자동은 플로우만 읽는다(모델 0회). 네 경우를 갈라 적는다 —
     // 사람이 눌러 돌림 · 글 그대로 · 글이 바뀜 · 플로우를 못 읽음.
     live.textContent = !j.cached
-      ? `방금 다시 감사했습니다 · ${j.claims.length}건 · 모델 호출 포함 ${sec}초`
+      ? `방금 다시 감사했습니다 · ${j.claims.length}건 · ${sec}초`
       : j.unchanged
-      ? `방금 플로우를 읽었습니다 · 글이 그대로라 저장된 결과입니다 · ${j.claims.length}건`
+      ? `방금 플로우를 읽었습니다 · 변경 없음 · ${j.claims.length}건`
       : j.read
-      ? '방금 플로우를 읽었습니다 · 글이 바뀌었습니다 — 「다시 감사」를 누르면 지금 기준으로 돌립니다'
+      ? '글이 바뀌었습니다 — 「다시 감사」를 눌러 주세요'
       : `저장된 결과입니다 · ${j.claims.length}건`
     if (j.cached && j.read && !j.unchanged) { live.className = 'livebadge warn'; return }
-    live.title = `${ran} · 호출 ${j.model.calls ?? '?'}회 · ${sec}초` +
+    live.title = (j.cached
+      ? (j.unchanged ? '플로우 글 목록을 방금 읽었고 저장된 감사 결과와 같은 상태입니다. 모델은 부르지 않았습니다.\n'
+        : j.read ? '플로우 글이 바뀌었습니다. 「다시 감사」를 누르면 지금 기준으로 다시 돌립니다.\n' : '')
+      : '모델 호출을 포함한 전체 소요입니다.\n')
+      + `${ran} · 호출 ${j.model.calls ?? '?'}회 · ${sec}초` +
       (j.claims.length !== demoSnap.claims.length
         ? ` — 라이브는 함수 상한(60초) 안에 들어와야 해서 빠른 모델로 돕니다. 저장본은 상위 모델로 만든 것이라 ${demoSnap.claims.length}건입니다.`
         : '')

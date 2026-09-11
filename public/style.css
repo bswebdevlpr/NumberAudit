@@ -151,6 +151,14 @@ mark{background:var(--mark);color:inherit;padding:2px 1px;border-radius:2px;
 /* 🔑 맥은 스크롤바를 숨긴다 — 넘치는 상자가 **잘린 게 아니라 끝난 것처럼** 보인다.
    `::-webkit-scrollbar` 는 환경에 따라 안 먹어서, 렌더링에 안 기대는 방법을 쓴다:
    위아래를 흐리게 해서 더 있다는 것을 보이고, 끝에 닿으면 그쪽 흐림을 끈다. */
+/* 스크롤바를 **자리를 차지하는 모양**으로 강제한다. 맥 기본 오버레이는 안 건드리면 안 보여서
+   「스크롤이 안 된다」로 읽힌다. ⚠️ `scrollbar-width` 를 같이 주면 크롬이 이 규칙을 통째로 무시한다. */
+.pre::-webkit-scrollbar{width:12px;height:12px}
+.pre::-webkit-scrollbar-track{background:transparent}
+.pre::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:99px;
+  border:3px solid var(--surface-2);background-clip:padding-box}
+.pre::-webkit-scrollbar-thumb:hover{background:var(--muted);background-clip:padding-box}
+
 .promptwrap{position:relative}
 .promptwrap::before,.promptwrap::after{content:"";position:absolute;left:1px;right:1px;height:34px;
   pointer-events:none;opacity:0;transition:opacity .12s;border-radius:8px}
@@ -159,6 +167,9 @@ mark{background:var(--mark);color:inherit;padding:2px 1px;border-radius:2px;
 .promptwrap.more-up::before,.promptwrap.more-down::after{opacity:1}
 
 .pre.promptbox{max-height:360px;overflow:auto}
+/* 펼치면 상한과 흐림을 없앤다 — 전부 한 번에 보인다 */
+.promptwrap.open .pre.promptbox{max-height:none;overflow:visible}
+.promptwrap.open::before,.promptwrap.open::after{display:none}
 
 .trace .borrowed{color:var(--accent);font-style:normal}
 
@@ -372,7 +383,10 @@ h1.ask{max-width:26ch}
 .flowmap li.done button:hover{background:var(--accent-soft);border-color:var(--accent)}
 .flowmap li.current button{color:#fff;background:var(--accent);border-color:transparent;cursor:pointer}
 .flowmap li.current button b{opacity:.75}
-.topbar .livebadge{margin-left:auto;margin-bottom:0;max-width:52ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:0 1 auto}
+/* 머리글이 먼저 자리를 잡고, 배지는 남는 만큼만 쓴다 — 배지가 길어져 제목을 밀어내던 것을 막는다. */
+.topbar .purpose{flex:1 1 auto;min-width:14ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.topbar .livebadge{margin-left:auto;margin-bottom:0;max-width:40ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:0 1 auto}
+@media (max-width:1100px){ .topbar .purpose{display:none} }
 .topbar .repo{margin-left:12px}
 
 /* ── 판정 머리 — 표보다 먼저 결론을 말한다 ───────────────────────── */
