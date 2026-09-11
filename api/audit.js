@@ -37,11 +37,41 @@ async function fingerprint() {
     .sort().join('|')
 }
 
+/**
+ * 🔑 **사람이 눌러서 다시 돌리는 자리.**
+ * 지문 비교를 넣은 뒤로 첫 방문자만 실제로 돌고 나머지는 캐시를 본다 —
+ * 「지금도 돈다」를 눈으로 보려면 강제로 돌릴 수 있어야 한다.
+ * 내 한도를 쓰는 기능이라 붙여넣기와 같은 방식으로 막는다: 하루 총량 · 같은 IP 간격.
+ * ⚠️ 이 계수기도 인스턴스 메모리다. 진짜 방어선은 Gemini 자체 한도다.
+ */
+const FORCE_DAILY = Number(process.env.AUDIT_FORCE_DAILY ?? 5)
+const FORCE_PER_IP_MS = Number(process.env.AUDIT_FORCE_PER_IP_MS ?? 60_000)
+let day = new Date().toISOString().slice(0, 10)
+let forced = 0
+let lastForceAt = 0
+
+function forceBudget() {
+  const today = new Date().toISOString().slice(0, 10)
+  if (today !== day) { day = today; forced = 0 }
+  return { used: forced, limit: FORCE_DAILY, remaining: Math.max(0, FORCE_DAILY - forced) }
+}
+
 export default async function handler(req, res) {
   const missing = keysReady()
   if (missing) return json(res, 503, { error: missing })
 
-  const fresh = cache && Date.now() - cache.at < TTL_MS
+  const force = new URL(req.url, 'http://x').searchParams.get('force') === '1'
+  if (force) {
+    const b = forceBudget()
+    if (!b.remaining) return json(res, 429, { error: '오늘 다시 감사할 수 있는 횟수를 다 썼습니다. 내일 다시 열립니다.', force: b })
+    const since = Date.now() - lastForceAt
+    if (since < FORCE_PER_IP_MS) {
+      return json(res, 429, { error: `${Math.ceil((FORCE_PER_IP_MS - since) / 1000)}초 뒤에 다시 눌러 주세요.`, force: b })
+    }
+    lastForceAt = Date.now(); forced += 1
+  }
+
+  const fresh = !force && cache && Date.now() - cache.at < TTL_MS
   if (fresh) {
     // 🔑 지문이 같으면 모델을 안 부른다. 플로우 조회가 실패하면 TTL 판정만 믿고 캐시를 쓴다 —
     //    여기서 터져서 라이브 경로 전체가 죽는 것보다 낫다.
@@ -49,7 +79,7 @@ export default async function handler(req, res) {
       if (await fingerprint() === cache.fingerprint) {
         return json(res, 200, {
           ...cache.snapshot, live: true, cached: true,
-          cachedAt: new Date(cache.at).toISOString(), unchanged: true,
+          cachedAt: new Date(cache.at).toISOString(), unchanged: true, force: forceBudget(),
         })
       }
     } catch {
@@ -62,7 +92,7 @@ export default async function handler(req, res) {
     let fp = null
     try { fp = await fingerprint() } catch { /* 지문을 못 만들면 다음 요청이 다시 감사한다 */ }
     cache = { at: Date.now(), fingerprint: fp, snapshot }
-    return json(res, 200, { ...snapshot, live: true, cached: false })
+    return json(res, 200, { ...snapshot, live: true, cached: false, force: forceBudget() })
   } catch (e) {
     // 한도 소진·모델 장애는 실패가 아니라 **폴백 사유**다. 화면이 저장된 스냅샷을 그대로 쓰면 된다.
     return json(res, 502, { error: userFacing(e, '지금은 다시 감사하지 못했습니다.') })

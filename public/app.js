@@ -639,15 +639,32 @@ renderOut()
  * 성공하면 스냅샷을 갈아 끼우고, 실패하면 저장된 것을 그대로 두고 사유를 적는다.
  */
 const live = $('#liveBadge')
-live.hidden = false
-live.textContent = '지금 다시 감사하는 중…'
 
-fetch('/api/audit', { method: 'POST' })
+const rerun = $('#rerunBtn')
+
+/** 남은 횟수를 버튼에 적는다. 0 이면 왜 못 누르는지도 적는다. */
+function paintRerun(b) {
+  if (!b) return
+  rerun.hidden = false
+  rerun.disabled = b.remaining === 0
+  rerun.textContent = b.remaining === 0 ? '오늘 다시 감사 한도 소진' : `다시 감사 ${b.remaining}/${b.limit}`
+}
+
+rerun.addEventListener('click', () => runLive({ force: true }))
+
+function runLive({ force = false } = {}) {
+  if (force) { rerun.disabled = true; rerun.textContent = '감사하는 중…' }
+  live.hidden = false
+  live.className = 'livebadge'
+  live.textContent = force ? '다시 감사하는 중…' : '지금 다시 감사하는 중…'
+  return fetch(`/api/audit${force ? '?force=1' : ''}`, { method: 'POST' })
   .then((r) => r.json().then((j) => ({ ok: r.ok, j })))
   .then(({ ok, j }) => {
+    paintRerun(j.force)
     if (!ok || j.error) {
       live.className = 'livebadge warn'
-      live.textContent = `저장된 결과를 보고 있습니다 — 다시 감사 실패: ${j.error ?? ''}`
+      // 가드에 막힌 것은 실패가 아니다 — 화면은 이미 본 결과를 그대로 들고 있다.
+      live.textContent = j.force ? j.error : `저장된 결과를 보고 있습니다 — ${j.error ?? '다시 감사하지 못했습니다.'}`
       return
     }
     snap = j
@@ -683,4 +700,8 @@ fetch('/api/audit', { method: 'POST' })
   .catch(() => {
     live.className = 'livebadge warn'
     live.textContent = '저장된 결과를 보고 있습니다 — 서버가 없습니다'
+    rerun.hidden = true
   })
+}
+
+runLive()
