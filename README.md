@@ -305,6 +305,29 @@ docs/decisions/ 무엇을 버렸고 왜 버렸는지 — 결정 13건
 통과만 하는 테스트인지도 확인했다. 시스템 댓글 필터·게이트 문맥 조건·쓰기 검증을 하나씩 무력화하니 각각 해당 테스트만 실패했다.
 일일 한도 폴백을 빼자 테스트는 실패하지 않고 **46초씩 기다리다 멈췄다** — 내가 5분을 태웠던 그 상황이 그대로 재현된다.
 
+## 배포 전에 건 것
+
+정적 파일과 함수에 **같은 헤더**를 건다(`vercel.json`). 로컬 서버도 그 파일을 읽어 같은 헤더를 붙인다 —
+한쪽에만 있으면 **CSP 위반을 배포에서 처음 만난다.**
+
+```
+Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline';
+                         img-src 'self' data:; connect-src 'self'; base-uri 'none';
+                         form-action 'none'; frame-ancestors 'none'
+X-Content-Type-Options: nosniff   ·   X-Frame-Options: DENY   ·   Referrer-Policy: no-referrer
+Cross-Origin-Opener-Policy / Resource-Policy: same-origin   ·   Strict-Transport-Security
+```
+
+외부에서 불러오는 스크립트·폰트·이미지가 하나도 없어서 `default-src 'none'` 으로 잠글 수 있었다.
+`style-src` 만 `unsafe-inline` 이다 — 화면 코드가 `style` 속성을 쓴다.
+
+**요청 본문은 읽으면서 자른다.** 다 읽고 길이를 재면 이미 메모리에 올라간 뒤라, 큰 POST 하나로 함수를 밀어낼 수 있다.
+상한(256KB)을 넘으면 그 자리에서 멈추고 **413** 을 준다. 세 경로 모두 메서드를 검사하고 아닌 것은 **405**.
+
+**모델과 플로우가 만든 문자열은 전부 `esc()` 를 지나 DOM 에 들어간다.** 확인은 넣어 보고 했다 —
+스냅샷의 제목·본문·인용·지표·단위·업무 제목·업무 본문에 `<img src=x onerror=…>` 를 심고 전 문서를 펼쳤다.
+태그로 살아난 것 **0개**, 스크립트 실행 **없음**, 화면에는 **글자 그대로** 보였다.
+
 ## 의존성이 0인 건 목표가 아니었다
 
 `package.json` 의 `dependencies` 가 비어 있다. 무의존을 노린 게 아니라 **넣을 이유가 생긴 자리가 없었다.**

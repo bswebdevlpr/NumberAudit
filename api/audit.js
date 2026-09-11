@@ -57,6 +57,7 @@ function forceBudget() {
 }
 
 export default async function handler(req, res) {
+  if (req.method !== 'POST') return json(res, 405, { error: 'POST 만 받습니다.' })
   const missing = keysReady()
   if (missing) return json(res, 503, { error: missing })
 

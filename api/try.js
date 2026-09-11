@@ -75,7 +75,9 @@ export default async function handler(req, res) {
     return json(res, 429, { error: `${Math.ceil((PER_IP_MS - since) / 1000)}초 뒤에 다시 눌러 주세요.`, budget: budget() })
   }
 
-  const { text } = await readBody(req)
+  let text
+  try { ({ text } = await readBody(req)) }
+  catch (e) { return json(res, e.tooLarge ? 413 : 400, { error: '요청이 너무 큽니다.', budget: budget() }) }
   const body = String(text ?? '').trim()
   if (!body) return json(res, 400, { error: '글을 붙여넣어 주세요.', budget: budget() })
   if (body.length > MAX_CHARS) return json(res, 400, { error: `${MAX_CHARS}자까지만 받습니다 (지금 ${body.length}자).`, budget: budget() })

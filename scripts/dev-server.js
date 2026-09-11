@@ -16,7 +16,15 @@ const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; ch
   '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8', '.svg': 'image/svg+xml' }
 const ROUTES = { '/api/audit': audit, '/api/submit': submit, '/api/try': tryIt }
 
+/**
+ * 🔑 **배포와 같은 헤더를 붙인다.** 로컬에만 없으면 CSP 위반을 배포에서 처음 만난다.
+ *    `vercel.json` 을 그대로 읽어 쓴다 — 두 곳에 적으면 언젠가 갈린다.
+ */
+const HEADERS = JSON.parse(await readFile(new URL('../vercel.json', import.meta.url), 'utf8'))
+  .headers?.[0]?.headers ?? []
+
 createServer(async (req, res) => {
+  for (const h of HEADERS) res.setHeader(h.key, h.value)
   const path = normalize(decodeURIComponent(new URL(req.url, 'http://x').pathname)).replace(/^(\.\.[/\\])+/, '')
 
   const fn = ROUTES[path]

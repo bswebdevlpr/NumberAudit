@@ -12,9 +12,20 @@ export const json = (res, code, obj) => {
   res.end(JSON.stringify(obj))
 }
 
+/**
+ * 🔑 **읽으면서 자른다.** 다 읽고 나서 길이를 재면 이미 메모리에 올라간 뒤다 —
+ *    큰 POST 하나로 함수를 밀어낼 수 있다. 상한을 넘으면 그 자리에서 멈춘다.
+ */
+const MAX_BODY = Number(process.env.MAX_BODY_BYTES ?? 256 * 1024)
+
 export async function readBody(req) {
   const chunks = []
-  for await (const c of req) chunks.push(c)
+  let size = 0
+  for await (const c of req) {
+    size += c.length
+    if (size > MAX_BODY) { const e = new Error('요청이 너무 큽니다.'); e.tooLarge = true; throw e }
+    chunks.push(c)
+  }
   const raw = Buffer.concat(chunks).toString('utf8')
   try { return raw ? JSON.parse(raw) : {} } catch { return {} }
 }

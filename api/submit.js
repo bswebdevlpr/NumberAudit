@@ -86,7 +86,9 @@ export default async function handler(req, res) {
   // 실패한 시도도 간격에 걸리게 한다 — 검증 자체가 플로우 읽기를 태운다
   lastByIp.set(ip, Date.now())
 
-  const { plan } = await readBody(req)
+  let plan
+  try { ({ plan } = await readBody(req)) }
+  catch (e) { return json(res, e.tooLarge ? 413 : 400, { error: '요청이 너무 큽니다.' }) }
   const docs = await collectProject(DEMO_PROJECT_ID)
   const v = validatePlan(plan, docs)
   if (v.error) return json(res, 400, { error: v.error, unverified: v.detail })
