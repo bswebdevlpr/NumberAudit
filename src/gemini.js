@@ -1,6 +1,6 @@
 import { requireEnv, redact } from './env.js'
 
-const BASE = 'https://generativelanguage.googleapis.com/v1beta/models'
+const BASE = process.env.GEMINI_API_BASE ?? 'https://generativelanguage.googleapis.com/v1beta/models'
 
 // 1순위가 막히면 다음으로 내려간다. 어느 모델이 답했는지는 항상 기록한다 —
 // 모델이 바뀐 줄 모르고 결과를 비교하는 게 이 종류 파이프라인의 흔한 무음 실패다.

@@ -1,6 +1,6 @@
 import { requireEnv, redact } from './env.js'
 
-const BASE = 'https://api.flow.team'
+const BASE = process.env.FLOW_API_BASE ?? 'https://api.flow.team'
 
 /**
  * 호출 흔적. 화면 1(수집)이 「진짜 API 를 불렀다」를 보여주는 근거다.

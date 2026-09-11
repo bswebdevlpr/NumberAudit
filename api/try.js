@@ -1,4 +1,4 @@
-import { json, readBody, keysReady } from './_lib.js'
+import { json, readBody, keysReady, userFacing } from './_lib.js'
 
 /**
  * 쓰는 사람이 **자기 글**로 파이프라인을 돌려 보는 자리.
@@ -70,6 +70,6 @@ export default async function handler(req, res) {
     return json(res, 200, { ...snapshot, budget: budget() })
   } catch (e) {
     used -= 1
-    return json(res, 502, { error: String(e.message ?? e), budget: budget() })
+    return json(res, 502, { error: userFacing(e, '감사에 실패했습니다. 잠시 뒤 다시 눌러 주세요.'), budget: budget() })
   }
 }

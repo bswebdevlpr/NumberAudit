@@ -1,4 +1,4 @@
-import { DEMO_PROJECT_ID, json, keysReady } from './_lib.js'
+import { DEMO_PROJECT_ID, json, keysReady, userFacing } from './_lib.js'
 
 /**
  * 라이브 경로의 모델을 **빠른 쪽으로 고정한다.**
@@ -65,6 +65,6 @@ export default async function handler(req, res) {
     return json(res, 200, { ...snapshot, live: true, cached: false })
   } catch (e) {
     // 한도 소진·모델 장애는 실패가 아니라 **폴백 사유**다. 화면이 저장된 스냅샷을 그대로 쓰면 된다.
-    return json(res, 502, { error: String(e.message ?? e) })
+    return json(res, 502, { error: userFacing(e, '지금은 다시 감사하지 못했습니다.') })
   }
 }

@@ -1,6 +1,6 @@
 // 저장소 링크 — 화면에서 걷어낸 설명(측정 기록·경계·재현 명령)이 여기 있다.
-const REPO = 'https://github.com/bswebdevlpr/number-audit'
-
+// 주소는 빌드가 넣는다(`scripts/build.js`). 박아 두면 포크한 사람 화면이 내 저장소를 가리킨다.
+import { REPO } from './lib/config.js'
 import { checkClaim } from './lib/gate.js'
 
 const $ = (s) => document.querySelector(s)
@@ -61,7 +61,9 @@ function derive() {
 }
 derive()
 
-$('#repoLink').href = REPO
+// 주소가 없으면 링크를 안 그린다. 죽은 링크보다 없는 편이 낫다.
+if (REPO) $('#repoLink').href = REPO
+else $('#repoLink').hidden = true
 
 // ── 히어로 — 스냅샷에서 다시 계산한다. 손으로 옮겨 적지 않는다 ───────────
 const leadClaim = [...flagged].map((id) => claims.get(id)).filter(Boolean)[0]
@@ -198,15 +200,22 @@ function stepCard(n, name, summary, body, open) {
     <div class="body">${body}</div></details>`
 }
 
+/**
+ * 🔑 프롬프트를 **자르지 않는다.** 한때 이 문서 앞뒤 260자만 보여 줬는데,
+ *    3단계가 하는 말이 「13문서를 한 번에 넣는다」인데 정작 그 배치가 화면에 안 보였다.
+ *    전문을 싣고 이 문서 구간만 강조한다. 상자는 스크롤되고, 열릴 때 강조 위치로 내려간다.
+ *    (배치 상한이 100문서라 아주 길어질 수 있어 상한만 둔다.)
+ */
+const PROMPT_CAP = 20000
+
 function highlightSection(prompt, docId) {
-  const mark = `### ${docId}`
-  const at = prompt.indexOf(mark)
-  if (at < 0) return esc(prompt.slice(0, 1800))
-  const end = prompt.indexOf('\n\n### ', at + 1)
-  const stop = end < 0 ? prompt.length : end
-  const from = Math.max(0, at - 260), to = Math.min(prompt.length, stop + 260)
-  return (from ? '…\n' : '') + esc(prompt.slice(from, at)) +
-    '<mark>' + esc(prompt.slice(at, stop)) + '</mark>' + esc(prompt.slice(stop, to)) + (to < prompt.length ? '\n…' : '')
+  const text = prompt.length > PROMPT_CAP ? prompt.slice(0, PROMPT_CAP) : prompt
+  const tail = prompt.length > PROMPT_CAP ? `\n…(${(prompt.length - PROMPT_CAP).toLocaleString()}자 더)` : ''
+  const at = text.indexOf(`### ${docId}`)
+  if (at < 0) return esc(text) + tail
+  const end = text.indexOf('\n\n### ', at + 1)
+  const stop = end < 0 ? text.length : end
+  return esc(text.slice(0, at)) + '<mark>' + esc(text.slice(at, stop)) + '</mark>' + esc(text.slice(stop)) + tail
 }
 
 
@@ -266,8 +275,8 @@ function render(i) {
         : '<b>붙여넣은 글 하나만 넣습니다.</b>'}
       <span class="q">${esc(gemini.model)} · 배치 ${JSON.stringify(snap.stats.batches)} · ${esc(tok)}</span>
     </div>
-    <span class="lbl">프롬프트 원문${batched ? ' — 이 문서 구간 강조' : ''}</span>
-    <div class="pre">${highlightSection(String(gemini.prompt), d.docId)}</div>
+    <span class="lbl">프롬프트 원문 ${String(gemini.prompt).length.toLocaleString()}자${batched ? ' — 이 문서 구간 강조' : ''}</span>
+    <div class="pre promptbox">${highlightSection(String(gemini.prompt), d.docId)}</div>
     <span class="lbl">응답 JSON 중 이 문서 몫</span>
     <div class="pre">${esc(JSON.stringify(mine.map(({ docId, metric, valueText, unit, scope, method, isTarget, quote }) =>
       ({ docId, metric, valueText, unit, scope, method, isTarget, quote })), null, 1))}</div>`
@@ -466,6 +475,11 @@ function show() {
   state.doc === 'paste' ? renderPaste() : state.doc === null ? renderIntro() : render(state.doc)
   paintMap()
   document.querySelectorAll('.playpen').forEach(runPlayground)
+  // 프롬프트 상자는 전문이라 길다. 이 문서 구간이 보이도록 상자 안에서만 스크롤한다.
+  document.querySelectorAll('.promptbox mark').forEach((m) => {
+    const box = m.closest('.promptbox')
+    if (box) box.scrollTop = Math.max(0, m.offsetTop - box.offsetTop - 40)
+  })
 }
 
 $('#pasteBtn').addEventListener('click', async () => {
