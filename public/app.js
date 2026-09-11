@@ -281,6 +281,7 @@ function render(i) {
     </div>
     <span class="lbl">프롬프트 원문 ${String(gemini.prompt).length.toLocaleString()}자${batched ? ' — 이 문서 구간 강조' : ''}</span>
     <div class="pre promptbox">${highlightSection(String(gemini.prompt), d.docId)}</div>
+    <button class="btn ghost small" data-redo="${esc(d.docId)}">이 글만 다시 돌리기</button>
     <span class="lbl">응답 JSON 중 이 문서 몫</span>
     <div class="pre">${esc(JSON.stringify(mine.map(({ docId, metric, valueText, unit, scope, method, isTarget, quote }) =>
       ({ docId, metric, valueText, unit, scope, method, isTarget, quote })), null, 1))}</div>`
@@ -420,7 +421,10 @@ function render(i) {
 
 let tryBudget = null
 
-function renderPaste(msg = '', busy = false) {
+/** 붙여넣기 화면이 어디서 온 글인지 기억한다 — 원문에서 왔으면 그렇게 말해야 한다. */
+let pasteFrom = ''
+
+function renderPaste(msg = '', busy = false, text = '') {
   const b = tryBudget
   // 🔑 Gemini 는 남은 횟수를 알려주지 않는다. 소진되면 그때 RESOURCE_EXHAUSTED 로 알 뿐이다.
   //    그래서 여기 적는 숫자는 **내가 건 가드의 잔여**다. 그렇게 적는다.
@@ -429,9 +433,10 @@ function renderPaste(msg = '', busy = false) {
     : ''
   const dry = b && b.remaining === 0
   $('#steps').innerHTML = `<div class="intro pastepen">
-    <div class="k">내 글로 해보기 ${left}</div>
-    <h2>수치가 든 글을 붙여넣어 보세요</h2>
-    <textarea id="pasteText" rows="7" placeholder="예) 응답시간 420ms에서 180ms로 개선했습니다(스테이징, 동시 20 기준). 고객 공지에는 150ms로 개선이라고 적었습니다."></textarea>
+    <div class="k">${pasteFrom ? '이 글만 다시 돌리기' : '내 글로 해보기'} ${left}</div>
+    <h2>${pasteFrom ? `「${esc(pasteFrom)}」` : '수치가 든 글을 붙여넣어 보세요'}</h2>
+    ${pasteFrom ? `<p class="perr warn">글 하나만 돌립니다 — <b>다른 글과 대조하지 않으므로</b> 판정이 프로젝트 감사와 다를 수 있습니다.</p>` : ''}
+    <textarea id="pasteText" rows="7" placeholder="예) 응답시간 420ms에서 180ms로 개선했습니다(스테이징, 동시 20 기준). 고객 공지에는 150ms로 개선이라고 적었습니다.">${esc(text)}</textarea>
     <div class="prow">
       <button class="btn" id="pasteRun"${busy || dry ? ' disabled' : ''}>${busy ? '감사하는 중…' : '감사하기'}</button>
       <button class="btn ghost" id="pasteBack">데모로 돌아가기</button>
@@ -487,6 +492,7 @@ function show() {
 }
 
 $('#pasteBtn').addEventListener('click', async () => {
+  pasteFrom = ''
   state.doc = 'paste'; state.revealed = 0; show()
   try {
     tryBudget = await fetch('/api/try').then((r) => r.json())
@@ -498,19 +504,29 @@ $('#steps').addEventListener('click', async (e) => {
   if (e.target.closest('#pasteBack')) {
     snap = demoSnap; derive(); paint(); state.doc = null; state.revealed = 0; return show()
   }
+  const redo = e.target.closest('[data-redo]')
+  if (redo) {
+    const d = docs.find((x) => x.docId === redo.dataset.redo)
+    if (!d) return
+    pasteFrom = cleanTitle(d.title)
+    state.doc = 'paste'; state.revealed = 0
+    paintMap(); renderPaste('', false, d.text)
+    $('#pasteText').scrollIntoView({ behavior: 'smooth', block: 'center' })
+    return
+  }
   const run = e.target.closest('#pasteRun'); if (!run) return
   const text = $('#pasteText').value
-  renderPaste('', true)
+  renderPaste('', true, text)
   try {
     const r = await fetch('/api/try', { method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ text }) }).then((x) => x.json())
     if (r.budget) tryBudget = r.budget
-    if (r.error) { renderPaste(r.error); $('#pasteText').value = text; return }
+    if (r.error) { renderPaste(r.error, false, text); return }
     snap = r; derive(); paint()
     state.doc = 0; state.revealed = 3   // 1·2 는 해당 없음 — 추출부터 편다
     show()
   } catch {
-    renderPaste('서버에 연결하지 못했습니다.'); $('#pasteText').value = text
+    renderPaste('서버에 연결하지 못했습니다.', false, text)
   }
 })
 

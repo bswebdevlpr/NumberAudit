@@ -132,6 +132,9 @@ mark{background:var(--mark);color:inherit;padding:2px 1px;border-radius:2px;
 .trace .cond{grid-column:1/-1;padding:7px 14px 6px;font:600 11px/1.5 var(--sans);
   color:var(--muted);background:var(--surface);border-top:1px dashed var(--line)}
 
+.btn.small{font-size:12.5px;padding:7px 13px;margin:0 0 14px}
+.perr.warn{color:var(--ink-2);background:var(--surface-2);border-radius:6px;padding:8px 11px}
+
 .rerun{font:inherit;font-size:12px;color:var(--accent);background:var(--surface);
   border:1px solid var(--line);border-radius:999px;padding:5px 11px;cursor:pointer;white-space:nowrap}
 .rerun:hover:not(:disabled){background:var(--accent-soft);border-color:transparent}
