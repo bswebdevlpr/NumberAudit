@@ -165,6 +165,7 @@ MCP 를 안 쓰고 REST API 를 고른 이유는 [`docs/flow-api-reference.md`](
 재현 명령을 숫자 옆에 같이 적는다. 화면 숫자는 저장된 JSON에서 다시 계산한다 — 손으로 옮겨 적지 않는다.
 
 근거 전문은 [`docs/measurement.md`](docs/measurement.md)(라운드 1~3)와 [`docs/measurement-flow.md`](docs/measurement-flow.md)(라운드 4 — 실제 플로우 데이터)에 있다.
+갈림길에서 무엇을 버렸는지는 [`docs/decisions/`](docs/decisions/)에 9건으로 남겼다.
 원시 결과는 `bench/out/*.json`.
 
 ## 직접 눌러 볼 수 있다
@@ -233,6 +234,7 @@ public/        화면. 스냅샷 하나만 읽는다
 scripts/       빌드와 로컬 서버 — 배포와 같은 핸들러를 부른다
 test/          fetch 를 갈아 끼우고 가짜 클라이언트를 넣는다
 bench/         측정 하네스 — 구현에 들어가지 않는다
+docs/decisions/ 무엇을 버렸고 왜 버렸는지 — 결정 9건
 ```
 
 경계가 두 군데다. **모델과 코드 사이** — 지표명을 붙이고 같은 지표끼리 묶는 것은 모델이 하고, 인용 대조와 판정은 코드가 한다.
