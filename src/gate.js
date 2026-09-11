@@ -23,26 +23,43 @@ export function loose(s) {
 }
 
 /**
- * ③ 문맥 하한 — 인용이 값 그 자체면 안 된다.
+ * ③ 자리를 특정하나 — **길이로 재지 않는다.**
  *
- * 처음엔 인용의 **절대 길이** 하한(6자)을 뒀다. 감이었고, 실제로 물었다 —
- * `'참석 5명.'`(5자)이 잘렸는데 정당한 인용이었다.
+ * 두 번 틀렸다.
+ *  1. 처음엔 인용의 **절대 길이** 하한(6자)을 뒀다. 감이었고 `'참석 5명.'`(5자)을 잘랐다.
+ *  2. 다음엔 **값 외 문맥 3자**로 바꿨다. 실측에서 나온 값이라 감은 아니었지만, **재는 축이 여전히 대리 지표였다.**
  *
- * 재보니 축이 틀렸다 (`node bench/quote-len.js`):
- *   - 통과 인용 82건 중 다른 문서에도 들어맞는 것 **0건** → 길이 하한이 막은 게 없다
- *   - 실제 인용의 문맥량(인용 길이 − 값 길이)은 **최소 3자 · 중앙 19자**
- *   - 반면 값만 있으면 위험하다 — `47회`는 3개 문서에, `320`은 2개 문서에 있다
+ * 묻고 싶은 건 길이가 아니라 「이 인용으로 자리가 찾아지나」다. 그건 **세면 된다.**
  *
- * 그래서 막을 것은 「짧은 인용」이 아니라 **「문맥 없는 인용」**이다.
- * ⚠️ 3은 이 표본의 실측 최소값이다. 감은 아니지만 표본 하나에서 나왔다 — 더 짧은 정당한 인용이 있으면 잘린다.
+ * 저장된 주장 33건을 다시 걸어 비교했다 (`node bench/gate-rules.js`, 모델 호출 0회):
+ *   - 길이 규칙은 통과 30건 중 **2건이 자리를 못 잡았다** (`"배포 3회"` 는 그 글에 2번, `"p95 320ms"` 는 다른 글에도)
+ *   - 세는 규칙은 **같은 30건을 통과시키면서 그 2건이 없다**
+ *   - 길이 규칙이 버린 `"4시간"` · `"47회면"` 은 둘 다 그 글에 한 번뿐이라 자리가 특정된다
+ *
+ * 길이 규칙은 **모호한 걸 통과시키고 명확한 걸 버렸다.** 그래서 축을 바꿨다.
+ * 남은 하한 1자는 인용이 값 문자열과 **완전히 같은** 경우만 막는다.
+ *
+ * ⚠️ 합성 원문 58건에서는 다섯 규칙이 전부 같은 결과였다. **이 차이는 실제 flow 데이터에서만 드러났다.**
  */
-export const MIN_CONTEXT_CHARS = 3
+export const MIN_CONTEXT_CHARS = 1
+
+const occurrences = (hay, needle) => {
+  if (!needle) return 0
+  let n = 0, i = 0
+  while ((i = hay.indexOf(needle, i)) >= 0) { n++; i++ }
+  return n
+}
 
 /**
- * @returns {{ok: boolean, tier: '1차'|'2차'|null, reason: string|null}}
- *   tier 를 나눠 돌려주는 이유: 느슨한 규칙으로 통과한 건수가 곧 게이트의 실제 강도다.
+ * @param {object} p
+ * @param {{docId: string, title?: string, text: string}[]} [p.otherDocs]
+ *   같은 감사에 들어온 **다른 문서들.** 주면 귀속까지 본다. 안 주면 그 검사만 건너뛴다
+ *   (화면의 「직접 해보기」는 문서가 하나뿐이라 안 준다).
+ * @returns {{ok, tier: '1차'|'2차'|null, reason, alsoIn: {docId, title}[]}}
+ *   `alsoIn` 은 **폐기 사유가 아니다.** 같은 문장이 다른 글에도 실재해서
+ *   어느 쪽 것인지 못 가렸다는 뜻이고, 화면에 출처를 적는다. 버리지 않는다.
  */
-export function checkClaim({ sourceText, quote, valueText }) {
+export function checkClaim({ sourceText, quote, valueText, otherDocs = [] }) {
   const q = String(quote ?? '')
   if (!tight(q)) return { ok: false, tier: null, reason: '인용이 비어 있음' }
 
@@ -50,20 +67,31 @@ export function checkClaim({ sourceText, quote, valueText }) {
   let tier = null
   if (tight(sourceText).includes(tight(q))) tier = '1차'
   else if (loose(sourceText).includes(loose(q))) tier = '2차'
-  else return { ok: false, tier: null, reason: '인용이 원문에 없음' }
+  else return { ok: false, tier: null, reason: '인용이 원문에 없음', alsoIn: [] }
 
   // ② 값이 인용 안에 실재하나 — 이게 없으면 원문 아무 문장이나 복사하고 값은 지어내도 통과한다
   const v = String(valueText ?? '')
-  if (!v) return { ok: false, tier, reason: '값이 비어 있음' }
+  if (!v) return { ok: false, tier, reason: '값이 비어 있음', alsoIn: [] }
   if (!loose(q).includes(loose(v))) {
-    return { ok: false, tier, reason: '값이 인용 안에 없음' }
+    return { ok: false, tier, reason: '값이 인용 안에 없음', alsoIn: [] }
   }
 
-  // ③ 값 주변에 문맥이 있나 — 값 자체만 인용하면 어느 문서 것인지 못 가린다
-  const context = tight(q).length - tight(v).length
-  if (context < MIN_CONTEXT_CHARS) {
-    return { ok: false, tier, reason: `문맥 없음 (값 외 ${context}자)` }
+  // ③ 이 인용으로 자리가 찾아지나 — 그 글에 두 번 이상 나오면 어느 자리인지 못 가린다
+  const hits = tier === '1차'
+    ? occurrences(tight(sourceText), tight(q))
+    : occurrences(loose(sourceText), loose(q))
+  if (hits > 1) {
+    return { ok: false, tier, reason: `같은 인용이 이 글에 ${hits}번 나옴`, alsoIn: [] }
+  }
+  if (tight(q).length - tight(v).length < MIN_CONTEXT_CHARS) {
+    return { ok: false, tier, reason: '값만 인용함', alsoIn: [] }
   }
 
-  return { ok: true, tier, reason: null }
+  // 🔑 귀속 — 다른 글에도 같은 문장이 있으면 **버리지 않고 출처를 적는다.**
+  //    가짜 인용이 아니라 어느 쪽 것인지 못 가린 것이다.
+  const alsoIn = (otherDocs ?? [])
+    .filter((d) => tight(d.text ?? '').includes(tight(q)) || loose(d.text ?? '').includes(loose(q)))
+    .map((d) => ({ docId: d.docId, title: d.title ?? '' }))
+
+  return { ok: true, tier, reason: null, alsoIn }
 }

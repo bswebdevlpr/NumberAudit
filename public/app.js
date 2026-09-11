@@ -271,6 +271,8 @@ function render(i) {
         ${ok ? `<span class="chip ok" style="margin-left:auto">원문에서 찾음 · ${esc(c.gateTier)}</span>`
              : `<span class="chip flag" style="margin-left:auto">폐기 · ${esc(c.reason)}</span>`}
       </div>
+      ${ok && c.alsoIn?.length ? `<div class="alsoin">같은 문장이 <b>${c.alsoIn.map((a) => esc(a.title || a.docId)).join('</b> · <b>')}</b>에도 있습니다 —
+        어느 글에서 온 값인지 가리지 못했습니다.</div>` : ''}
       <div class="pre">${at ? esc(d.text.slice(0, at[0])) + '<mark>' + esc(d.text.slice(at[0], at[1])) + '</mark>' + esc(d.text.slice(at[1])) : esc(d.text)}</div>
     </div>`
   }).join('') + recordedReject(d, rej.length) + playground(d, mine[0])

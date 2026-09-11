@@ -22,16 +22,39 @@ test('② 값이 인용 안에 없으면 폐기한다 — 인용은 진짜인데
   assert.match(v.reason, /값이 인용 안에 없음/)
 })
 
-test('③ 값만 인용하면 폐기한다 — 어느 문서 것인지 못 가린다', () => {
+test('③ 값만 인용하면 폐기한다 — 인용이 값 문자열과 같으면 자리가 없다', () => {
   const v = checkClaim({ sourceText: SRC, quote: '820', valueText: '820' })
   assert.equal(v.ok, false)
-  assert.match(v.reason, /문맥/)
+  assert.match(v.reason, /값만 인용함/)
 })
 
-test(`문맥 하한은 ${MIN_CONTEXT_CHARS}자다 — 짧고 정당한 인용을 자르지 않는다`, () => {
+test('③ 같은 인용이 그 글에 두 번 나오면 폐기한다 — 어느 자리인지 못 가린다', () => {
+  const src = '이번 주 배포 3회.\n다음 주도 배포 3회 예정입니다.'
+  const v = checkClaim({ sourceText: src, quote: '배포 3회', valueText: '3' })
+  assert.equal(v.ok, false)
+  assert.match(v.reason, /2번 나옴/)
+})
+
+test('짧아도 그 글에 한 번뿐이면 통과한다 — 길이로 자르지 않는다', () => {
   const src = '릴리스 여부를 논의했습니다. 참석 5명.'
-  const v = checkClaim({ sourceText: src, quote: '참석 5명.', valueText: '5' })
-  assert.equal(v.ok, true, '「참석 5명.」은 정당한 인용이다')
+  assert.equal(checkClaim({ sourceText: src, quote: '참석 5명.', valueText: '5' }).ok, true)
+  // 길이 규칙(값 외 3자)이 버리던 것들 — 자리는 특정된다
+  assert.equal(checkClaim({ sourceText: '47회면 손볼 만하네요.', quote: '47회면', valueText: '47' }).ok, true)
+  assert.equal(checkClaim({ sourceText: '코드리뷰 평균 대기 · 4시간', quote: '4시간', valueText: '4' }).ok, true)
+})
+
+test('다른 글에도 있는 인용은 버리지 않고 출처를 적는다', () => {
+  const src = '◾ p95 320ms. 스테이징 · 동시 10 · 캐시 미적용 기준입니다.'
+  const others = [{ docId: 'post:1', title: '[회의록] 릴리스 판정', text: '◾ p95 320ms로 목표 300ms에는 못 미칩니다.' }]
+  const v = checkClaim({ sourceText: src, quote: 'p95 320ms', valueText: '320', otherDocs: others })
+  assert.equal(v.ok, true, '폐기가 아니다')
+  assert.deepEqual(v.alsoIn, [{ docId: 'post:1', title: '[회의록] 릴리스 판정' }])
+})
+
+test('otherDocs 를 안 주면 귀속 검사를 건너뛴다 — 화면의 직접 해보기가 그렇다', () => {
+  const v = checkClaim({ sourceText: SRC, quote: '목표는 300ms입니다.', valueText: '300' })
+  assert.equal(v.ok, true)
+  assert.deepEqual(v.alsoIn, [])
 })
 
 // 실제 flow 데이터에서 온 노이즈 — 에디터 글에 실재한다

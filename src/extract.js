@@ -126,7 +126,7 @@ export async function extractClaims(docs) {
 
   const claims = []
   const rejected = []
-  const stats = { raw: 0, tier1: 0, tier2: 0, misattributed: 0, unknownDoc: 0, byReason: {}, batches: batches.length }
+  const stats = { raw: 0, tier1: 0, tier2: 0, ambiguous: 0, misattributed: 0, unknownDoc: 0, byReason: {}, batches: batches.length }
 
   for (const c of raw) {
     stats.raw += 1
@@ -138,11 +138,15 @@ export async function extractClaims(docs) {
       continue
     }
 
-    const v = checkClaim({ sourceText: doc.text, quote: c.quote, valueText: c.valueText })
+    const others = docs.filter((d) => d.docId !== c.docId)
+    const v = checkClaim({ sourceText: doc.text, quote: c.quote, valueText: c.valueText, otherDocs: others })
     if (v.ok) {
       v.tier === '1차' ? (stats.tier1 += 1) : (stats.tier2 += 1)
+      if (v.alsoIn.length) stats.ambiguous += 1
       claims.push({ ...c, title: doc.title, url: doc.url, kind: doc.kind,
-        claimId: `C${String(claims.length + 1).padStart(3, '0')}`, gateTier: v.tier })
+        claimId: `C${String(claims.length + 1).padStart(3, '0')}`, gateTier: v.tier,
+        // 같은 문장이 다른 글에도 있어 어느 쪽 것인지 못 가렸다. 폐기가 아니라 등급이다.
+        alsoIn: v.alsoIn })
       continue
     }
 
