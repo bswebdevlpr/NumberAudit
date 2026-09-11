@@ -456,7 +456,15 @@ let tryBudget = null
 /** 붙여넣기 화면이 어디서 온 글인지 기억한다 — 원문에서 왔으면 그렇게 말해야 한다. */
 let pasteFrom = ''
 
+/**
+ * 🔑 **도는 동안 초를 센다.** 붙여넣기는 모델을 두 번 부르고 실측 5.6~21.0초다 —
+ *    버튼 글자만 바꿔 두면 그 20초 동안 화면이 멈춘 것과 구분되지 않는다.
+ *    가짜 진행 막대는 안 쓴다. 남은 시간을 모르면서 아는 척하는 셈이라, **흐른 시간만** 적는다.
+ */
+let pasteTimer = null
+
 function renderPaste(msg = '', busy = false, text = '') {
+  clearInterval(pasteTimer); pasteTimer = null
   const b = tryBudget
   // 🔑 Gemini 는 남은 횟수를 알려주지 않는다. 소진되면 그때 RESOURCE_EXHAUSTED 로 알 뿐이다.
   //    그래서 여기 적는 숫자는 **내가 건 가드의 잔여**다. 그렇게 적는다.
@@ -473,10 +481,21 @@ function renderPaste(msg = '', busy = false, text = '') {
       <button class="btn" id="pasteRun"${busy || dry ? ' disabled' : ''}>${busy ? '감사하는 중…' : '감사하기'}</button>
       <button class="btn ghost" id="pasteBack">데모로 돌아가기</button>
     </div>
+    ${busy ? `<p class="wait" id="pasteWait" role="status" aria-live="polite">감사하는 중… <b>0.0초</b>
+      <span>모델을 두 번 부릅니다 — 수치를 뽑고, 같은 지표끼리 묶습니다. 그다음은 코드가 판정합니다.</span></p>` : ''}
     ${msg ? `<p class="perr">${esc(msg)}</p>` : ''}
     <span class="hint">붙여넣은 글이 플로우에 올라와 있다고 가정하고 추출부터 돌립니다.
       ${b ? `모델 호출 1회를 씁니다 · ${b.maxChars}자까지 · ${Math.round(b.perIpMs / 1000)}초 간격` : ''}</span>
   </div>`
+  if (!busy) return
+  const at = Date.now()
+  const tick = $('#pasteWait')?.querySelector('b')
+  if (!tick) return
+  pasteTimer = setInterval(() => {
+    // 화면이 갈아 끼워지면 스스로 멈춘다 — 붙여넣기를 떠나도 타이머가 남지 않는다.
+    if (!tick.isConnected) { clearInterval(pasteTimer); pasteTimer = null; return }
+    tick.textContent = `${((Date.now() - at) / 1000).toFixed(1)}초`
+  }, 100)
 }
 
 /** 시작 전 화면 — 무엇을 볼 것인지부터 고른다. */
@@ -673,8 +692,11 @@ function renderOut() {
       ${body ? `<button class="docmore" data-outmore="${key}" aria-expanded="false">본문 펼치기</button>
                <div class="pre" data-outbody="${key}" hidden style="margin-top:8px">${esc(body)}</div>` : ''}
     </div>`
+  const why = (qs) => qs?.length
+    ? `<ul class="whylist">${qs.map((q) => `<li>「${esc(q)}」</li>`).join('')}</ul>` : ''
   const mine = submitted.map((s, i) => card(s.title,
-    s.taskId ? `방금 등록 · 업무 ${esc(s.taskId)} · 하위업무 ${s.subtaskIds.length}건 · ${esc(s.steps.join(' · '))}` : esc(s.error),
+    s.taskId ? `방금 등록 · 업무 ${esc(s.taskId)} · 하위업무 ${s.subtaskIds.length}건 · ${esc(s.steps.join(' · '))}`
+      : esc(s.error) + why(s.unverified),
     s.contents ?? '', `new${i}`)).join('')
   const old = before.map((t, i) => card(t.title,
     `${esc(ymdDash(String(t.writtenAt).slice(0, 8)))} 등록 · 하위업무 ${t.subTaskCount}건`,
@@ -694,7 +716,9 @@ $('#steps').addEventListener('click', async (e) => {
       body: JSON.stringify({ plan: p }),
     }).then((x) => x.json())
     // 본문은 화면이 이미 갖고 있다 — 펼치기에 쓰려고 같이 담는다.
-    submitted.push(r.error ? { title: p.task.title, subtaskIds: [], error: r.error, contents: p.task.contents }
+    // 🔑 **왜 막혔는지 같이 담는다.** 쓰기 전 게이트가 막은 것은 사고가 아니라 이 도구가 할 일이다 —
+    //    「확인되지 않는 인용 2건」만 보이고 그 2건이 안 보이면 사용자가 할 수 있는 게 없다.
+    submitted.push(r.error ? { title: p.task.title, subtaskIds: [], error: r.error, unverified: r.unverified, contents: p.task.contents }
                            : { ...r, contents: p.task.contents })
     b.textContent = r.error ? '등록 실패' : '등록됨'
   } catch (err) {
