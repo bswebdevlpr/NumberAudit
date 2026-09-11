@@ -38,6 +38,24 @@ async function fingerprint() {
 }
 
 /**
+ * 🔑 **비교 기준을 저장본에서 읽는다.** 메모리 캐시에만 두면 서버가 새로 뜰 때마다
+ *    「비교할 게 없다」가 되어 모델을 다시 부른다 — 인스턴스가 여럿인 서버리스에서 이게 자주 난다.
+ *    저장본에 지문이 박혀 있으면 **콜드스타트에서도 0회**로 끝난다.
+ */
+let stored = null
+async function storedSnapshot() {
+  if (stored !== null) return stored
+  try {
+    const { readFile } = await import('node:fs/promises')
+    stored = JSON.parse(await readFile(new URL('../public/snapshot.json', import.meta.url), 'utf8'))
+  } catch (e) {
+    console.warn('[라이브] 저장본을 못 읽었다 — 콜드스타트마다 다시 감사한다:', String(e.message ?? e))
+    stored = false
+  }
+  return stored
+}
+
+/**
  * 🔑 **사람이 눌러서 다시 돌리는 자리.**
  * 지문 비교를 넣은 뒤로 첫 방문자만 실제로 돌고 나머지는 캐시를 본다 —
  * 「지금도 돈다」를 눈으로 보려면 강제로 돌릴 수 있어야 한다.
@@ -72,20 +90,30 @@ export default async function handler(req, res) {
     lastForceAt = Date.now(); forced += 1
   }
 
-  const fresh = !force && cache && Date.now() - cache.at < TTL_MS
-  if (fresh) {
-    // 🔑 지문이 같으면 모델을 안 부른다. 플로우 조회가 실패하면 TTL 판정만 믿고 캐시를 쓴다 —
-    //    여기서 터져서 라이브 경로 전체가 죽는 것보다 낫다.
-    try {
-      if (await fingerprint() === cache.fingerprint) {
-        return json(res, 200, {
-          ...cache.snapshot, live: true, cached: true,
-          cachedAt: new Date(cache.at).toISOString(), unchanged: true, force: forceBudget(),
-        })
-      }
-    } catch {
-      return json(res, 200, { ...cache.snapshot, live: true, cached: true, cachedAt: new Date(cache.at).toISOString() })
-    }
+  // 🔑 **자동으로는 모델을 부르지 않는다.** 플로우만 읽고 지문을 견준다(Gemini 0회).
+  //
+  //    이유는 결과를 **어디에도 못 쌓기 때문**이다. 배포에서 감사 결과가 사는 곳은 인스턴스 메모리뿐이고
+  //    (파일시스템은 읽기 전용), 인스턴스가 여럿이라 서로 나눌 수도 없다.
+  //    그래서 자동으로 돌리면 **인스턴스마다 각자 2회씩 태우고 아무도 그 결과를 못 본다.**
+  //    모델은 사람이 「다시 감사」를 누를 때만 돈다 — 그쪽은 따로 가드가 걸려 있다.
+  if (!force) {
+    const memFresh = cache && Date.now() - cache.at < TTL_MS
+    const base = memFresh ? { fp: cache.fingerprint, snapshot: cache.snapshot, at: cache.at }
+      : await (async () => {
+          const snap = await storedSnapshot()
+          return snap && snap.fingerprint ? { fp: snap.fingerprint, snapshot: snap, at: null } : null
+        })()
+    if (!base) return json(res, 503, { error: '아직 저장된 감사 결과가 없습니다.', force: forceBudget() })
+
+    let now = null
+    // 플로우 조회가 실패해도 라이브 경로 전체가 죽지는 않는다. 「읽었다」만 못 말할 뿐이다.
+    try { now = await fingerprint() } catch { /* 아래에서 read:false 로 나간다 */ }
+    return json(res, 200, {
+      ...base.snapshot, live: true, cached: true, force: forceBudget(),
+      read: now !== null,                      // 플로우를 실제로 읽었나
+      unchanged: now !== null && now === base.fp,
+      cachedAt: base.at ? new Date(base.at).toISOString() : null,
+    })
   }
 
   try {

@@ -195,6 +195,11 @@ export async function collectProject(projectId, { client = flow } = {}) {
   }
 
   const kept = docs.filter((d) => d.text.length > 0)
+  // 🔑 글 목록의 지문. **스냅샷에 박아 두면** 서버가 새로 떠도 비교 기준이 남는다 —
+  //    기준이 메모리에만 있으면 콜드스타트마다 「비교할 게 없다」가 되어 모델을 다시 부른다.
+  kept.fingerprint = list
+    .map((p) => `${p.postId}:${p.editedDateTime ?? p.registeredDateTime ?? ''}:${p.remarkCount ?? 0}`)
+    .sort().join('|')
   // 최신이 위로. 문서 배열에 프로퍼티로 붙여 호출부 시그니처를 안 바꾼다.
   kept.toolPosts = toolPosts.sort((a, b) => b.writtenAt.localeCompare(a.writtenAt))
   return kept

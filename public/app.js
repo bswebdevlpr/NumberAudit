@@ -718,9 +718,16 @@ function runLive({ force = false } = {}) {
     // 🔑 배지는 한 줄로 잘리는 자리다. **살아 있다는 증거**만 남기고,
     //    저장본과의 차이는 그 숫자가 실제로 적히는 곳(푸터)으로 내린다.
     // 글이 안 바뀌어 모델을 안 부른 경우와, 실제로 다시 돌린 경우를 갈라 적는다.
-    live.textContent = j.unchanged
-      ? `방금 플로우를 읽었습니다 · 글이 그대로라 앞서 돌린 결과입니다 · ${j.claims.length}건`
-      : `방금 다시 감사했습니다 · ${j.claims.length}건 · 모델 호출 포함 ${sec}초`
+    // 자동은 플로우만 읽는다(모델 0회). 네 경우를 갈라 적는다 —
+    // 사람이 눌러 돌림 · 글 그대로 · 글이 바뀜 · 플로우를 못 읽음.
+    live.textContent = !j.cached
+      ? `방금 다시 감사했습니다 · ${j.claims.length}건 · 모델 호출 포함 ${sec}초`
+      : j.unchanged
+      ? `방금 플로우를 읽었습니다 · 글이 그대로라 저장된 결과입니다 · ${j.claims.length}건`
+      : j.read
+      ? '방금 플로우를 읽었습니다 · 글이 바뀌었습니다 — 「다시 감사」를 누르면 지금 기준으로 돌립니다'
+      : `저장된 결과입니다 · ${j.claims.length}건`
+    if (j.cached && j.read && !j.unchanged) { live.className = 'livebadge warn'; return }
     live.title = `${ran} · 호출 ${j.model.calls ?? '?'}회 · ${sec}초` +
       (j.claims.length !== demoSnap.claims.length
         ? ` — 라이브는 함수 상한(60초) 안에 들어와야 해서 빠른 모델로 돕니다. 저장본은 상위 모델로 만든 것이라 ${demoSnap.claims.length}건입니다.`

@@ -126,6 +126,7 @@ export async function auditProject(projectId, { title } = {}) {
     docs,
     // 전에 이 도구가 만들어 둔 업무. 감사 대상은 아니지만 화면 마지막 칸에 보인다.
     toolPosts: docs.toolPosts ?? [],
+    fingerprint: docs.fingerprint ?? null,
     claims,
     rejected,
     groups, dangling, duplicated, outOfGroup, ungrouped,
