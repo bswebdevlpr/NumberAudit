@@ -17,23 +17,39 @@ const unitOf = (c) => norm(c.unit ?? '')
  * 🔑 「근거 없음」의 코드적 정의.
  *
  *   측정값인데(목표가 아님)
- *   ∧ 같은 값이 **측정 방법과 함께** 적힌 곳이 어디에도 없고
+ *   ∧ 이 값에 측정 방법이 안 적혀 있고
+ *   ∧ **같은 조건 묶음 안에** 방법이 적힌 값이 없고
  *   ∧ 같은 지표에 방법이 적힌 다른 값은 존재한다
  *
  * 마지막 조건이 있어야 「아무도 방법을 안 적은 지표」 전체가 통째로 걸리지 않는다.
- * 두 번째 조건이 있어야 킥오프 글의 820ms 처럼 **다른 글에서 방법과 함께 재등장하는 값**이 안 걸린다.
  *
- * ⚠️ 두 번째 조건은 **가정 위에 서 있다 — 「같은 숫자면 같은 측정이다」.** 확인한 게 아니다.
- *    킥오프 글에는 조건이 아예 없어서 프로파일링과 같은 조건인지 알 수가 없다. 「모른다」를 「같다」로 치고 있다.
- *    조건 축(`findDisagreement`)은 방법을 따지는데 여기서는 안 따진다 — 두 규칙이 어긋나 있다.
- *    면제 기준을 「같은 값」에서 「같은 조건 묶음」으로 옮기는 것이 다음 작업이다 (`docs/decisions/0011-*`).
+ * 🔑 **면제는 「같은 값」이 아니라 「같은 조건 묶음」으로 준다.**
+ *    예전에는 같은 숫자가 어딘가 방법과 함께 있으면 면제했다. 그건 **「같은 숫자면 같은 측정이다」라는 가정**이었고,
+ *    조건 축(`findDisagreement`)이 방법을 따지는 것과 어긋났다.
+ *    지금은 모델이 「같은 측정을 옮겨 적은 것」이라고 판단해 같은 묶음에 넣은 값만 면제된다.
+ *    묶음에 못 들어간 값은 걸린다 — **모르는 것을 안다고 하지 않는다.** (`docs/decisions/0011-*`)
+ *
+ *    `contexts` 가 없으면 묶음이 하나뿐이라 「이 지표에 방법 적힌 값이 있나」만 보는 셈이 된다.
  *
  * ⚠️ 이건 「그 숫자가 틀렸다」가 아니다. **「감사한 글에서 근거를 못 찾았다」**까지다. 화면 문구도 그렇게 쓴다.
  */
-export function findUnsourced(groupClaims) {
-  const grounded = new Set(groupClaims.filter(hasMethod).map(valueOf))
-  if (grounded.size === 0) return []
-  return groupClaims.filter((c) => !c.isTarget && !hasMethod(c) && !grounded.has(valueOf(c)))
+export function findUnsourced(groupClaims, contexts) {
+  if (!groupClaims.some(hasMethod)) return []          // 아무도 안 적은 지표는 통째로 둔다
+
+  // 🔴 조건 묶음이 없으면 **옛 규칙(같은 값이면 면제)으로 떨어진다.**
+  //    묶음이 하나뿐이라고 보면 그 묶음에 방법 적힌 값이 있어서 1차가 통째로 꺼진다 —
+  //    모델이 조건을 못 가르면 판정이 조용히 사라지는 셈이라, 없을 때는 예전 동작을 남긴다.
+  if (!contexts?.length) {
+    const grounded = new Set(groupClaims.filter(hasMethod).map(valueOf))
+    return groupClaims.filter((c) => !c.isTarget && !hasMethod(c) && !grounded.has(valueOf(c)))
+  }
+
+  const out = []
+  for (const cs of splitByContext(groupClaims, contexts)) {
+    if (cs.some(hasMethod)) continue                    // 이 묶음 안에 근거가 있다 → 면제
+    out.push(...cs.filter((c) => !c.isTarget && !hasMethod(c)))
+  }
+  return out
 }
 
 /**
@@ -123,7 +139,7 @@ export function judge(claims, groups) {
       metric: g.metric,
       claims: cs,
       targets: cs.filter((c) => c.isTarget),
-      unsourced: findUnsourced(cs),
+      unsourced: findUnsourced(cs, g.contexts),
       disagreement: findDisagreement(cs, g.contexts),
       crossContext: findCrossContext(cs, g.contexts),
       contexts: (g.contexts ?? []).map((ctx) => ({ condition: ctx.condition, claimIds: [...(ctx.claimIds ?? [])] })),

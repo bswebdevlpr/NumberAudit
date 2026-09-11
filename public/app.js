@@ -75,12 +75,22 @@ const cleanTitle = (s) => String(s ?? '').replace(/^\[[^\]]+\]\s*/, '').replace(
 const isComment = (c) => String(c.docId ?? '').startsWith('comment:')
 const byTime = (x, y) => String(writtenAt.get(x.docId)).localeCompare(String(writtenAt.get(y.docId)))
 
-function traceRow(c, here) {
+const NO_CONDITION = '조건 미기재'
+
+/**
+ * 🔑 방법이 안 적힌 값인데 **모델이 조건 묶음에 넣은 것**은 그렇게 적는다.
+ *    「적혀 있다」와 「같은 측정으로 봤다」는 다른 말이고, 그 차이를 화면이 지운 적이 있다.
+ */
+function traceRow(c, here, condOf) {
   const miss = flagged.has(c.claimId)
+  const borrowed = !c.method && condOf?.get(c.claimId) && condOf.get(c.claimId) !== NO_CONDITION
+  const how = c.method ? esc(c.method)
+    : borrowed ? `<span class="borrowed">「${esc(condOf.get(c.claimId))}」과 같은 측정으로 봤습니다</span>`
+    : '어디에도 적혀 있지 않음'
   return `<div class="tr${miss ? ' miss' : ''}">
       <div class="v">${esc(val(c))}${c.isTarget ? '<span class="chip" style="margin-left:6px">목표</span>' : ''}</div>
       <div class="where">${isComment(c) ? '<span class="chip">댓글</span>' : ''}<span>${esc(cleanTitle(c.title))}</span>${c.docId === here ? '<b class="mine">← 이 문서</b>' : ''}</div>
-      <div class="how">${c.method ? esc(c.method) : '어디에도 적혀 있지 않음'}</div>
+      <div class="how">${how}</div>
     </div>`
 }
 
@@ -118,12 +128,12 @@ function traceBlock(cs, here, set) {
   const conds = [...new Set(grounded.map((c) => condOf.get(c.claimId) ?? OTHER))]
   const groundedRows = conds.length > 1
     ? conds.map((cond) => `<div class="cond">조건 · ${esc(cond)}</div>` +
-        grounded.filter((c) => (condOf.get(c.claimId) ?? OTHER) === cond).map((c) => traceRow(c, here)).join('')).join('')
-    : grounded.map((c) => traceRow(c, here)).join('')
+        grounded.filter((c) => (condOf.get(c.claimId) ?? OTHER) === cond).map((c) => traceRow(c, here, condOf)).join('')).join('')
+    : grounded.map((c) => traceRow(c, here, condOf)).join('')
   return `<div class="trace">
     <div class="th"><div>숫자</div><div>적힌 글</div><div>어떻게 쟀다고 적혀 있나</div></div>
     ${grounded.length ? `<div class="cut">측정 기록 — 방법이 함께 적혀 있다${outGroup.length ? ' · 단위가 같은 값을 프로젝트 전체에서 모았습니다' : ''}</div>${groundedRows}` : ''}
-    ${bare.length ? `<div class="cut">방법이 적혀 있지 않은 값</div>${bare.map((c) => traceRow(c, here)).join('')}` : ''}
+    ${bare.length ? `<div class="cut">방법이 적혀 있지 않은 값</div>${bare.map((c) => traceRow(c, here, condOf)).join('')}` : ''}
     ${conds.filter((c) => c !== OTHER).length > 1 ? '<div class="foot">조건이 서로 다른 값은 <b>견주지 않습니다.</b> 같은 조건으로 잰 값끼리만 비교합니다.</div>' : ''}
     ${hasMiss ? '<div class="foot">틀렸다는 판정이 아닙니다 — <b>감사한 글에서 근거를 찾지 못했다</b>는 표시입니다.</div>' : ''}
   </div>`

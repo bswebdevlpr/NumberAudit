@@ -135,3 +135,25 @@ test('조건이 안 적힌 값은 「조건이 다르다」로 말하지 않는�
   assert.deepEqual(findDisagreement(cs, ctx).map((x) => x.claimId), ['A', 'B'])
   assert.deepEqual(findCrossContext(cs, ctx).map((x) => x.claimId), [])   // C 는 여기 안 온다
 })
+
+// ── 면제 기준 — 「같은 값」이 아니라 「같은 조건 묶음」 (0011) ─────────────────
+const G = [c('A', '820', 'ms'), c('B', '820', 'ms', '스테이징 · 동시 10'), c('C', '320', 'ms', '스테이징 · 동시 10')]
+
+test('모델이 같은 조건 묶음에 넣으면 방법 없는 값도 면제된다', () => {
+  const ctx = [{ condition: '스테이징 · 동시 10', claimIds: ['A', 'B', 'C'] }]
+  assert.equal(findUnsourced(G, ctx).length, 0)
+})
+
+test('묶음에 못 들어간 값은 같은 숫자가 있어도 걸린다 — 모르는 것을 안다고 하지 않는다', () => {
+  const ctx = [
+    { condition: '스테이징 · 동시 10', claimIds: ['B', 'C'] },
+    { condition: '조건 미기재', claimIds: ['A'] },
+  ]
+  assert.deepEqual(findUnsourced(G, ctx).map((x) => x.claimId), ['A'])
+})
+
+test('조건 묶음이 없으면 옛 규칙으로 떨어진다 — 판정이 조용히 꺼지면 안 된다', () => {
+  assert.equal(findUnsourced(G).length, 0, '같은 값 820 이 방법과 함께 있으므로 면제')
+  const only = [c('A', '900', 'ms'), c('B', '820', 'ms', '스테이징 · 동시 10')]
+  assert.deepEqual(findUnsourced(only).map((x) => x.claimId), ['A'])
+})
