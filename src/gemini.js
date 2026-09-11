@@ -91,7 +91,7 @@ async function once(model, body, { maxRetries = 5 } = {}) {
  * Gemini 를 JSON 스키마로 묶어서 호출한다.
  * 자유 서술을 받지 않는 이유: 뒤에 붙는 인용 게이트가 필드 단위로 돌아야 하기 때문이다.
  */
-export async function generateJson({ system, prompt, schema, temperature = 0 }) {
+export async function generateJson({ system, prompt, schema, temperature = 0, chain }) {
   const body = {
     contents: [{ role: 'user', parts: [{ text: prompt }] }],
     generationConfig: { temperature, responseMimeType: 'application/json', responseSchema: schema },
@@ -99,7 +99,8 @@ export async function generateJson({ system, prompt, schema, temperature = 0 }) 
   if (system) body.systemInstruction = { parts: [{ text: system }] }
 
   let parsed, used, lastErr
-  const MODELS = models()
+  // 호출자가 체인을 줄 수 있다. 배포 함수마다 상한이 달라 **경로별로 모델을 달리 고를 자리**가 필요하다.
+  const MODELS = chain?.length ? chain : models()
   for (const model of MODELS) {
     try { parsed = await once(model, body); used = model; break } catch (e) {
       lastErr = e

@@ -11,8 +11,18 @@ import { json, readBody, keysReady } from './_lib.js'
  *    실제로는 「하루 12회」가 아니라 「인스턴스당 12회」다. 진짜 방어선은 Gemini 자체 한도다.
  *    공유 저장소를 두면 정확해지지만 이 규모에 부품을 늘리지 않았다 — **알고 안 한 것이라 적어 둔다.**
  */
-process.env.GEMINI_MODEL ??= process.env.LIVE_GEMINI_MODEL ?? 'gemini-3.1-flash-lite'
 const { auditText } = await import('../src/audit.js')
+
+/**
+ * 🔑 **붙여넣기는 상위 모델로 돈다.** 프로젝트 감사(`api/audit.js`)가 빠른 모델로 고정된 이유는
+ *    13문서 2회 호출이 상위 체인에서 23~105초라 함수 상한(60초)을 넘겼기 때문이다.
+ *    여기는 **짧은 글 하나에 호출 1회**라 그 이유가 안 맞는다.
+ *
+ * 실측(2026-09-11): 빠른 모델은 「공지 초안에는 150ms로 개선이라고 적었습니다」를 **목표값으로 분류**해
+ * 판정에서 통째로 빼 버렸다. 사용자가 자기 글로 확인하는 자리라 여기서 지면 도구가 안 도는 것처럼 보인다.
+ */
+const TRY_CHAIN = (process.env.TRY_GEMINI_MODEL ?? 'gemini-3.6-flash,gemini-3.5-flash,gemini-3.1-flash-lite')
+  .split(',').map((s) => s.trim()).filter(Boolean)
 
 const MAX_CHARS = Number(process.env.TRY_MAX_CHARS ?? 4000)
 const DAILY_BUDGET = Number(process.env.TRY_DAILY_BUDGET ?? 12)
@@ -56,7 +66,7 @@ export default async function handler(req, res) {
   lastByIp.set(ip, Date.now())
   used += 1
   try {
-    const snapshot = await auditText(body)
+    const snapshot = await auditText(body, { chain: TRY_CHAIN })
     return json(res, 200, { ...snapshot, budget: budget() })
   } catch (e) {
     used -= 1

@@ -91,7 +91,7 @@ export function planBatches(docs, budget = BUDGET) {
 }
 
 /** 한 배치를 실제로 호출한다. 잘렸으면(MAX_TOKENS) 반으로 쪼개 다시 넣는다. */
-async function extractOneBatch(docs, depth = 0) {
+async function extractOneBatch(docs, depth = 0, chain) {
   // 작성자를 넣지 않는다. 추출에 쓰이지 않고, 프롬프트 원문이 화면과 저장소에 그대로 실린다.
   const body = docs.map((d) => `### ${d.docId}\n제목: ${d.title}\n본문:\n${d.text}`).join('\n\n')
   try {
@@ -99,6 +99,7 @@ async function extractOneBatch(docs, depth = 0) {
       system: SYSTEM,
       prompt: `다음 문서들에서 수치 주장을 전부 뽑아라.\n\n${body}`,
       schema: SCHEMA,
+      chain,
     })
     return claims ?? []
   } catch (e) {
@@ -106,8 +107,8 @@ async function extractOneBatch(docs, depth = 0) {
     if (e.code === 'MAX_TOKENS' && docs.length > 1 && depth < 4) {
       const mid = Math.ceil(docs.length / 2)
       process.stderr.write(`  ✂ 출력이 잘렸다 — ${docs.length}건을 ${mid}/${docs.length - mid} 로 쪼갠다\n`)
-      return [...await extractOneBatch(docs.slice(0, mid), depth + 1),
-              ...await extractOneBatch(docs.slice(mid), depth + 1)]
+      return [...await extractOneBatch(docs.slice(0, mid), depth + 1, chain),
+              ...await extractOneBatch(docs.slice(mid), depth + 1, chain)]
     }
     throw e
   }
@@ -117,12 +118,12 @@ async function extractOneBatch(docs, depth = 0) {
  * 문서 집합 → 게이트를 통과한 주장.
  * @returns {{claims, rejected, stats, batches}}
  */
-export async function extractClaims(docs) {
+export async function extractClaims(docs, { chain } = {}) {
   const byId = new Map(docs.map((d) => [d.docId, d]))
   const batches = planBatches(docs)
 
   const raw = []
-  for (const b of batches) raw.push(...await extractOneBatch(b))
+  for (const b of batches) raw.push(...await extractOneBatch(b, 0, chain))
 
   const claims = []
   const rejected = []

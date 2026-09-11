@@ -16,7 +16,7 @@ export const SNAPSHOT_VERSION = 1
  *    문서가 하나뿐이면 「같은 지표를 다른 이름으로 부른 것」을 가를 일도 거의 없다.
  *    (프로젝트 감사는 문서가 여럿이라 그 판단이 필요해서 모델을 쓴다)
  */
-export async function auditText(text, { title = '붙여넣은 글' } = {}) {
+export async function auditText(text, { title = '붙여넣은 글', chain } = {}) {
   const startedAt = Date.now()
   geminiTrace.length = 0
   const usageBefore = { ...usage, byModel: { ...usage.byModel } }
@@ -24,7 +24,7 @@ export async function auditText(text, { title = '붙여넣은 글' } = {}) {
   const docs = [{ docId: 'paste:1', kind: 'post', title, author: '', writtenAt: '', url: '',
     source: 'paste', raw: { content: text, outContent: '', htmlContent: '' }, text: normalizeText(text) }]
 
-  const { claims, rejected, stats } = await extractClaims(docs)
+  const { claims, rejected, stats } = await extractClaims(docs, { chain })
 
   // 지표명이 같으면 한 그룹. 모델을 부르지 않는다.
   const key = (s) => String(s ?? '').replace(/\s/g, '').toLowerCase()

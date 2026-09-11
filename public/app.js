@@ -610,9 +610,15 @@ fetch('/api/audit', { method: 'POST' })
     }
     snap = j
     derive(); paint()
-    // 이미 단계를 밟고 있으면 되돌리지 않는다. 아직 시작 전일 때만 새로 그린다.
-    if (state.doc !== null) { state.doc = Math.min(state.doc, docs.length - 1) }
-    show()
+    // 🔴 **붙여넣기 화면은 건드리지 않는다.** 사용자가 자기 글을 감사해 결과를 보고 있는데
+    //    프로젝트 감사 결과가 돌아와 덮으면, 방금 한 일이 눈앞에서 사라진다.
+    //    (`Math.min('paste', n)` 이 NaN 이라 조용히 엉뚱한 문서로 튀기도 했다.)
+    if (state.doc === 'paste') { paintMap() }
+    else {
+      // 이미 단계를 밟고 있으면 되돌리지 않는다. 문서 수가 줄었을 때만 범위를 맞춘다.
+      if (state.doc !== null) state.doc = Math.min(state.doc, docs.length - 1)
+      show()
+    }
     live.className = 'livebadge ok'
     // 🔑 라이브는 함수 상한(60초) 때문에 **빠른 모델**로 돈다. 저장본보다 덜 뽑힐 수 있다.
     //    조용히 갈아 끼우면 화면이 이유 없이 나빠진 것처럼 보인다 — 어느 모델이 돌았고 뭐가 다른지 적는다.
@@ -622,7 +628,10 @@ fetch('/api/audit', { method: 'POST' })
     //    숫자만 앞에 세우면 결함 고지처럼 읽힌다.
     // 🔑 배지는 한 줄로 잘리는 자리다. **살아 있다는 증거**만 남기고,
     //    저장본과의 차이는 그 숫자가 실제로 적히는 곳(푸터)으로 내린다.
-    live.textContent = `방금 다시 감사했습니다 · ${j.claims.length}건 · 모델 호출 포함 ${sec}초`
+    // 방이 안 바뀌어 모델을 안 부른 경우와, 실제로 다시 돌린 경우를 갈라 적는다.
+    live.textContent = j.unchanged
+      ? `방금 플로우를 읽었습니다 · 글이 그대로라 앞서 돌린 결과입니다 · ${j.claims.length}건`
+      : `방금 다시 감사했습니다 · ${j.claims.length}건 · 모델 호출 포함 ${sec}초`
     live.title = `${ran} · 호출 ${j.model.calls ?? '?'}회 · ${sec}초` +
       (j.claims.length !== demoSnap.claims.length
         ? ` — 라이브는 함수 상한(60초) 안에 들어와야 해서 빠른 모델로 돕니다. 저장본은 상위 모델로 만든 것이라 ${demoSnap.claims.length}건입니다.`
