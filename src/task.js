@@ -85,6 +85,9 @@ export function planTasks(snapshot, { workers = new Map() } = {}) {
   for (const v of snapshot.verdicts ?? []) {
     const unsourced = (v.unsourcedIds ?? []).map((id) => byId.get(id)).filter(Boolean)
     const conflicting = (v.disagreementIds ?? []).map((id) => byId.get(id)).filter(Boolean)
+    // 조건이 갈려 견주지 않은 값. 업무를 만들지는 않지만 **본문에서 지우지도 않는다** —
+    // 모델이 조건을 잘못 갈랐으면 사람이 여기서 뒤집는다.
+    const crossed = (v.crossContextIds ?? []).map((id) => byId.get(id)).filter(Boolean)
     const flagged = unsourced.length ? unsourced : (conflicting.length > 1 ? conflicting : [])
     if (!flagged.length) continue
 
@@ -97,14 +100,21 @@ export function planTasks(snapshot, { workers = new Map() } = {}) {
       `■ ${kind.label} (${flagged.length}건)`,
       ...flagged.map(claimLine),
       '',
-      `■ 같은 지표의 다른 값 ${(v.claimIds?.length ?? 0) - flagged.length}건`,
-      ...(v.claimIds ?? []).filter((id) => !flagged.some((f) => f.claimId === id))
+      ...(crossed.length ? [
+        `■ 조건이 달라 견주지 않은 값 ${crossed.length}건`,
+        ...crossed.map(claimLine),
+        '  ↑ 잰 조건이 서로 달라 값을 견주지 않았습니다. 같은 조건이라면 알려 주세요.',
+        '',
+      ] : []),
+      `■ 같은 지표의 다른 값 ${(v.claimIds?.length ?? 0) - flagged.length - crossed.length}건`,
+      ...(v.claimIds ?? []).filter((id) => !flagged.some((f) => f.claimId === id) && !crossed.some((f) => f.claimId === id))
         .map((id) => byId.get(id)).filter(Boolean).map(claimLine),
       ...(targets.length ? ['', `■ 목표값: ${targets.map((t) => `${t.valueText}${t.unit ?? ''}`).join(', ')}`] : []),
       '',
       '---',
       '이 업무는 수치 감사 도구가 만들었다. 판정은 다음 두 가지만 본다 —',
       '「인용이 원문에 실재하나」와 「같은 값이 측정 방법과 함께 적힌 곳이 있나」.',
+      '값을 견줄 때는 같은 조건으로 잰 값끼리만 견준다.',
       '숫자가 틀렸다는 뜻이 아니다. 이 프로젝트의 글에서 어떻게 쟀는지를 못 찾았다는 뜻이다.',
     ].join('\n')
 

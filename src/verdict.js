@@ -52,11 +52,50 @@ export function findUnsourcedByUnit(allClaims, alreadyFlagged = new Set()) {
     groundedUnits.has(unitOf(c)))
 }
 
-/** 같은 지표 안에서 측정값이 갈리나. 판정이 아니라 **나열**이다 — 시점 차이일 수 있다. */
-export function findDisagreement(groupClaims) {
+/**
+ * 같은 지표 안에서 측정값이 갈리나. 판정이 아니라 **나열**이다 — 시점 차이일 수 있다.
+ *
+ * 🔑 **조건이 다르면 견주지 않는다.** `320ms(캐시 미적용)` 과 `280ms(캐시 워밍 후 3회 평균)` 는
+ * 값이 다른 게 아니라 **애초에 견줄 수 없는 두 숫자**다. 조건 묶음(contexts)이 있으면 그 안에서만 본다.
+ *
+ * 조건 동일성은 문자열로 못 가른다 — `스테이징 · 동시 10 · 캐시 미적용` 과
+ * `스테이징에서 동시 10 으로, 캐시 없이` 는 같은 조건인데 글자가 다르다. 완전 일치는 놓치고,
+ * 유사도는 임계값을 감으로 정해야 한다(이 저장소가 인용 길이 `6자` 로 한 번 데인 자리다).
+ * 그래서 **묶는 것은 모델이 하고, 갈렸는지 여부만 코드가 본다.**
+ *
+ * contexts 가 없으면 조건 축을 안 쓴 것과 같다 — 그룹 전체를 한 묶음으로 본다.
+ */
+export function findDisagreement(groupClaims, contexts) {
+  const buckets = splitByContext(groupClaims, contexts)
+  const out = []
+  for (const cs of buckets) {
+    const measured = cs.filter((c) => !c.isTarget)
+    if ([...new Set(measured.map(valueOf))].length > 1) out.push(...measured)
+  }
+  return out
+}
+
+/**
+ * 조건이 갈려서 **견주지 않은** 측정값들. 지우지 않고 등급만 달리 적기 위한 것이다 —
+ * 모델이 조건을 잘못 갈랐을 때 사람이 뒤집을 수 있어야 한다.
+ */
+export function findCrossContext(groupClaims, contexts) {
+  if (!contexts?.length || contexts.length < 2) return []
+  const within = new Set(findDisagreement(groupClaims, contexts).map((c) => c.claimId))
   const measured = groupClaims.filter((c) => !c.isTarget)
-  const values = [...new Set(measured.map(valueOf))]
-  return values.length > 1 ? measured : []
+  if ([...new Set(measured.map(valueOf))].length < 2) return []
+  return measured.filter((c) => !within.has(c.claimId))
+}
+
+/** 조건 묶음대로 주장을 나눈다. 묶음이 없으면 통째로 한 묶음이다. */
+function splitByContext(groupClaims, contexts) {
+  if (!contexts?.length) return [groupClaims]
+  const byId = new Map(groupClaims.map((c) => [c.claimId, c]))
+  const buckets = contexts.map((ctx) => (ctx.claimIds ?? []).map((id) => byId.get(id)).filter(Boolean))
+  const placed = new Set(contexts.flatMap((ctx) => ctx.claimIds ?? []))
+  const left = groupClaims.filter((c) => !placed.has(c.claimId))
+  if (left.length) buckets.push(left)
+  return buckets.filter((b) => b.length)
 }
 
 /**
@@ -72,7 +111,9 @@ export function judge(claims, groups) {
       claims: cs,
       targets: cs.filter((c) => c.isTarget),
       unsourced: findUnsourced(cs),
-      disagreement: findDisagreement(cs),
+      disagreement: findDisagreement(cs, g.contexts),
+      crossContext: findCrossContext(cs, g.contexts),
+      contexts: (g.contexts ?? []).map((ctx) => ({ condition: ctx.condition, claimIds: [...(ctx.claimIds ?? [])] })),
     }
   }).sort((a, b) => (b.unsourced.length - a.unsourced.length) || (b.claims.length - a.claims.length))
 }

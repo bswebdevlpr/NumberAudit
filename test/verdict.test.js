@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { findUnsourced, findUnsourcedByUnit, findDisagreement, judgeRoom } from '../src/verdict.js'
+import { findUnsourced, findUnsourcedByUnit, findDisagreement, findCrossContext, judgeRoom } from '../src/verdict.js'
 
 const c = (claimId, valueText, unit, method = '', isTarget = false, metric = 'p95 응답시간') =>
   ({ claimId, valueText, unit, method, isTarget, metric })
@@ -64,4 +64,33 @@ test('방 전체 판정 — 1차 다음에 2차를 돌린다', () => {
   const { verdicts, byUnit } = judgeRoom(ROOM, groups)
   assert.equal(verdicts.flatMap((v) => v.unsourced).length, 0, '1차로는 안 잡힌다 — 그룹이 갈려 있다')
   assert.deepEqual(byUnit.map((x) => x.claimId), ['F'])
+})
+
+
+// ── 조건 축 — 잰 방법이 다르면 견주지 않는다 ────────────────────────────────
+const MS = [c('C', '820', 'ms', '스테이징 · 동시 10'), c('D', '320', 'ms', '스테이징 · 동시 10'),
+            c('E', '280', 'ms', '캐시 워밍 후 3회 평균')]
+const CTX = [
+  { condition: '스테이징 · 동시 10', claimIds: ['C', 'D'] },
+  { condition: '캐시 워밍 후 3회 평균', claimIds: ['E'] },
+]
+
+test('조건이 같은 값끼리만 갈림으로 센다 — 320 과 280 은 견줄 수 없다', () => {
+  const ids = findDisagreement(MS, CTX).map((x) => x.claimId).sort()
+  assert.deepEqual(ids, ['C', 'D'])            // 같은 조건의 820·320 만
+})
+
+test('조건이 달라 견주지 않은 값은 지우지 않고 따로 담는다', () => {
+  assert.deepEqual(findCrossContext(MS, CTX).map((x) => x.claimId), ['E'])
+})
+
+test('조건 묶음이 없으면 예전 동작 그대로다 — 화면이 죽지 않는다', () => {
+  assert.equal(findDisagreement(MS).length, 3)
+  assert.equal(findCrossContext(MS, []).length, 0)
+})
+
+test('조건이 하나뿐이면 갈림 판정이 그대로 선다', () => {
+  const one = [{ condition: '스테이징 · 동시 10', claimIds: ['C', 'D'] }]
+  assert.equal(findDisagreement(MS.slice(0, 2), one).length, 2)
+  assert.equal(findCrossContext(MS.slice(0, 2), one).length, 0)
 })

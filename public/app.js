@@ -91,7 +91,10 @@ function traceRow(c, here) {
  * ⚠️ 한때 머리글과 사슬이 **각자 계산**했다. 머리글은 그룹을 안 보고 단위만 봤고 사슬은 그룹을 봤다 —
  *    1차(그룹 안)로 걸리는 경우 **머리글이 표에 없는 값을 언급**했다. 화면 두 곳이 같은 데이터를 다르게 센 것이다.
  */
-function comparisonSet(cs) {
+function comparisonSet(cs, v) {
+  // 조건 묶음은 모델이 갈랐고 코드가 되짚은 것이다. 머리글·사슬이 같은 지도를 본다.
+  const condOf = new Map()
+  for (const ctx of v?.contexts ?? []) for (const id of ctx.claimIds ?? []) condOf.set(id, ctx.condition)
   const bare = cs.filter((c) => !String(c.method ?? '').trim()).sort(byTime)
   const viaUnit = bare.filter((c) => byUnitSet.has(c.claimId))
   const inGroup = cs.filter((c) => String(c.method ?? '').trim())
@@ -99,17 +102,27 @@ function comparisonSet(cs) {
     ? snap.claims.filter((c) => String(c.method ?? '').trim() &&
         viaUnit.some((m) => (m.unit ?? '') === (c.unit ?? '')) && !inGroup.includes(c))
     : []
-  return { bare, viaUnit, inGroup, outGroup, grounded: [...inGroup, ...outGroup].sort(byTime) }
+  return { bare, viaUnit, inGroup, outGroup, condOf, grounded: [...inGroup, ...outGroup].sort(byTime) }
 }
 
-/** 지표 그룹 하나를 사슬로 그린다. 비교군은 위에서 이미 정해진 것을 받는다. */
+/**
+ * 지표 그룹 하나를 사슬로 그린다. 비교군은 위에서 이미 정해진 것을 받는다.
+ * 🔑 조건이 둘 이상이면 **측정 기록을 조건별로 가른다.** 나란히 놓으면 견줄 수 있는 값처럼 읽힌다.
+ */
 function traceBlock(cs, here, set) {
-  const { bare, outGroup, grounded } = set
+  const { bare, outGroup, grounded, condOf } = set
   const hasMiss = bare.some((c) => flagged.has(c.claimId))
+  const OTHER = '단위만 같은 다른 지표'
+  const conds = [...new Set(grounded.map((c) => condOf.get(c.claimId) ?? OTHER))]
+  const groundedRows = conds.length > 1
+    ? conds.map((cond) => `<div class="cond">조건 · ${esc(cond)}</div>` +
+        grounded.filter((c) => (condOf.get(c.claimId) ?? OTHER) === cond).map((c) => traceRow(c, here)).join('')).join('')
+    : grounded.map((c) => traceRow(c, here)).join('')
   return `<div class="trace">
     <div class="th"><div>숫자</div><div>적힌 글</div><div>어떻게 쟀다고 적혀 있나</div></div>
-    ${grounded.length ? `<div class="cut">측정 기록 — 방법이 함께 적혀 있다${outGroup.length ? ' · 단위가 같은 값을 프로젝트 전체에서 모았습니다' : ''}</div>${grounded.map((c) => traceRow(c, here)).join('')}` : ''}
+    ${grounded.length ? `<div class="cut">측정 기록 — 방법이 함께 적혀 있다${outGroup.length ? ' · 단위가 같은 값을 프로젝트 전체에서 모았습니다' : ''}</div>${groundedRows}` : ''}
     ${bare.length ? `<div class="cut">방법이 적혀 있지 않은 값</div>${bare.map((c) => traceRow(c, here)).join('')}` : ''}
+    ${conds.length > 1 ? '<div class="foot">조건이 서로 다른 값은 <b>견주지 않습니다.</b> 같은 조건으로 잰 값끼리만 비교합니다.</div>' : ''}
     ${hasMiss ? '<div class="foot">틀렸다는 판정이 아닙니다 — <b>감사한 글에서 근거를 찾지 못했다</b>는 표시입니다.</div>' : ''}
   </div>`
 }
@@ -278,20 +291,39 @@ function render(i) {
         line: `<b>${esc(vals.join(' · '))}</b>를 어떻게 쟀는지 <b>감사한 글·댓글 ${snap.stats.docs}건</b> 어디에도 적혀 있지 않습니다.`,
         sub: grounded.length ? `${scope} ${grounded.map((g) => esc(g)).join(' · ')}에는 어떻게 쟀는지가 적혀 있습니다.` : '' }
     }
+    // 갈림은 **같은 조건 안에서만** 센다. 조건이 달라 견주지 않은 값은 지우지 않고 따로 적는다.
+    const dis = (v.disagreementIds ?? []).map((id) => claims.get(id)).filter(Boolean)
+    const cross = (v.crossContextIds ?? []).map((id) => claims.get(id)).filter(Boolean)
     const measured = cs.filter((c) => !c.isTarget).sort(byTime)
+    const targets = cs.filter((c) => c.isTarget).map(val)
+    const targetLine = targets.length ? `목표는 ${esc(targets.join(' · '))}입니다.` : ''
+    const crossLine = cross.length
+      ? `${esc([...new Set(cross.map(val))].join(' · '))}는 잰 조건이 달라 견주지 않았습니다.` : ''
+    const disVals = [...new Set(dis.map(val))]
+    if (disVals.length > 1) {
+      // 조건 축이 실제로 일한 경우에만 「조건」이라고 말한다. 전부 미기재면 예전 문구가 맞다.
+      const head = cross.length ? '같은 조건끼리 견줬을 때' : '같은 지표에'
+      return { cls: '', chip: '값이 갈림',
+        line: `${head} <b>${esc(disVals.join(' · '))}</b>가 함께 적혀 있습니다.`,
+        sub: [crossLine, targetLine].filter(Boolean).join(' ') }
+    }
+    if (cross.length) {
+      return { cls: '', chip: '조건이 다름',
+        line: `값이 여럿이지만 <b>잰 조건이 서로 달라 견주지 않았습니다.</b>`,
+        sub: targetLine }
+    }
     const vals = [...new Set(measured.map(val))]
     if (vals.length > 1) {
-      const targets = cs.filter((c) => c.isTarget).map(val)
       return { cls: '', chip: '값이 갈림',
         line: `같은 지표에 <b>${esc(vals.join(' · '))}</b>가 함께 적혀 있습니다.`,
-        sub: targets.length ? `목표는 ${esc(targets.join(' · '))}입니다.` : '' }
+        sub: targetLine }
     }
     return { cls: 'ok', chip: '어긋남 없음', line: `<b>${esc(vals[0] ?? '')}</b> 하나뿐입니다. 어긋나는 값이 없습니다.`, sub: '' }
   }
 
   const s5 = groups.length ? groups.map((v) => {
     const cs = v.claimIds.map((id) => claims.get(id)).filter(Boolean)
-    const set = comparisonSet(cs)
+    const set = comparisonSet(cs, v)
     const h = verdictHead(v, cs, set)
     return `<div style="margin-bottom:18px">
       <div class="verdict ${h.cls}">
@@ -306,8 +338,10 @@ function render(i) {
     : '이 글에는 수치 주장이 없습니다.'}</div>`
 
   const badCount = groups.filter((v) => v.claimIds.some((id) => flagged.has(id))).length
-  const conflictCount = groups.filter((v) => !v.claimIds.some((id) => flagged.has(id)) &&
-    new Set(v.claimIds.map((id) => claims.get(id)).filter((c) => c && !c.isTarget).map(val)).size > 1).length
+  const conflictCount = groups.filter((v) => !v.claimIds.some((id) => flagged.has(id)) && (
+    v.disagreementIds
+      ? v.disagreementIds.length > 0
+      : new Set(v.claimIds.map((id) => claims.get(id)).filter((c) => c && !c.isTarget).map(val)).size > 1)).length
   const s5sum = [badCount ? `근거 없음 ${badCount}` : '', conflictCount ? `값이 갈림 ${conflictCount}` : '']
     .filter(Boolean).join(' · ') || `지표 ${groups.length}개`
 

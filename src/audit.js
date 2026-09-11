@@ -42,6 +42,8 @@ export async function auditText(text, { title = '붙여넣은 글' } = {}) {
       metric: v.metric, claimIds: v.claims.map((c) => c.claimId),
       unsourcedIds: v.unsourced.map((c) => c.claimId),
       disagreementIds: v.disagreement.map((c) => c.claimId),
+      crossContextIds: v.crossContext.map((c) => c.claimId),
+      contexts: v.contexts,
       targetIds: v.targets.map((c) => c.claimId),
     })),
     byUnitIds: byUnit.map((c) => c.claimId),
@@ -115,6 +117,9 @@ export async function auditProject(projectId, { title } = {}) {
       claimIds: v.claims.map((c) => c.claimId),
       unsourcedIds: v.unsourced.map((c) => c.claimId),
       disagreementIds: v.disagreement.map((c) => c.claimId),
+      // 조건이 갈려 견주지 않은 값. 지우지 않고 등급만 달리 적는다.
+      crossContextIds: v.crossContext.map((c) => c.claimId),
+      contexts: v.contexts,
       targetIds: v.targets.map((c) => c.claimId),
     })),
     // 2차 — 그룹 밖 대조(단위만 같음). 1차와 등급이 다르므로 따로 담는다.

@@ -83,3 +83,21 @@ test('2차 판정 업무는 견준 근거를 같이 적는다', () => {
   assert.match(body, /같은 단위\(ms\)로 「어떻게 쟀는지」가 적힌 값/)
   assert.match(body, /820ms/)
 })
+
+
+test('조건이 달라 견주지 않은 값도 업무 본문에 남는다 — 사람이 뒤집을 수 있어야 한다', () => {
+  const snap = {
+    docs: [{ docId: 'd1', author: '' }],
+    claims: [
+      { claimId: 'C', docId: 'd1', valueText: '820', unit: 'ms', method: '스테이징 · 동시 10', quote: 'p95 820ms', title: 'T' },
+      { claimId: 'D', docId: 'd1', valueText: '320', unit: 'ms', method: '스테이징 · 동시 10', quote: 'p95 320ms', title: 'T' },
+      { claimId: 'E', docId: 'd1', valueText: '280', unit: 'ms', method: '캐시 워밍 후 3회 평균', quote: 'p95 280ms', title: 'T' },
+    ],
+    verdicts: [{ metric: 'p95 응답시간', claimIds: ['C', 'D', 'E'], unsourcedIds: [],
+                 disagreementIds: ['C', 'D'], crossContextIds: ['E'], targetIds: [] }],
+  }
+  const [plan] = planTasks(snap)
+  assert.match(plan.task.title, /값이 갈림 2건/)                       // 갈림은 같은 조건 둘만 센다
+  assert.match(plan.task.contents, /조건이 달라 견주지 않은 값 1건/)
+  assert.match(plan.task.contents, /280ms/)                           // 지우지 않는다
+})

@@ -20,6 +20,18 @@ const SCHEMA = {
         properties: {
           metric: { type: 'string', description: '이 그룹이 가리키는 지표를 짧은 명사구로' },
           claimIds: { type: 'array', items: { type: 'string' }, description: '이 지표에 속하는 주장 ID' },
+          contexts: {
+            type: 'array',
+            description: '이 그룹 안에서 같은 조건으로 잰 값끼리 다시 묶은 것',
+            items: {
+              type: 'object',
+              properties: {
+                condition: { type: 'string', description: '그 조건을 원문 표현 그대로 짧게. 원문에 없으면 「조건 미기재」' },
+                claimIds: { type: 'array', items: { type: 'string' } },
+              },
+              required: ['condition', 'claimIds'],
+            },
+          },
         },
         required: ['metric', 'claimIds'],
       },
@@ -44,6 +56,12 @@ const SYSTEM = [
   '- 어느 그룹에도 안 들어가는 주장은 그대로 둔다. 억지로 묶지 않는다.',
   '- 주어진 claimId 만 쓴다. 없는 ID를 만들지 않는다.',
   '- 각 줄의 원문 구절을 보고 판단한다. 글쓴이가 수식어를 생략했어도 같은 것을 가리키면 같은 그룹이다.',
+  '',
+  '그리고 **각 그룹 안에서 같은 조건으로 잰 값끼리 다시 묶어라**(contexts).',
+  '- 조건은 원문에 적힌 측정 방법·기준이다. 표현이 달라도 같은 조건을 가리키면 한 묶음이다.',
+  '- 조건이 원문에 안 적힌 값들은 「조건 미기재」 한 묶음으로 모은다.',
+  '- **조건을 지어내지 않는다.** 원문에 없으면 미기재다.',
+  '- 한 그룹의 claimId 는 정확히 한 묶음에만 들어간다. 그룹 밖 ID 를 넣지 않는다.',
 ].join('\n')
 
 /**
@@ -54,7 +72,8 @@ export async function clusterClaims(claims) {
   if (claims.length === 0) return { groups: [], dangling: [], ungrouped: [] }
 
   const lines = claims.map((c) =>
-    `${c.claimId} | ${c.metric ?? '-'} | ${c.valueText}${c.unit ?? ''} | 범위:${c.scope || '없음'} | ${c.isTarget ? '목표' : '측정'} | 「${c.title ?? ''}」 | 원문: ${c.quote}`
+    `${c.claimId} | ${c.metric ?? '-'} | ${c.valueText}${c.unit ?? ''} | 범위:${c.scope || '없음'} | ${c.isTarget ? '목표' : '측정'}` +
+    ` | 방법:${c.method || '원문에 없음'} | 「${c.title ?? ''}」 | 원문: ${c.quote}`
   )
   const { groups } = await generateJson({
     system: SYSTEM,
@@ -74,9 +93,43 @@ export async function clusterClaims(claims) {
       if (seen.has(id)) { duplicated.push(id); continue }
       seen.add(id); ids.push(id)
     }
-    return { metric: g.metric, claimIds: ids }
+    return { metric: g.metric, claimIds: ids, contexts: cleanContexts(g.contexts, ids, dangling, duplicated) }
   }).filter((g) => g.claimIds.length > 0)
 
   const ungrouped = claims.filter((c) => !seen.has(c.claimId)).map((c) => c.claimId)
   return { groups: clean, dangling, duplicated, ungrouped }
+}
+
+export const NO_CONDITION = '조건 미기재'
+
+/**
+ * 🔑 참조 게이트, 세 번째 — 조건 묶음에도 같은 대조를 건다.
+ *
+ * 그룹 밖 ID·없는 ID·한 그룹 안 중복 배정을 코드가 되짚고, **어느 묶음에도 안 들어간 값은
+ * 「조건 미기재」로 모은다.** 판정이 그룹을 빠짐없이 덮어야 해서 분할이 전체를 덮어야 한다.
+ *
+ * ⚠️ 모델이 조건을 못 가르면 `contexts` 가 비어서 나온다. 그때는 **조건 축을 안 쓴 것과 같다** —
+ *    판정이 예전 동작으로 떨어지고 화면은 그대로 산다.
+ */
+function cleanContexts(contexts, groupIds, dangling, duplicated) {
+  if (!Array.isArray(contexts) || contexts.length === 0) return []
+  const inGroup = new Set(groupIds)
+  const placed = new Set()
+  const out = []
+  for (const c of contexts) {
+    const ids = []
+    for (const id of c?.claimIds ?? []) {
+      if (!inGroup.has(id)) { dangling.push(id); continue }
+      if (placed.has(id)) { duplicated.push(id); continue }
+      placed.add(id); ids.push(id)
+    }
+    if (ids.length) out.push({ condition: String(c?.condition ?? '').trim() || NO_CONDITION, claimIds: ids })
+  }
+  const left = groupIds.filter((id) => !placed.has(id))
+  if (left.length) {
+    const bucket = out.find((c) => c.condition === NO_CONDITION)
+    if (bucket) bucket.claimIds.push(...left)
+    else out.push({ condition: NO_CONDITION, claimIds: left })
+  }
+  return out
 }
