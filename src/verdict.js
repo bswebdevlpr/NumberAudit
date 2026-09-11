@@ -5,8 +5,10 @@
  * 여기서는 게이트를 통과한 주장들만 놓고, 코드가 볼 수 있는 사실로만 가른다.
  */
 
+import { valueKey } from './value.js'
+
 const norm = (s) => String(s ?? '').replace(/\s/g, '').replace(/(\d),(?=\d{3}\b)/g, '$1').toLowerCase()
-const valueOf = (c) => norm(`${c.valueText}${c.unit ?? ''}`)
+const valueOf = (c) => valueKey(c)
 const hasMethod = (c) => Boolean(String(c.method ?? '').trim())
 const unitOf = (c) => norm(c.unit ?? '')
 

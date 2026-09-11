@@ -5,7 +5,9 @@ import { checkClaim } from './lib/gate.js'
 
 const $ = (s) => document.querySelector(s)
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]))
-const val = (c) => `${c.valueText ?? ''}${c.unit ?? ''}`
+import { valueLabel } from './lib/value.js'
+
+const val = (c) => valueLabel(c)
 /** 받침에 따라 「(으)로」를 고른다. 「초안로」 같은 문장이 나오면 화면이 대충 만든 티가 난다. */
 function ro(word) {
   const last = String(word ?? '').trim().slice(-1)

@@ -24,11 +24,11 @@ const SCHEMA = {
         properties: {
           docId: { type: 'string', description: '이 수치가 나온 문서의 ID. 주어진 ID 중 하나여야 한다' },
           metric: { type: 'string', description: '지표를 짧은 명사구로' },
-          valueText: { type: 'string', description: '글에 적힌 값 그대로' },
-          unit: { type: 'string' },
+          valueText: { type: 'string', description: '숫자 부분만. 단위를 붙이지 않는다 — "320ms" 가 아니라 "320"' },
+          unit: { type: 'string', description: '단위만. 없으면 빈 문자열' },
           scope: { type: 'string', description: '이 숫자가 어디의 것인가 — 단계·구간·대상. 없으면 빈 문자열' },
           method: { type: 'string', description: '무엇과 비교해 어떤 환경·표본으로 쟀는가. 원문에 없으면 반드시 빈 문자열' },
-          isTarget: { type: 'boolean' },
+          isTarget: { type: 'boolean', description: '목표로 내건 값이면 true. 사실로 적힌 값이면 false' },
           quote: { type: 'string', description: '그 문서의 원문 구절을 글자 그대로' },
         },
         required: ['docId', 'metric', 'valueText', 'unit', 'scope', 'method', 'isTarget', 'quote'],
@@ -49,6 +49,11 @@ const SYSTEM = [
   '- method = **무엇과 비교해 어떤 환경·표본으로 쟀는가**. 예: "스테이징 · 동시 10 · 캐시 미적용", "3회 평균"',
   '- 단계 이름·구간 이름은 method 가 아니다. scope 다.',
   '- 원문에 측정 방법이 안 적혀 있으면 method 는 **반드시 빈 문자열**이다. 추측해서 채우지 않는다.',
+  '',
+  'isTarget 은 「목표로 내건 값」일 때만 true 다.',
+  '- 목표·목표치·달성 기준처럼 **아직 이루지 않은 값**으로 적힌 것만 true.',
+  '- 예정·계획·확정·현재값처럼 **사실로 적힌 값**은 false 다. 날짜도 같다.',
+  '- 애매하면 false 다. 목표로 잘못 보면 **그 값이 대조에서 통째로 빠진다.**',
 ].join('\n')
 
 /**

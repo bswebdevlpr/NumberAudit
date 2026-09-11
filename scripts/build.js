@@ -10,5 +10,6 @@ import { fileURLToPath } from 'node:url'
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const out = resolve(root, 'public/lib')
 mkdirSync(out, { recursive: true })
-for (const f of ['gate.js']) copyFileSync(resolve(root, 'src', f), resolve(out, f))
-console.log(`public/lib ← src/gate.js`)
+const FILES = ['gate.js', 'value.js']
+for (const f of FILES) copyFileSync(resolve(root, 'src', f), resolve(out, f))
+console.log(`public/lib ← ${FILES.map((f) => `src/${f}`).join(' · ')}`)

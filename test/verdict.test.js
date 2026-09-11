@@ -94,3 +94,12 @@ test('조건이 하나뿐이면 갈림 판정이 그대로 선다', () => {
   assert.equal(findDisagreement(MS.slice(0, 2), one).length, 2)
   assert.equal(findCrossContext(MS.slice(0, 2), one).length, 0)
 })
+
+// ── 값 + 단위 — 모델이 단위를 값에 같이 넣어도 두 번 붙지 않는다 ──────────────
+test('valueText 에 단위가 이미 들어 있으면 다시 붙이지 않는다', async () => {
+  const { valueLabel, valueKey } = await import('../src/value.js')
+  assert.equal(valueLabel({ valueText: '320', unit: 'ms' }), '320ms')
+  assert.equal(valueLabel({ valueText: '320ms', unit: 'ms' }), '320ms')   // 실측: 실행마다 흔들린다
+  assert.equal(valueLabel({ valueText: '42', unit: '' }), '42')
+  assert.equal(valueKey({ valueText: '1,284', unit: '케이스' }), '1284케이스')
+})

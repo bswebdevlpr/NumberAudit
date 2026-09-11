@@ -1,3 +1,5 @@
+import { valueLabel, valueKey } from './value.js'
+
 /**
  * 감사 결과 → **플로우 업무 모델**.
  *
@@ -46,7 +48,6 @@ export function workerIndex(participants = []) {
   return m
 }
 
-const valueKey = (c) => `${c.valueText}${c.unit ?? ''}`.replace(/\s/g, '')
 /** 하위업무 제목은 한 줄이어야 한다. 글 제목의 대괄호 태그와 이모지를 걷어낸다. */
 const shortTitle = (s) => String(s ?? '').replace(/^\[[^\]]+\]\s*/, '')
   .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}]/gu, '').replace(/\s+/g, ' ').trim().slice(0, 22)
@@ -59,14 +60,15 @@ function subtasksFor(kind, flagged) {
     if (!byValue.has(k)) byValue.set(k, [])
     byValue.get(k).push(c)
   }
-  return [...byValue.entries()].map(([value, cs]) => ({
-    title: `${value} — ${cs.length > 1 ? `${cs.length}곳` : `「${shortTitle(cs[0].title)}」`} ${kind.code === 'UNSOURCED' ? '근거 확인' : '확인'}`,
+  // 열쇠는 묶는 데만 쓴다. 제목에는 **원문에 적힌 모양**을 쓴다 — 열쇠는 소문자·쉼표 제거본이다.
+  return [...byValue.values()].map((cs) => ({
+    title: `${valueLabel(cs[0])} — ${cs.length > 1 ? `${cs.length}곳` : `「${shortTitle(cs[0].title)}」`} ${kind.code === 'UNSOURCED' ? '근거 확인' : '확인'}`,
     contents: cs.map(claimLine).join('\n'),
   }))
 }
 
 function claimLine(c) {
-  const bits = [`- ${c.valueText}${c.unit ?? ''}`, `「${c.title}」`]
+  const bits = [`- ${valueLabel(c)}`, `「${c.title}」`]
   if (c.scope) bits.push(`범위: ${c.scope}`)
   bits.push(c.method ? `방법: ${c.method}` : '방법: 원문에 없음')
   return `${bits.join(' · ')}\n  인용: "${c.quote}"`
@@ -109,7 +111,7 @@ export function planTasks(snapshot, { workers = new Map() } = {}) {
       `■ 같은 지표의 다른 값 ${(v.claimIds?.length ?? 0) - flagged.length - crossed.length}건`,
       ...(v.claimIds ?? []).filter((id) => !flagged.some((f) => f.claimId === id) && !crossed.some((f) => f.claimId === id))
         .map((id) => byId.get(id)).filter(Boolean).map(claimLine),
-      ...(targets.length ? ['', `■ 목표값: ${targets.map((t) => `${t.valueText}${t.unit ?? ''}`).join(', ')}`] : []),
+      ...(targets.length ? ['', `■ 목표값: ${targets.map((t) => valueLabel(t)).join(', ')}`] : []),
       '',
       '---',
       '이 업무는 수치 감사 도구가 만들었다. 판정은 다음 두 가지만 본다 —',
@@ -148,10 +150,14 @@ export function planTasks(snapshot, { workers = new Map() } = {}) {
   // 2차 — 그룹 밖 대조로 걸린 값. 등급이 다르므로 본문에 그렇게 적는다.
   const byUnit = (snapshot.byUnitIds ?? []).map((id) => byId.get(id)).filter(Boolean)
   const seen = new Set(plans.flatMap((p) => p.claimIds))
+  // 🔑 주장마다 붙은 `metric` 이 아니라 **묶기가 정한 그룹**으로 모은다.
+  //    같은 그룹인데 주장별 지표명이 「응답시간」/「검색 응답시간」으로 갈리면 업무가 둘로 쪼개진다.
+  const groupOf = new Map()
+  for (const v of snapshot.verdicts ?? []) for (const id of v.claimIds ?? []) groupOf.set(id, v.metric)
   const groupedByMetric = new Map()
   for (const c of byUnit) {
     if (seen.has(c.claimId)) continue
-    const k = c.metric ?? '(지표 미상)'
+    const k = groupOf.get(c.claimId) ?? c.metric ?? '(지표 미상)'
     if (!groupedByMetric.has(k)) groupedByMetric.set(k, [])
     groupedByMetric.get(k).push(c)
   }
