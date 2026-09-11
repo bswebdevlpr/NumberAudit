@@ -108,6 +108,8 @@ export async function auditProject(projectId, { title } = {}) {
     ms: Date.now() - startedAt,
     project: { projectId: String(projectId), title: projectTitle },
     docs,
+    // 전에 이 도구가 만들어 둔 업무. 감사 대상은 아니지만 화면 마지막 칸에 보인다.
+    toolPosts: docs.toolPosts ?? [],
     claims,
     rejected,
     groups, dangling, duplicated, outOfGroup, ungrouped,

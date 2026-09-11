@@ -131,10 +131,20 @@ const projectUrl = (projectId) => `https://flow.team/main.act?projectId=${projec
 export async function collectProject(projectId, { client = flow } = {}) {
   const list = await client.listPosts(projectId)
   const docs = []
+  // 🔑 감사에서는 빼되 **버리지는 않는다.** 이 도구가 전에 만들어 둔 업무가 화면 마지막 칸에 뜬다 —
+  //    처음 연 사람이 아무것도 안 눌러도 워크플로의 끝이 보인다. 목록 응답에 이미 실려 오므로 호출이 안 는다.
+  const toolPosts = []
 
   for (const item of list) {
     // 도구가 만든 업무는 감사하지 않는다. 자기 출력을 다시 읽으면 같은 수치가 무한히 번식한다.
-    if (String(item.title ?? '').startsWith(TOOL_TITLE_PREFIX)) continue
+    if (String(item.title ?? '').startsWith(TOOL_TITLE_PREFIX)) {
+      toolPosts.push({
+        postId: String(item.postId), title: String(item.title ?? ''),
+        writtenAt: String(item.registeredDateTime ?? ''),
+        subTaskCount: Number(item.subTaskCount ?? 0), url: projectUrl(projectId),
+      })
+      continue
+    }
     const post = await client.getPost(item.postId)
     const plain = plainText(post)
     docs.push({
@@ -181,5 +191,8 @@ export async function collectProject(projectId, { client = flow } = {}) {
     }
   }
 
-  return docs.filter((d) => d.text.length > 0)
+  const kept = docs.filter((d) => d.text.length > 0)
+  // 최신이 위로. 문서 배열에 프로퍼티로 붙여 호출부 시그니처를 안 바꾼다.
+  kept.toolPosts = toolPosts.sort((a, b) => b.writtenAt.localeCompare(a.writtenAt))
+  return kept
 }

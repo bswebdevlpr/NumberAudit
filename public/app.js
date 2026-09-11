@@ -574,14 +574,22 @@ $('#steps').addEventListener('input', (e) => {
 // ── 되돌린 업무 리스트 ───────────────────────────────────────────────────
 const submitted = []
 function renderOut() {
-  $('#outHead').textContent = `되돌린 업무 ${submitted.length ? `${submitted.length}건` : ''}`
-  $('#outList').innerHTML = submitted.length ? submitted.map((s) => `
-    <div class="card card-pad" style="margin-bottom:10px">
-      <b>${esc(s.title)}</b>
-      <div class="muted" style="font-size:12.5px;margin-top:5px">
-        ${s.taskId ? `업무 ${esc(s.taskId)} · 하위업무 ${s.subtaskIds.length}건 · ${esc(s.steps.join(' · '))}` : esc(s.error)}
-      </div>
-    </div>`).join('')
+  // 🔑 전에 등록해 둔 것도 같이 보인다. 아무것도 안 눌러도 워크플로의 끝이 화면에 있다.
+  //    방금 누른 것과는 갈라서 적는다 — 내가 만든 것처럼 보이면 거짓말이 된다.
+  const before = (snap.toolPosts ?? []).filter((t) => !submitted.some((s) => s.title === t.title))
+  const total = submitted.length + before.length
+  $('#outHead').textContent = `되돌린 업무 ${total ? `${total}건` : ''}`
+  const card = (title, note, cls = '') => `
+    <div class="card card-pad${cls}" style="margin-bottom:10px">
+      <b>${esc(title)}</b>
+      <div class="muted" style="font-size:12.5px;margin-top:5px">${note}</div>
+    </div>`
+  const mine = submitted.map((s) => card(s.title,
+    s.taskId ? `방금 등록 · 업무 ${esc(s.taskId)} · 하위업무 ${s.subtaskIds.length}건 · ${esc(s.steps.join(' · '))}` : esc(s.error))).join('')
+  const old = before.map((t) => card(t.title,
+    `${esc(ymdDash(String(t.writtenAt).slice(0, 8)))} 등록 · 하위업무 ${t.subTaskCount}건 · <a href="${esc(t.url)}" target="_blank" rel="noopener">플로우에서 열기</a>`)).join('')
+  $('#outList').innerHTML = total
+    ? mine + old
     : '<div class="empty">6단계에서 <b>플로우에 등록</b>을 누르면 실제 업무가 만들어지고 여기 쌓입니다.</div>'
 }
 $('#steps').addEventListener('click', async (e) => {
@@ -629,6 +637,7 @@ fetch('/api/audit', { method: 'POST' })
     // 🔴 **붙여넣기 화면은 건드리지 않는다.** 사용자가 자기 글을 감사해 결과를 보고 있는데
     //    프로젝트 감사 결과가 돌아와 덮으면, 방금 한 일이 눈앞에서 사라진다.
     //    (`Math.min('paste', n)` 이 NaN 이라 조용히 엉뚱한 문서로 튀기도 했다.)
+    renderOut()
     if (state.doc === 'paste') { paintMap() }
     else {
       // 이미 단계를 밟고 있으면 되돌리지 않는다. 문서 수가 줄었을 때만 범위를 맞춘다.
