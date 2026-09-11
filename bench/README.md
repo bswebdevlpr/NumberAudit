@@ -13,6 +13,7 @@
 | `seed-*.js` · `roundtrip.js` | 플로우에 심고 다시 읽어 원문과 대조 |
 | `block-fusion.js` · `noise-stress.js` · `ladder.js` | 라운드 4 — 실데이터에서 드러난 것들 |
 | `rejudge.js` · `recluster.js` · `replay-gate.js` | 저장된 결과 재판정. **모델 호출 0회** |
+| `gate-rules.js` | 인용 규칙 후보를 저장된 주장에 다시 걸어 비교. **모델 호출 0회** ([0010](../docs/decisions/0010-locate-not-length.md)) |
 | `out/*.json` | 원시 결과 |
 
 ## `external-doc.txt` 는 내 옛 문서다

@@ -160,6 +160,8 @@ function paint() {
 }
 
 const STEP_NAMES = ['수집', '정제', '추출', '게이트', '판정', '업무']
+// 🔑 모델이 하는 일은 둘뿐이다 — 뽑기(3)와 묶기. 나머지는 코드다. 지도에서 그걸 보인다.
+const BY_MODEL = new Set([3])
 
 /** 여섯 단계 지도 — 늘 보인다. 지금 어디까지 왔는지가 곧 내비게이션이다. */
 function paintMap() {
@@ -167,8 +169,9 @@ function paintMap() {
     const n = i + 1
     const cls = state.doc === null || state.doc === 'paste' ? ''
       : n < state.revealed ? 'done' : n === state.revealed ? 'current' : ''
-    return `<li class="${cls}"><button data-step="${n}"><b>${n}</b>${name}</button></li>`
-  }).join('')
+    const who = BY_MODEL.has(n) ? 'model' : 'code'
+    return `<li class="${cls}"><button data-step="${n}" class="${who}"><b>${n}</b>${name}</button></li>`
+  }).join('') + '<li class="mapkey"><span class="dot-model"></span>모델이 뽑고 묶는다 · 나머지는 코드가 판정한다</li>'
 }
 
 $('#flowMap').addEventListener('click', (e) => {
@@ -249,7 +252,7 @@ function render(i) {
     <div class="why">
       ${batched
         ? `<b>${snap.stats.docs}개 문서를 한 번에 넣습니다.</b> 문서당 1회로 부르면 무료 한도(모델당 하루 20회)에서
-           <b>하루 20문서가 천장</b>이라, 프로젝트 하나를 다 못 읽습니다.`
+           <b>하루 20문서까지만</b> 읽을 수 있어 프로젝트 하나를 다 못 봅니다.`
         : '<b>붙여넣은 글 하나만 넣습니다.</b>'}
       <span class="q">${esc(gemini.model)} · 배치 ${JSON.stringify(snap.stats.batches)} · ${esc(tok)}</span>
     </div>
@@ -609,7 +612,7 @@ fetch('/api/audit', { method: 'POST' })
     //    숫자만 앞에 세우면 결함 고지처럼 읽힌다.
     // 🔑 배지는 한 줄로 잘리는 자리다. **살아 있다는 증거**만 남기고,
     //    저장본과의 차이는 그 숫자가 실제로 적히는 곳(푸터)으로 내린다.
-    live.textContent = `방금 다시 감사했습니다 · ${j.claims.length}건 · ${sec}초`
+    live.textContent = `방금 다시 감사했습니다 · ${j.claims.length}건 · 모델 호출 포함 ${sec}초`
     live.title = `${ran} · 호출 ${j.model.calls ?? '?'}회 · ${sec}초` +
       (j.claims.length !== demoSnap.claims.length
         ? ` — 라이브는 함수 상한(60초) 안에 들어와야 해서 빠른 모델로 돕니다. 저장본은 상위 모델로 만든 것이라 ${demoSnap.claims.length}건입니다.`
