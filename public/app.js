@@ -165,12 +165,14 @@ function paint() {
   </div>`
   }).join('')
 
-  $('#foot').innerHTML = `프로젝트 ${esc(snap.project.projectId)} · 모델 ${esc(Object.entries(snap.model.byModel).map(([m, n]) => `${m}×${n}`).join(' · '))}
-    · 호출 ${snap.model.calls}회 · ${(snap.ms / 1000).toFixed(1)}초
-    <br>데모 데이터는 API 로 심어 작성자가 모두 같습니다. 담당자 매핑은 참여자가 여럿인 프로젝트에서 갈립니다.${
-      snap.live && snap.claims.length !== demoSnap.claims.length
-        ? `<br>지금 화면은 방금 돌린 결과입니다. 라이브는 함수 상한(60초) 안에 들어와야 해서 빠른 모델로 돌고,
-           저장본은 상위 모델로 만든 것이라 ${demoSnap.claims.length}건입니다.` : ''}`
+  // 🔑 푸터에는 **밝혀야 할 것만** 남긴다.
+  //    프로젝트 id·모델·호출수는 배지와 각 단계가 이미 말하고, 담당자 안내는 6단계 칩과 겹쳤다.
+  //    라이브가 저장본과 다를 때의 고지는 없애면 안 된다 — 화면 숫자가 달라진 이유다.
+  const differs = snap.live && snap.claims.length !== demoSnap.claims.length
+  $('#foot').innerHTML = differs
+    ? '지금 화면은 방금 돌린 결과입니다. 라이브는 함수 상한(60초) 안에 들어와야 해서 빠른 모델로 돌고, '
+      + `저장본은 상위 모델로 만든 것이라 ${demoSnap.claims.length}건입니다.`
+    : ''
 }
 
 const STEP_NAMES = ['수집', '정제', '추출', '게이트', '판정', '업무']
@@ -512,6 +514,16 @@ $('#steps').addEventListener('click', async (e) => {
   }
 })
 
+// 되돌린 업무의 본문 펼치기. 플로우 링크는 참여자가 아니면 안 열려서 내용을 여기서 보인다.
+$('#outList').addEventListener('click', (e) => {
+  const more = e.target.closest('[data-outmore]'); if (!more) return
+  const body = $(`[data-outbody="${more.dataset.outmore}"]`)
+  const open = body.hidden
+  body.hidden = !open
+  more.setAttribute('aria-expanded', String(open))
+  more.textContent = open ? '본문 접기' : '본문 펼치기'
+})
+
 $('#docList').addEventListener('click', (e) => {
   const more = e.target.closest('[data-more]')
   if (more) {
@@ -579,15 +591,19 @@ function renderOut() {
   const before = (snap.toolPosts ?? []).filter((t) => !submitted.some((s) => s.title === t.title))
   const total = submitted.length + before.length
   $('#outHead').textContent = `되돌린 업무 ${total ? `${total}건` : ''}`
-  const card = (title, note, cls = '') => `
-    <div class="card card-pad${cls}" style="margin-bottom:10px">
+  const card = (title, note, body = '', key = '') => `
+    <div class="card card-pad" style="margin-bottom:10px">
       <b>${esc(title)}</b>
       <div class="muted" style="font-size:12.5px;margin-top:5px">${note}</div>
+      ${body ? `<button class="docmore" data-outmore="${key}" aria-expanded="false">본문 펼치기</button>
+               <div class="pre" data-outbody="${key}" hidden style="margin-top:8px">${esc(body)}</div>` : ''}
     </div>`
-  const mine = submitted.map((s) => card(s.title,
-    s.taskId ? `방금 등록 · 업무 ${esc(s.taskId)} · 하위업무 ${s.subtaskIds.length}건 · ${esc(s.steps.join(' · '))}` : esc(s.error))).join('')
-  const old = before.map((t) => card(t.title,
-    `${esc(ymdDash(String(t.writtenAt).slice(0, 8)))} 등록 · 하위업무 ${t.subTaskCount}건 · <a href="${esc(t.url)}" target="_blank" rel="noopener">플로우에서 열기</a>`)).join('')
+  const mine = submitted.map((s, i) => card(s.title,
+    s.taskId ? `방금 등록 · 업무 ${esc(s.taskId)} · 하위업무 ${s.subtaskIds.length}건 · ${esc(s.steps.join(' · '))}` : esc(s.error),
+    s.contents ?? '', `new${i}`)).join('')
+  const old = before.map((t, i) => card(t.title,
+    `${esc(ymdDash(String(t.writtenAt).slice(0, 8)))} 등록 · 하위업무 ${t.subTaskCount}건`,
+    t.contents ?? '', `old${i}`)).join('')
   $('#outList').innerHTML = total
     ? mine + old
     : '<div class="empty">6단계에서 <b>플로우에 등록</b>을 누르면 실제 업무가 만들어지고 여기 쌓입니다.</div>'
@@ -602,10 +618,12 @@ $('#steps').addEventListener('click', async (e) => {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ plan: p }),
     }).then((x) => x.json())
-    submitted.push(r.error ? { title: p.task.title, subtaskIds: [], error: r.error } : r)
+    // 본문은 화면이 이미 갖고 있다 — 펼치기에 쓰려고 같이 담는다.
+    submitted.push(r.error ? { title: p.task.title, subtaskIds: [], error: r.error, contents: p.task.contents }
+                           : { ...r, contents: p.task.contents })
     b.textContent = r.error ? '등록 실패' : '등록됨'
   } catch (err) {
-    submitted.push({ title: p.task.title, subtaskIds: [],
+    submitted.push({ title: p.task.title, subtaskIds: [], contents: p.task.contents,
       error: '이 배포는 읽기 전용입니다 — 쓰기는 서버가 있어야 합니다.' })
     b.textContent = '등록 불가'
   }

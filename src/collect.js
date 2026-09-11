@@ -141,7 +141,10 @@ export async function collectProject(projectId, { client = flow } = {}) {
       toolPosts.push({
         postId: String(item.postId), title: String(item.title ?? ''),
         writtenAt: String(item.registeredDateTime ?? ''),
-        subTaskCount: Number(item.subTaskCount ?? 0), url: projectUrl(projectId),
+        subTaskCount: Number(item.subTaskCount ?? 0),
+        // 본문도 목록 응답에 실려 온다. 화면에서 펼쳐 보이려고 담는다 —
+        // 플로우 링크는 참여자가 아니면 안 열리므로 링크 대신 내용을 보인다.
+        contents: normalizeText(String(item.content ?? '')).slice(0, 4000),
       })
       continue
     }
