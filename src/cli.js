@@ -47,7 +47,7 @@ switch (cmd) {
     const g = snap.stats
     console.log(`\n문서 ${g.docs}건 · 배치 ${JSON.stringify(g.batches)}`)
     console.log(`주장 ${g.raw}건 → 통과 ${snap.claims.length} (1차 ${g.tier1} · 2차 ${g.tier2}) · 폐기 ${snap.rejected.length}`)
-    console.log(`오귀속 ${g.misattributed} · 없는 docId ${g.unknownDoc}`)
+    console.log(`오귀속 ${g.misattributed} · 없는 docId ${g.unknownDoc} · 귀속 확인불가 ${g.ambiguous ?? 0}`)
     console.log(`지표 그룹 ${snap.groups.length} · 참조 게이트 — 없는 ID ${snap.dangling.length} · 중복 배정 ${snap.duplicated.length} · 그룹 밖 ${(snap.outOfGroup ?? []).length}`)
     for (const v of snap.verdicts) {
       if (!v.unsourcedIds.length) continue

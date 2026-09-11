@@ -29,10 +29,10 @@ const RULES = {
   '옛 규칙 · 문맥 ≥ 3자': (c, l) => tight(c.quote).length - tight(c.valueText).length >= OLD_CONTEXT_MIN,
   'A · 유일성만': (c, l) => l.own === 1 && l.others === 0,
   'B · 유일성 + 문맥 ≥ 1자': (c, l) => l.own === 1 && l.others === 0 && tight(c.quote).length - tight(c.valueText).length >= 1,
-  'C · 현재 + 유일성': (c, l) => tight(c.quote).length - tight(c.valueText).length >= OLD_CONTEXT_MIN && l.own === 1 && l.others === 0,
+  'C · 옛 규칙 + 유일성': (c, l) => tight(c.quote).length - tight(c.valueText).length >= OLD_CONTEXT_MIN && l.own === 1 && l.others === 0,
   // 🔑 다른 문서에도 있는 인용은 **귀속을 확인 못 할 뿐** 가짜는 아니다.
   //    버리지 말고 등급으로 적는 쪽(0006 과 같은 방식)을 같이 잰다.
-  'D · 자기문서 유일 + 문맥 ≥ 1자': (c, l) => l.own === 1 && tight(c.quote).length - tight(c.valueText).length >= 1,
+  'D · 자기문서 유일 + 문맥 ≥ 1자 (채택)': (c, l) => l.own === 1 && tight(c.quote).length - tight(c.valueText).length >= 1,
 }
 
 function evaluate(name, docs, claims) {
