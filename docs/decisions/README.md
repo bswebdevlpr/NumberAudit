@@ -17,3 +17,5 @@
 | [0009](0009-no-fallback-snapshot.md) | 폴백 스냅샷은 기준본이 아니다 | 지금 있는 것 vs 한도 복구 후 |
 | [0010](0010-locate-not-length.md) | 인용은 길이가 아니라 자리로 잰다 | 문맥 길이(대리 지표) vs 등장 횟수 |
 | [0011](0011-same-number-is-an-assumption.md) | 「같은 숫자면 같은 측정」도 모델이 정한다 | 값으로 면제 vs 조건 묶음으로 면제 |
+| [0012](0012-polling-not-webhooks.md) | 자동 실행은 폴링이다 | 웹훅(방향이 반대) vs 지문 비교 폴링 |
+| [0013](0013-no-byo-api-key.md) | 남의 API 키를 받지 않는다 | 호스팅 폼 vs 붙여넣기·로컬 CLI |
