@@ -14,3 +14,6 @@ public/lib/
 
 # 작업 규칙 — 내부 문서
 CLAUDE.md
+
+# 공개 전 자체 점검 — 내부 도구
+scripts/check.js
