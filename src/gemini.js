@@ -54,8 +54,12 @@ function isDailyQuota(parsed) {
 async function once(model, body, { maxRetries = 5 } = {}) {
   for (let attempt = 0; ; attempt++) {
     await throttle()
-    const res = await fetch(`${BASE}/${model}:generateContent?key=${requireEnv('GEMINI_API_KEY')}`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
+    // 🔑 **키는 헤더로 보낸다.** 쿼리스트링은 URL 의 일부라 프록시 로그·에러 리포트·리퍼러에 그대로 남는다.
+    //    같은 요청이고 같은 인증인데 남는 자리가 다르다.
+    const res = await fetch(`${BASE}/${model}:generateContent`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-goog-api-key': requireEnv('GEMINI_API_KEY') },
+      body: JSON.stringify(body),
     })
     const text = await res.text()
 

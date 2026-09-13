@@ -212,7 +212,11 @@ export async function submitPlan(flow, projectId, plan, { worker = null } = {}) 
   created.steps.push(`업무 생성 ${created.taskId}`)
 
   for (const st of plan.subtasks) {
-    const r = await flow.createSubtask(projectId, created.taskId, st)
+    // 🔑 **클라이언트가 준 객체를 그대로 넘기지 않는다.** 검증은 title·contents 만 보는데
+    //    통째로 넘기면 그 밖의 키(`status`·`workerId` 같은)가 **아무도 안 본 채 플로우 API 로 나간다.**
+    //    보낼 필드는 여기서 다시 짓는다 — 검증한 것과 보내는 것이 같아야 한다.
+    const r = await flow.createSubtask(projectId, created.taskId,
+      { title: String(st?.title ?? ''), contents: String(st?.contents ?? '') })
     created.subtaskIds.push(String(r.subtaskId ?? r.taskId ?? r.id ?? ''))
   }
   created.steps.push(`하위업무 ${created.subtaskIds.length}건`)

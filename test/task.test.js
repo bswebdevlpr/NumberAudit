@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { planTasks, workerIndex, TOOL_TITLE_PREFIX, KIND } from '../src/task.js'
+import { planTasks, workerIndex, TOOL_TITLE_PREFIX, KIND, submitPlan } from '../src/task.js'
 
 const snap = {
   docs: [
@@ -100,4 +100,22 @@ test('조건이 달라 견주지 않은 값도 업무 본문에 남는다 — �
   assert.match(plan.task.title, /값이 갈림 2건/)                       // 갈림은 같은 조건 둘만 센다
   assert.match(plan.task.contents, /조건이 달라 견주지 않은 값 1건/)
   assert.match(plan.task.contents, /280ms/)                           // 지우지 않는다
+})
+
+// 🔑 검증이 보는 것과 상위 API 로 나가는 것이 같아야 한다.
+//    한동안 하위업무 객체를 통째로 넘겼다 — 검증은 title·contents 만 보는데
+//    그 밖의 키가 아무도 안 본 채 플로우로 나갔다.
+test('하위업무는 검증한 두 필드만 플로우로 보낸다', async () => {
+  const sent = []
+  const fake = {
+    createTask: async () => ({ taskId: 'T1' }),
+    createSubtask: async (_p, _t, body) => { sent.push(body); return { subtaskId: 'S1' } },
+    updateTaskWorker: async () => ({}),
+  }
+  await submitPlan(fake, 'P1', {
+    task: { title: '[수치 감사] x', contents: 'c', status: 'request', priority: 'high', endDate: '20260930' },
+    subtasks: [{ title: '확인', contents: '본문', status: 'complete', workerId: '남의-id', 진행률: 100 }],
+  })
+  assert.deepEqual(Object.keys(sent[0]).sort(), ['contents', 'title'])
+  assert.deepEqual(sent[0], { title: '확인', contents: '본문' })
 })

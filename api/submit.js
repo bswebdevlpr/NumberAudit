@@ -2,7 +2,7 @@ import { flow } from '../src/flow.js'
 import { collectProject } from '../src/collect.js'
 import { submitPlan, workerIndex, TOOL_TITLE_PREFIX } from '../src/task.js'
 import { tight, loose } from '../src/gate.js'
-import { DEMO_PROJECT_ID, json, readBody, keysReady } from './_lib.js'
+import { DEMO_PROJECT_ID, json, readBody, keysReady, userFacing } from './_lib.js'
 
 /**
  * 화면의 「플로우에 등록」이 실제로 업무를 만든다.
@@ -157,6 +157,6 @@ export default async function handler(req, res) {
     return json(res, 200, { ...created, title: plan.task.title, verifiedQuotes: v.quotes })
   } catch (e) {
     used -= 1
-    return json(res, 502, { error: String(e.message ?? e) })
+    return json(res, 502, { error: userFacing(e, '플로우에 등록하지 못했습니다.') })
   }
 }
