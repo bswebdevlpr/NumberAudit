@@ -35,9 +35,33 @@ let lastCallAt = 0
  */
 const left = (deadline) => (deadline ? deadline - Date.now() : Infinity)
 const PER_CALL_MS = Number(process.env.GEMINI_CALL_TIMEOUT_MS ?? 45_000)
+/** 다음 모델을 시도할 값어치가 있는 최소 잔여 시간. 이보다 적으면 내려가 봐야 또 끊긴다. */
+const MIN_FALLBACK_MS = Number(process.env.GEMINI_MIN_FALLBACK_MS ?? 5_000)
+
+/**
+ * ⚠️ **마감을 준 쪽만 시간을 잰다.** 한때 마감이 없어도 한 호출 상한(45초)을 걸었는데,
+ *    CLI·측정 하네스는 마감을 안 준다 — 상위 모델의 13문서 배치가 그 상한을 넘을 수 있어서
+ *    **재현하던 측정이 조용히 끊길 뻔했다.** 상한은 배포 함수의 문제고, 마감을 넘긴 쪽에만 건다.
+ */
+const perCallMs = (deadline) => (deadline ? Math.max(1, Math.min(PER_CALL_MS, left(deadline))) : null)
 
 class Timeout extends Error {
   constructor(msg) { super(msg); this.status = 'DEADLINE'; this.code = 'DEADLINE' }
+}
+
+/**
+ * 🔑 **「이 모델이 느리다」와 「시간이 없다」는 다르다.**
+ *    한 호출이 상한에 걸렸는데 전체 마감이 아직 넉넉하면, 그건 **이 모델이 느린 것**이다 —
+ *    일시 오류로 올려서 다음 모델로 내려가게 한다. 한때 둘을 같이 묶어서,
+ *    마감이 30초 남았는데도 체인이 통째로 멈췄다.
+ */
+function abortedAs(model, deadline) {
+  if (left(deadline) > MIN_FALLBACK_MS) {
+    const e = new Error(`gemini(${model}) 응답이 느리다 — 다음 모델로`)
+    e.status = 'UNAVAILABLE'
+    return e
+  }
+  return new Timeout(`gemini(${model}) 응답이 제한 시간 안에 안 왔다`)
 }
 
 async function throttle(deadline) {
@@ -72,6 +96,7 @@ async function once(model, body, { maxRetries = 5, deadline } = {}) {
   for (let attempt = 0; ; attempt++) {
     if (left(deadline) <= 0) throw new Timeout(`gemini(${model}) 제한 시간 초과`)
     await throttle(deadline)
+    const cap = perCallMs(deadline)
     // 🔑 **키는 헤더로 보낸다.** 쿼리스트링은 URL 의 일부라 프록시 로그·에러 리포트·리퍼러에 그대로 남는다.
     //    같은 요청이고 같은 인증인데 남는 자리가 다르다.
     const res = await fetch(`${BASE}/${model}:generateContent`, {
@@ -79,8 +104,11 @@ async function once(model, body, { maxRetries = 5, deadline } = {}) {
       headers: { 'Content-Type': 'application/json', 'x-goog-api-key': requireEnv('GEMINI_API_KEY') },
       body: JSON.stringify(body),
       // 응답이 안 오는 경우에도 **우리가 먼저 끊는다.** 남은 시간과 한 호출 상한 중 짧은 쪽.
-      signal: AbortSignal.timeout(Math.max(1, Math.min(PER_CALL_MS, left(deadline)))),
-    }).catch((e) => { throw e?.name === 'TimeoutError' || e?.name === 'AbortError' ? new Timeout(`gemini(${model}) 응답이 제한 시간 안에 안 왔다`) : e })
+      signal: cap == null ? undefined : AbortSignal.timeout(cap),
+    }).catch((e) => {
+      if (e?.name !== 'TimeoutError' && e?.name !== 'AbortError') throw e
+      throw abortedAs(model, deadline)
+    })
     const text = await res.text()
 
     let parsed

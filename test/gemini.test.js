@@ -122,3 +122,55 @@ test('마감을 안 주면 예전처럼 끝까지 돈다', async () => {
   route(() => ok('{"n":9}'))
   assert.deepEqual(await generateJson({ prompt: 'x', schema: SCHEMA, chain: ['a'] }), { n: 9 })
 })
+
+// 🔑 **「이 모델이 느리다」와 「시간이 없다」는 다르다.** 한때 둘을 같이 묶어서,
+//    마감이 30초 남았는데도 한 호출이 상한에 걸리면 체인이 통째로 멈췄다.
+const slowThen = (slowName) => {
+  const hits = []
+  global.fetch = (url, init) => {
+    const m = String(url).match(/models\/([^:]+):/)[1]
+    hits.push(m)
+    if (m !== slowName) return Promise.resolve(new Response(JSON.stringify(ok('{"n":7}')), { status: 200 }))
+    return new Promise((_, reject) => {
+      const guard = setTimeout(() => reject(new Error('마감이 안 걸렸다')), 5000)
+      init.signal.addEventListener('abort', () => {
+        clearTimeout(guard); const e = new Error('x'); e.name = 'TimeoutError'; reject(e)
+      })
+    })
+  }
+  return hits
+}
+
+test('한 호출이 느려도 전체 마감이 남았으면 다음 모델로 내려간다', async () => {
+  process.env.GEMINI_CALL_TIMEOUT_MS = '200'
+  const { generateJson: gen } = await import('../src/gemini.js?call-cap')
+  const hits = slowThen('slow')
+  assert.deepEqual(await gen({ prompt: 'x', schema: SCHEMA, chain: ['slow', 'fast'], deadline: Date.now() + 30_000 }), { n: 7 })
+  assert.deepEqual(hits, ['slow', 'fast'])
+  delete process.env.GEMINI_CALL_TIMEOUT_MS
+})
+
+test('전체 마감이 얼마 안 남았으면 다음 모델을 부르지 않는다 — 불러 봐야 또 끊긴다', async () => {
+  process.env.GEMINI_CALL_TIMEOUT_MS = '200'
+  const { generateJson: gen } = await import('../src/gemini.js?no-room')
+  const hits = slowThen('slow')
+  await assert.rejects(gen({ prompt: 'x', schema: SCHEMA, chain: ['slow', 'fast'], deadline: Date.now() + 600 }),
+    (e) => e.status === 'DEADLINE')
+  assert.deepEqual(hits, ['slow'], '호출을 태우지 않는다')
+  delete process.env.GEMINI_CALL_TIMEOUT_MS
+})
+
+// ⚠️ CLI·측정 하네스는 마감을 안 준다. 상위 모델의 배치가 한 호출 상한을 넘을 수 있어서,
+//    마감 없이도 상한을 걸면 **재현하던 측정이 조용히 끊긴다.**
+test('마감을 안 주면 한 호출 상한도 안 건다', async () => {
+  process.env.GEMINI_CALL_TIMEOUT_MS = '100'
+  const { generateJson: gen } = await import('../src/gemini.js?no-deadline')
+  let sawSignal = 'unset'
+  global.fetch = async (url, init) => {
+    sawSignal = init.signal
+    return new Response(JSON.stringify(ok('{"n":3}')), { status: 200 })
+  }
+  assert.deepEqual(await gen({ prompt: 'x', schema: SCHEMA, chain: ['a'] }), { n: 3 })
+  assert.equal(sawSignal, undefined, '마감이 없으면 signal 을 안 붙인다')
+  delete process.env.GEMINI_CALL_TIMEOUT_MS
+})
