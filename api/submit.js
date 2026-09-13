@@ -15,7 +15,51 @@ import { DEMO_PROJECT_ID, json, readBody, keysReady } from './_lib.js'
  *    제목만 접두사를 맞추고 본문에 실재하는 인용 하나만 넣으면 하위업무로 아무거나 올릴 수 있었다.
  *    **검증은 보내는 것 전부에 건다.**
  */
-const LIMITS = { subtasks: 20, title: 120, contents: 8000 }
+const LIMITS = { subtasks: 20, title: 120, contents: 8000, line: 400 }
+
+/**
+ * 🔑 **인용만 검증하면 인용 사이가 뚫린다.**
+ *    한동안 `인용: "…"` 만 원문에 대조했다. 그런데 업무 본문은 클라이언트가 통째로 보내는 문자열이라,
+ *    **진짜 인용 한 줄만 끼워 넣으면 나머지 8,000자는 아무 내용이나 올릴 수 있었다.**
+ *    인용은 공개된 `snapshot.json` 에서 그냥 집어 올 수 있으니 진입 장벽도 없다.
+ *    실제로 피싱 문구 + 진짜 인용 한 줄로 검증을 통과시켜 봤다.
+ *
+ *    그래서 **줄 모양까지 검사한다.** 이 도구가 내는 본문은 기계가 만든 고정 서식이다(`src/task.js`).
+ *    그 서식에 없는 줄은 사람이 손으로 넣은 것이고, 손으로 넣은 것은 안 받는다.
+ */
+const LINE_SHAPES = [
+  /^$/,                                    // 빈 줄
+  /^---$/,                                 // 구분선
+  /^지표: /,
+  /^■ /,
+  /^- /,                                   // 항목 — 바로 다음 줄이 인용이어야 한다
+  /^ {2}인용: "/,
+  /^ {2}↑ /,                                // 조건이 달라 견주지 않았다는 안내
+  /^수치 감사 도구가 만든 업무입니다/,
+  /^숫자가 틀렸다는 뜻이 아니라/,
+]
+
+/** 링크는 이 도구가 한 번도 안 만든다. 본문에 있으면 손으로 넣은 것이다. */
+const LINKISH = /(:\/\/|www\.|@[\w-]+\.[a-z]{2,})/i
+
+/** 본문이 **도구가 내는 서식 그대로인지** 본다. 인용 대조와 별개다. */
+export function checkShape(contents) {
+  const lines = String(contents ?? '').split('\n')
+  for (const [i, line] of lines.entries()) {
+    if (line.length > LIMITS.line) return `${i + 1}번째 줄이 ${LIMITS.line}자를 넘습니다.`
+    if (!LINE_SHAPES.some((re) => re.test(line))) return `${i + 1}번째 줄이 이 도구가 만드는 서식이 아닙니다.`
+    // 항목 줄은 **반드시 인용을 데리고 온다.** 이게 없으면 인용 없는 서술을 줄줄이 넣을 수 있다.
+    if (/^- /.test(line) && !/^ {2}인용: "/.test(lines[i + 1] ?? '')) {
+      return `${i + 1}번째 항목에 인용이 붙어 있지 않습니다.`
+    }
+  }
+  if (LINKISH.test(contents)) return '본문에 링크가 들어 있습니다. 이 도구는 링크를 만들지 않습니다.'
+  return null
+}
+
+/** 업무 속성도 클라이언트가 보낸다. 도구가 실제로 쓰는 값만 받는다. */
+const ALLOWED_STATUS = new Set(['request'])
+const ALLOWED_PRIORITY = new Set(['high', 'normal'])
 
 /** 본문에 적힌 인용 중 어느 문서 원문에도 없는 것을 돌려준다. 게이트 ① 과 같은 대조다. */
 export function unverifiedQuotes(contents, docs) {
@@ -36,6 +80,10 @@ export function validatePlan(plan, docs) {
   if (plan.subtasks.length > LIMITS.subtasks) {
     return { error: `하위업무는 ${LIMITS.subtasks}건까지입니다 (지금 ${plan.subtasks.length}건).` }
   }
+  if (LINKISH.test(plan.task.title)) return { error: '제목에 링크가 들어 있습니다.' }
+  if (!ALLOWED_STATUS.has(plan.task.status)) return { error: '업무 상태가 이 도구가 쓰는 값이 아닙니다.' }
+  if (!ALLOWED_PRIORITY.has(plan.task.priority)) return { error: '우선순위가 이 도구가 쓰는 값이 아닙니다.' }
+  if (!/^\d{8}$/.test(String(plan.task.endDate ?? ''))) return { error: '마감일 형식이 아닙니다.' }
 
   const parts = [
     { where: '업무 본문', title: plan.task.title, contents: plan.task.contents },
@@ -46,6 +94,8 @@ export function validatePlan(plan, docs) {
   for (const p of parts) {
     if (String(p.title ?? '').length > LIMITS.title) return { error: `${p.where} 제목이 ${LIMITS.title}자를 넘습니다.` }
     if (String(p.contents ?? '').length > LIMITS.contents) return { error: `${p.where} 본문이 ${LIMITS.contents}자를 넘습니다.` }
+    const shape = checkShape(p.contents)
+    if (shape) return { error: `${p.where}: ${shape}` }
     const { quotes, unverified } = unverifiedQuotes(p.contents, docs)
     if (!quotes.length) return { error: `${p.where}에 인용이 없습니다.` }
     if (unverified.length) {

@@ -74,9 +74,15 @@ const SYSTEM = [
 export async function clusterClaims(claims) {
   if (claims.length === 0) return { groups: [], dangling: [], ungrouped: [] }
 
+  // 🔑 **한 주장은 한 줄이다.** 줄은 `|` 로 나뉘고 `\n` 으로 갈린다 — 그 두 글자가 필드 안에 들어오면
+  //    주장 하나가 여러 줄로 갈라져 **없던 주장을 프롬프트에 심을 수 있다.**
+  //    필드 값은 모델이 붙여넣은 글에서 뽑아 온 것이라 공격자가 고를 수 있다.
+  //    참조 게이트가 「없는 claimId」는 걸러 주지만, 실재하는 id 에 남의 지표명을 붙이는 건 못 막는다.
+  //    그래서 구분자를 필드에서 빼고 길이도 자른다.
+  const cell = (v, max = 200) => String(v ?? '').replace(/[\r\n|]/g, ' ').slice(0, max)
   const lines = claims.map((c) =>
-    `${c.claimId} | ${c.metric ?? '-'} | ${c.valueText}${c.unit ?? ''} | 범위:${c.scope || '없음'} | ${c.isTarget ? '목표' : '측정'}` +
-    ` | 방법:${c.method || '원문에 없음'} | 「${c.title ?? ''}」 | 원문: ${c.quote}`
+    `${cell(c.claimId, 12)} | ${cell(c.metric) || '-'} | ${cell(c.valueText, 40)}${cell(c.unit, 20)} | 범위:${cell(c.scope) || '없음'} | ${c.isTarget ? '목표' : '측정'}` +
+    ` | 방법:${cell(c.method) || '원문에 없음'} | 「${cell(c.title)}」 | 원문: ${cell(c.quote, 400)}`
   )
   const { groups } = await generateJson({
     system: SYSTEM,
