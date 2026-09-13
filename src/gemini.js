@@ -24,9 +24,26 @@ export const trace = []
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 let lastCallAt = 0
 
-async function throttle() {
+/**
+ * 🔑 **시간을 코드가 갖는다.** 예전엔 제한이 없었다 — 재시도 5회에 최대 30초 대기, 거기에 모델 3개 체인이고
+ *    fetch 에도 타임아웃이 없어서 느린 응답 하나에 분 단위로 매달릴 수 있었다.
+ *    배포 함수는 상한이 있으니 그 경우 **플랫폼이 함수를 죽인다** — 호출은 태웠는데 결과도 사유도 없이 끊긴다.
+ *    실제로 배포에서 났다(FUNCTION_INVOCATION_TIMEOUT, 60초).
+ *
+ *    그래서 호출자가 마감 시각을 넘긴다. 남은 시간에 안 들어가는 대기·재시도는 **하지 않고 다음 모델로 내려간다.**
+ *    끝까지 안 되면 상한 안에서 **사유를 말하고** 끝낸다. 화면이 저장본을 그대로 들고 있으면 되니까.
+ */
+const left = (deadline) => (deadline ? deadline - Date.now() : Infinity)
+const PER_CALL_MS = Number(process.env.GEMINI_CALL_TIMEOUT_MS ?? 45_000)
+
+class Timeout extends Error {
+  constructor(msg) { super(msg); this.status = 'DEADLINE'; this.code = 'DEADLINE' }
+}
+
+async function throttle(deadline) {
   const wait = lastCallAt + MIN_INTERVAL_MS - Date.now()
-  if (wait > 0) { usage.waitedMs += wait; await sleep(wait) }
+  // 간격을 지키려다 마감을 넘기면 간격보다 마감이 우선이다. 남은 만큼만 쉰다.
+  if (wait > 0) { const ms = Math.min(wait, Math.max(0, left(deadline))); usage.waitedMs += ms; await sleep(ms) }
   lastCallAt = Date.now()
 }
 
@@ -51,16 +68,19 @@ function isDailyQuota(parsed) {
   return v.some((x) => String(x.quotaId ?? '').includes('PerDay'))
 }
 
-async function once(model, body, { maxRetries = 5 } = {}) {
+async function once(model, body, { maxRetries = 5, deadline } = {}) {
   for (let attempt = 0; ; attempt++) {
-    await throttle()
+    if (left(deadline) <= 0) throw new Timeout(`gemini(${model}) 제한 시간 초과`)
+    await throttle(deadline)
     // 🔑 **키는 헤더로 보낸다.** 쿼리스트링은 URL 의 일부라 프록시 로그·에러 리포트·리퍼러에 그대로 남는다.
     //    같은 요청이고 같은 인증인데 남는 자리가 다르다.
     const res = await fetch(`${BASE}/${model}:generateContent`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-goog-api-key': requireEnv('GEMINI_API_KEY') },
       body: JSON.stringify(body),
-    })
+      // 응답이 안 오는 경우에도 **우리가 먼저 끊는다.** 남은 시간과 한 호출 상한 중 짧은 쪽.
+      signal: AbortSignal.timeout(Math.max(1, Math.min(PER_CALL_MS, left(deadline)))),
+    }).catch((e) => { throw e?.name === 'TimeoutError' || e?.name === 'AbortError' ? new Timeout(`gemini(${model}) 응답이 제한 시간 안에 안 왔다`) : e })
     const text = await res.text()
 
     let parsed
@@ -79,6 +99,11 @@ async function once(model, body, { maxRetries = 5 } = {}) {
     }
     if (TRANSIENT.has(status) && attempt < maxRetries) {
       const ms = retryDelayMs(parsed, attempt)
+      // 🔑 **기다린 뒤에 호출할 시간이 남아야 기다린다.** 안 남으면 기다리는 건 순수 낭비다 — 바로 내려간다.
+      if (ms + 1000 >= left(deadline)) {
+        process.stderr.write(`  ⏱ ${model} ${status} — 남은 시간에 재시도가 안 들어간다. 폴백\n`)
+        throw new Timeout(`gemini(${model}) ${status} — 재시도할 시간이 없다`)
+      }
       usage.retries += 1; usage.waitedMs += ms
       process.stderr.write(`  ↻ ${model} ${status} — ${(ms / 1000).toFixed(1)}초 대기 (${attempt + 1}/${maxRetries})\n`)
       await sleep(ms)
@@ -95,7 +120,7 @@ async function once(model, body, { maxRetries = 5 } = {}) {
  * Gemini 를 JSON 스키마로 묶어서 호출한다.
  * 자유 서술을 받지 않는 이유: 뒤에 붙는 인용 게이트가 필드 단위로 돌아야 하기 때문이다.
  */
-export async function generateJson({ system, prompt, schema, temperature = 0, chain }) {
+export async function generateJson({ system, prompt, schema, temperature = 0, chain, deadline }) {
   const body = {
     contents: [{ role: 'user', parts: [{ text: prompt }] }],
     generationConfig: { temperature, responseMimeType: 'application/json', responseSchema: schema },
@@ -103,10 +128,12 @@ export async function generateJson({ system, prompt, schema, temperature = 0, ch
   if (system) body.systemInstruction = { parts: [{ text: system }] }
 
   let parsed, used, lastErr
+  const startedAt = Date.now()
   // 호출자가 체인을 줄 수 있다. 배포 함수마다 상한이 달라 **경로별로 모델을 달리 고를 자리**가 필요하다.
   const MODELS = chain?.length ? chain : models()
   for (const model of MODELS) {
-    try { parsed = await once(model, body); used = model; break } catch (e) {
+    if (left(deadline) <= 0) { lastErr = new Timeout('제한 시간 안에 못 끝냈다'); break }
+    try { parsed = await once(model, body, { deadline }); used = model; break } catch (e) {
       lastErr = e
       if (!TRANSIENT.has(e.status)) throw e   // 진짜 오류는 삼키지 않는다
       process.stderr.write(`  ↓ ${model} 소진 → 다음 모델\n`)
@@ -117,7 +144,7 @@ export async function generateJson({ system, prompt, schema, temperature = 0, ch
   usage.calls += 1
   usage.byModel[used] = (usage.byModel[used] ?? 0) + 1
   const entry = {
-    model: used, system: redact(system ?? ''), prompt: redact(prompt),
+    model: used, ms: Date.now() - startedAt, system: redact(system ?? ''), prompt: redact(prompt),
     promptTokens: parsed.usageMetadata?.promptTokenCount ?? 0,
     outputTokens: parsed.usageMetadata?.candidatesTokenCount ?? 0,
     finishReason: parsed.candidates?.[0]?.finishReason ?? null,

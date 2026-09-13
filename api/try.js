@@ -21,8 +21,16 @@ const { auditText } = await import('../src/audit.js')
  * 실측(2026-09-11): 빠른 모델은 「공지 초안에는 150ms로 개선이라고 적었습니다」를 **목표값으로 분류**해
  * 판정에서 통째로 빼 버렸다. 사용자가 자기 글로 확인하는 자리라 여기서 지면 도구가 안 도는 것처럼 보인다.
  */
-const TRY_CHAIN = (process.env.TRY_GEMINI_MODEL ?? 'gemini-3.6-flash,gemini-3.5-flash,gemini-3.1-flash-lite')
-  .split(',').map((s) => s.trim()).filter(Boolean)
+const list = (v) => String(v).split(',').map((s) => s.trim()).filter(Boolean)
+const TRY_CHAIN = list(process.env.TRY_GEMINI_MODEL ?? 'gemini-3.6-flash,gemini-3.5-flash,gemini-3.1-flash-lite')
+
+/**
+ * 🔑 **묶기는 빠른 모델로 돈다.** 위 이유는 뽑기에만 붙는다 — 목표/사실 분류가 거기서 났다.
+ *    묶기는 붙여넣은 주장과 저장본 주장을 통째로 넣어서 프롬프트가 훨씬 크고, 상위 모델로 돌리면
+ *    두 호출 합이 함수 상한(60초)을 넘겼다(실측 47.7초, 배포에서는 타임아웃).
+ *    프로젝트 감사는 이미 라이브 경로 전체를 빠른 모델로 고정해 같은 크기의 묶기를 문제없이 돌리고 있다.
+ */
+const TRY_CLUSTER_CHAIN = list(process.env.TRY_CLUSTER_MODEL ?? 'gemini-3.1-flash-lite,gemini-3.5-flash')
 
 /**
  * 🔑 비교군 — **저장된 스냅샷의 원문과 주장을 그대로 쓴다.** 모델을 다시 부르지 않는다.
@@ -46,6 +54,14 @@ async function baseline() {
   }
   return cachedBase
 }
+
+/**
+ * 🔑 **함수 상한보다 먼저 끝낸다.** `vercel.json` 이 60초를 주는데, 그 60초를 다 쓰면
+ *    플랫폼이 함수를 죽이고 사용자는 우리 화면이 아니라 **플랫폼 오류 페이지**를 본다 —
+ *    호출은 태웠는데 결과도 사유도 없다. 실제로 배포에서 났다.
+ *    10초를 남겨 두고 우리가 끝내면, 늦더라도 **사유가 적힌 JSON** 이 나간다.
+ */
+const DEADLINE_MS = Number(process.env.TRY_DEADLINE_MS ?? 50_000)
 
 const MAX_CHARS = Number(process.env.TRY_MAX_CHARS ?? 4000)
 // 🔑 비교군을 붙이면서 호출이 1회 → 2회가 됐다(추출 + 묶기). 하루 총량을 그만큼 줄인다.
@@ -97,7 +113,8 @@ export default async function handler(req, res) {
     // 목록에 「붙여넣은 글」이 제목으로 또 나오면 같은 말이 두 번이다. 첫 줄을 제목으로 쓴다.
     const head = body.split('\n').map((l) => l.trim()).find(Boolean) ?? ''
     const title = head.slice(0, 40) + (head.length > 40 ? '…' : '')
-    const snapshot = await auditText(body, { chain: TRY_CHAIN, baseline: await baseline(), title: title || '붙여넣은 글' })
+    const snapshot = await auditText(body, { chain: TRY_CHAIN, clusterChain: TRY_CLUSTER_CHAIN,
+      baseline: await baseline(), title: title || '붙여넣은 글', deadline: Date.now() + DEADLINE_MS })
     return json(res, 200, { ...snapshot, budget: budget() })
   } catch (e) {
     used -= 1

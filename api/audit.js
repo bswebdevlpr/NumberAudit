@@ -74,6 +74,8 @@ async function storedSnapshot() {
  * 내 한도를 쓰는 기능이라 붙여넣기와 같은 방식으로 막는다: 하루 총량 · 같은 IP 간격.
  * ⚠️ 이 계수기도 인스턴스 메모리다. 진짜 방어선은 Gemini 자체 한도다.
  */
+// 함수 상한(60초)보다 먼저 우리가 끝낸다 — 상한에 걸리면 사유 없이 끊긴다.
+const AUDIT_DEADLINE_MS = Number(process.env.AUDIT_DEADLINE_MS ?? 50_000)
 const FORCE_DAILY = Number(process.env.AUDIT_FORCE_DAILY ?? 5)
 const FORCE_PER_IP_MS = Number(process.env.AUDIT_FORCE_PER_IP_MS ?? 60_000)
 let day = new Date().toISOString().slice(0, 10)
@@ -134,7 +136,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const snapshot = await auditProject(DEMO_PROJECT_ID)
+    const snapshot = await auditProject(DEMO_PROJECT_ID, { deadline: Date.now() + AUDIT_DEADLINE_MS })
     let fp = null
     try { fp = (await readList()).fingerprint } catch { /* 지문을 못 만들면 다음 요청이 다시 감사한다 */ }
     cache = { at: Date.now(), fingerprint: fp, snapshot }

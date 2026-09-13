@@ -79,3 +79,46 @@ test('스키마를 요청 몸통에 실어 보낸다 — 형태 강제는 서버
   assert.deepEqual(sent.generationConfig.responseSchema, SCHEMA)
   assert.equal(sent.generationConfig.temperature, 0)
 })
+
+// ── 제한 시간 ─────────────────────────────────────────────
+// 🔑 배포에서 FUNCTION_INVOCATION_TIMEOUT 이 났던 자리. 재시도 5회 × 최대 30초 대기에 모델 3개 체인인데
+//    fetch 에도 타임아웃이 없어서, 느린 응답 하나에 함수 상한까지 매달리고 **사유 없이 끊겼다.**
+
+test('응답이 안 오면 마감 안에 우리가 먼저 끊는다', async () => {
+  // ⚠️ `AbortSignal.timeout` 은 이벤트 루프를 붙잡지 않는다(unref 타이머). 실제로는 진행 중인 fetch 가
+  //    루프를 살려 두지만, 가짜 fetch 만 남는 테스트에서는 루프가 말라 테스트가 통째로 취소된다.
+  //    그래서 안전장치 타이머를 하나 둔다 — 이게 먼저 울리면 마감이 안 걸린 것이다.
+  global.fetch = (url, init) => new Promise((_, reject) => {
+    const guard = setTimeout(() => reject(new Error('마감이 안 걸렸다')), 5000)
+    init.signal.addEventListener('abort', () => {
+      clearTimeout(guard)
+      const e = new Error('aborted'); e.name = 'TimeoutError'; reject(e)
+    })
+  })
+  const t0 = Date.now()
+  await assert.rejects(
+    generateJson({ prompt: 'x', schema: SCHEMA, chain: ['a'], deadline: Date.now() + 300 }),
+    (e) => e.status === 'DEADLINE')
+  assert.ok(Date.now() - t0 < 3000, `마감을 지켜야 한다 (실제 ${Date.now() - t0}ms)`)
+})
+
+test('남은 시간에 재시도가 안 들어가면 기다리지 않는다', async () => {
+  route(() => err('UNAVAILABLE', 'retry in 30.0s'))
+  const t0 = Date.now()
+  await assert.rejects(
+    generateJson({ prompt: 'x', schema: SCHEMA, chain: ['a'], deadline: Date.now() + 400 }),
+    (e) => e.status === 'DEADLINE')
+  assert.ok(Date.now() - t0 < 3000, `30초를 기다리면 안 된다 (실제 ${Date.now() - t0}ms)`)
+})
+
+test('마감이 이미 지났으면 호출 자체를 안 한다', async () => {
+  let called = 0
+  global.fetch = async () => { called += 1; return new Response(JSON.stringify(ok('{"n":1}')), { status: 200 }) }
+  await assert.rejects(generateJson({ prompt: 'x', schema: SCHEMA, chain: ['a'], deadline: Date.now() - 1 }))
+  assert.equal(called, 0, '호출을 태우지 않는다')
+})
+
+test('마감을 안 주면 예전처럼 끝까지 돈다', async () => {
+  route(() => ok('{"n":9}'))
+  assert.deepEqual(await generateJson({ prompt: 'x', schema: SCHEMA, chain: ['a'] }), { n: 9 })
+})

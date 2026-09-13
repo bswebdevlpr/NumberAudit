@@ -52,6 +52,8 @@ export function userFacing(e, fallback) {
   console.warn('[실패]', m)
   // 한도·모델 장애처럼 **사용자가 알아야 뜻이 통하는 것**만 그대로 내보낸다.
   if (/RESOURCE_EXHAUSTED|한도|quota/i.test(m)) return '오늘 모델 호출 한도를 다 썼습니다. 내일 다시 열립니다.'
+  // 늦어서 우리가 끊은 경우. 「고장」이 아니라 「이번엔 제시간에 못 끝냈다」라고 말한다.
+  if (/제한 시간|DEADLINE/i.test(m)) return '모델 응답이 늦어 제시간에 못 끝냈습니다. 잠시 뒤 다시 눌러 주세요.'
   return fallback
 }
 

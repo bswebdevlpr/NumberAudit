@@ -16,7 +16,7 @@ export const SNAPSHOT_VERSION = 1
  *    문서가 하나뿐이면 「같은 지표를 다른 이름으로 부른 것」을 가를 일도 거의 없다.
  *    (프로젝트 감사는 문서가 여럿이라 그 판단이 필요해서 모델을 쓴다)
  */
-export async function auditText(text, { title = '붙여넣은 글', chain, baseline } = {}) {
+export async function auditText(text, { title = '붙여넣은 글', chain, clusterChain, baseline, deadline } = {}) {
   const startedAt = Date.now()
   geminiTrace.length = 0
   const usageBefore = { ...usage, byModel: { ...usage.byModel } }
@@ -28,7 +28,7 @@ export async function auditText(text, { title = '붙여넣은 글', chain, basel
   //    비교군이 붙여넣은 글 안에만 있으면 「내 초안의 숫자가 이 프로젝트와 맞나」를 못 본다.
   //    그게 이 도구가 하려던 일 자체다(공지 초안의 250ms).
   const base = { docs: baseline?.docs ?? [], claims: baseline?.claims ?? [], rejected: baseline?.rejected ?? [] }
-  const { claims: fresh, rejected, stats } = await extractClaims([pasteDoc], { chain })
+  const { claims: fresh, rejected, stats } = await extractClaims([pasteDoc], { chain, deadline })
 
   // 기존 주장과 id 가 겹치면 안 된다. 붙여넣은 것은 P 로 시작한다.
   const pasted = fresh.map((c, i) => ({ ...c, claimId: `P${String(i + 1).padStart(3, '0')}` }))
@@ -38,7 +38,11 @@ export async function auditText(text, { title = '붙여넣은 글', chain, basel
   let groups
   if (base.claims.length) {
     // 비교군이 있으면 묶기도 모델이 한다 — 지표명 문자열로 얹으면 이름이 조금만 흔들려도 조용히 빠진다.
-    groups = (await clusterClaims(claims)).groups
+    // 🔑 **뽑기와 묶기의 모델을 가른다.** 붙여넣기가 상위 모델을 쓰는 이유는 뽑기에 있었다 —
+    //    빠른 모델이 「150ms로 개선이라고 적었습니다」를 목표값으로 분류해 판정에서 통째로 뺐다.
+    //    묶기는 그 이유가 안 붙는데 **여기가 훨씬 비싸다**(프롬프트 3,679자 · 출력 864토큰 · 실측 2026-09-13).
+    //    상위 모델로 둘 다 돌리면 배포 상한(60초)을 넘는다. 실제로 넘었다.
+    groups = (await clusterClaims(claims, { chain: clusterChain ?? chain, deadline })).groups
   } else {
     // 비교군이 없으면 글 하나뿐이라 묶을 판단이 거의 없다. 호출을 아낀다.
     const key = (s) => String(s ?? '').replace(/\s/g, '').toLowerCase()
@@ -100,7 +104,7 @@ export async function auditText(text, { title = '붙여넣은 글', chain, basel
  * 그래서 스냅샷에는 **화면이 근거를 펼 때 필요한 것을 전부** 담는다 —
  * 원문 전문(인용 하이라이트용) · 요청/응답 로그 · 프롬프트 원문 · 폐기된 주장과 그 사유까지.
  */
-export async function auditProject(projectId, { title } = {}) {
+export async function auditProject(projectId, { title, deadline } = {}) {
   const startedAt = Date.now()
   flowTrace.length = 0
   geminiTrace.length = 0
@@ -113,8 +117,8 @@ export async function auditProject(projectId, { title } = {}) {
   }
 
   const docs = await collectProject(projectId)
-  const { claims, rejected, stats, batches } = await extractClaims(docs)
-  const { groups, dangling, duplicated, outOfGroup, ungrouped } = await clusterClaims(claims)
+  const { claims, rejected, stats, batches } = await extractClaims(docs, { deadline })
+  const { groups, dangling, duplicated, outOfGroup, ungrouped } = await clusterClaims(claims, { deadline })
   const { verdicts, byUnit } = judgeRoom(claims, groups)
 
   // 참여자는 담당자 지정에 쓴다. 플로우 호출이라 Gemini 예산과 무관하다.

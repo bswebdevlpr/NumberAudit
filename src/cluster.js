@@ -71,7 +71,7 @@ const SYSTEM = [
  * 🔑 참조 게이트 — 판정이 가리킨 claimId 가 실재하는지 코드가 되짚는다.
  * 인용 게이트와 같은 원리다. 모델에게 「확실하냐」고 되묻지 않고, 코드가 볼 수 있는 사실만 본다.
  */
-export async function clusterClaims(claims) {
+export async function clusterClaims(claims, { chain, deadline } = {}) {
   if (claims.length === 0) return { groups: [], dangling: [], ungrouped: [] }
 
   // 🔑 **한 주장은 한 줄이다.** 줄은 `|` 로 나뉘고 `\n` 으로 갈린다 — 그 두 글자가 필드 안에 들어오면
@@ -88,6 +88,8 @@ export async function clusterClaims(claims) {
     system: SYSTEM,
     prompt: `다음 수치 주장들을 같은 지표끼리 묶어라.\n\n${lines.join('\n')}`,
     schema: SCHEMA,
+    chain,
+    deadline,
   })
 
   const known = new Set(claims.map((c) => c.claimId))
