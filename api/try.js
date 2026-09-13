@@ -1,4 +1,4 @@
-import { json, readBody, keysReady, userFacing } from './_lib.js'
+import { json, readBody, keysReady, userFacing, crossSite, clientIp } from './_lib.js'
 
 /**
  * 쓰는 사람이 **자기 글**로 파이프라인을 돌려 보는 자리.
@@ -67,6 +67,8 @@ export default async function handler(req, res) {
   // GET 은 남은 횟수만 알려준다. 호출을 쓰지 않는다.
   if (req.method === 'GET') return json(res, 200, budget())
   if (req.method !== 'POST') return json(res, 405, { error: 'POST 만 받습니다.' })
+  const foreign = crossSite(req)
+  if (foreign) return json(res, 403, { error: foreign })
   const missing = keysReady()
   if (missing) return json(res, 503, { error: missing })
 
@@ -75,7 +77,7 @@ export default async function handler(req, res) {
     return json(res, 429, { error: `오늘 시험 실행이 ${DAILY_BUDGET}회를 채웠습니다. 무료 티어 한도(모델당 하루 20회)를 나눠 쓰기 때문입니다.`, budget: budget() })
   }
 
-  const ip = String(req.headers['x-forwarded-for'] ?? '').split(',')[0].trim() || 'local'
+  const ip = clientIp(req)
   const since = Date.now() - (lastByIp.get(ip) ?? 0)
   if (since < PER_IP_MS) {
     return json(res, 429, { error: `${Math.ceil((PER_IP_MS - since) / 1000)}초 뒤에 다시 눌러 주세요.`, budget: budget() })

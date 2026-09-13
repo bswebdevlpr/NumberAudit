@@ -1,4 +1,4 @@
-import { DEMO_PROJECT_ID, json, keysReady, userFacing } from './_lib.js'
+import { DEMO_PROJECT_ID, json, keysReady, userFacing, crossSite } from './_lib.js'
 
 /**
  * 라이브 경로의 모델을 **빠른 쪽으로 고정한다.**
@@ -88,6 +88,8 @@ function forceBudget() {
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return json(res, 405, { error: 'POST 만 받습니다.' })
+  const foreign = crossSite(req)
+  if (foreign) return json(res, 403, { error: foreign })
   const missing = keysReady()
   if (missing) return json(res, 503, { error: missing })
 

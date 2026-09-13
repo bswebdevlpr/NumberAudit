@@ -54,3 +54,38 @@ export function userFacing(e, fallback) {
   if (/RESOURCE_EXHAUSTED|한도|quota/i.test(m)) return '오늘 모델 호출 한도를 다 썼습니다. 내일 다시 열립니다.'
   return fallback
 }
+
+/**
+ * 🔑 **브라우저가 보낸 교차 사이트 요청을 거른다.**
+ *    이 엔드포인트들은 인증이 없어서 훔칠 세션은 없다. 그래도 남의 페이지가 방문자 브라우저로
+ *    이쪽에 POST 를 시킬 수 있고, 그러면 **내 하루 한도를 남의 IP 로 태운다.**
+ *
+ *    브라우저는 교차 출처 POST 에 `Origin` 을 반드시 붙인다. 그러니 **있으면 대조하고, 없으면 통과**시킨다 —
+ *    없는 쪽은 브라우저가 아니다(curl·CLI·상태 점검). 브라우저만 막으면 되는 문제라 그걸로 충분하다.
+ *    ⚠️ 인증이 붙는 날에는 이 판단을 다시 해야 한다. 그때는 없는 `Origin` 도 막아야 한다.
+ */
+export function crossSite(req) {
+  const origin = req.headers.origin
+  if (!origin) return null
+  const host = req.headers['x-forwarded-host'] ?? req.headers.host
+  try {
+    if (new URL(origin).host === String(host)) return null
+  } catch { /* 파싱 안 되면 아래로 */ }
+  console.warn('[교차출처]', origin, '→', host)
+  return '다른 사이트에서 온 요청은 받지 않습니다.'
+}
+
+/**
+ * 🔑 **클라이언트가 정할 수 없는 값부터 본다.**
+ *    `x-forwarded-for` 는 요청자가 직접 넣을 수 있는 헤더다. 플랫폼이 덮어써 주는 환경에서는 첫 값이 맞지만,
+ *    안 덮는 곳에 올리면 **간격 제한이 헤더 한 줄로 뚫린다.** 프록시가 넣는 값을 먼저 쓰고,
+ *    `x-forwarded-for` 밖에 없으면 **맨 뒤**를 쓴다 — 앞쪽은 요청자가 채울 수 있고 뒤쪽은 프록시가 채운다.
+ */
+export function clientIp(req) {
+  const h = req.headers
+  const first = (v) => String(v ?? '').split(',')[0].trim()
+  const proxied = first(h['x-real-ip']) || first(h['x-vercel-forwarded-for'])
+  if (proxied) return proxied
+  const chain = String(h['x-forwarded-for'] ?? '').split(',').map((s) => s.trim()).filter(Boolean)
+  return chain[chain.length - 1] || 'local'
+}

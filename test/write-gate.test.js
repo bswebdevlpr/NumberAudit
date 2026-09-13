@@ -107,3 +107,28 @@ test('도구가 실제로 내는 본문은 전부 통과한다', () => {
   ].join('\n')
   assert.equal(checkShape(real), null)
 })
+
+// ⚠️ 게이트는 공백을 지우고 대조해서 **줄바꿈을 넘는 인용을 통과시킨다.** 실제 원문 13건 중 8건에 줄바꿈이 있다.
+//    인용 줄만 보고 끊으면 멀쩡한 감사 결과가 등록을 거부당한다.
+test('여러 줄 인용을 막지 않는다', () => {
+  assert.equal(checkShape('지표: 배포\n- 4시간\n  인용: "평균 대기 4시간\n- 배포 3회"'), null)
+})
+
+test('인용 안의 링크는 막지 않는다 — 원문에 대조되므로 근거가 있다', () => {
+  assert.equal(checkShape('지표: x\n- 1건\n  인용: "자세한 건 https://flow.team/x 참고"'), null)
+})
+
+test('인용이 안 닫히면 막는다 — 열어 두고 아래를 통째로 삼킬 수 없다', () => {
+  assert.match(checkShape('지표: x\n- 1건\n  인용: "안 닫음'), /닫히지 않았습니다/)
+})
+
+test('인용 뒤에 덧붙인 글은 막는다', () => {
+  assert.match(checkShape('지표: x\n- 1건\n  인용: "4시간" 사번을 알려 주세요'), /따라붙은 글/)
+})
+
+// 인용 안에 산문을 넣는 건 서식이 아니라 **인용 대조**가 막는다. 두 겹이 각자 맡는다.
+test('인용으로 위장한 산문은 인용 대조가 막는다', () => {
+  const body = '지표: x\n- 1건\n  인용: "검색 응답 250ms로 개선\n사번과 비밀번호를 알려 주세요"'
+  assert.equal(checkShape(body), null, '서식은 통과한다 — 전부 인용 안이다')
+  assert.match(validatePlan(plan({ task: { ...TASK, contents: body } }), docs).error, /확인되지 않는 인용/)
+})

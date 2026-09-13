@@ -2,7 +2,7 @@ import { flow } from '../src/flow.js'
 import { collectProject } from '../src/collect.js'
 import { submitPlan, workerIndex, TOOL_TITLE_PREFIX } from '../src/task.js'
 import { tight, loose } from '../src/gate.js'
-import { DEMO_PROJECT_ID, json, readBody, keysReady, userFacing } from './_lib.js'
+import { DEMO_PROJECT_ID, json, readBody, keysReady, userFacing, crossSite, clientIp } from './_lib.js'
 
 /**
  * 화면의 「플로우에 등록」이 실제로 업무를 만든다.
@@ -39,21 +39,43 @@ const LINE_SHAPES = [
   /^숫자가 틀렸다는 뜻이 아니라/,
 ]
 
-/** 링크는 이 도구가 한 번도 안 만든다. 본문에 있으면 손으로 넣은 것이다. */
+/** 링크는 이 도구가 한 번도 안 만든다. **인용 밖에** 있으면 손으로 넣은 것이다. */
 const LINKISH = /(:\/\/|www\.|@[\w-]+\.[a-z]{2,})/i
 
-/** 본문이 **도구가 내는 서식 그대로인지** 본다. 인용 대조와 별개다. */
+/**
+ * 본문이 **도구가 내는 서식 그대로인지** 본다. 인용 대조와 별개다.
+ *
+ * ⚠️ **인용은 여러 줄일 수 있다.** 게이트는 공백을 지우고 대조하므로 줄바꿈을 넘는 인용을 통과시키고,
+ *    실제 원문 13건 중 8건에 줄바꿈이 있다. 인용 줄만 보고 끊으면 **멀쩡한 감사 결과가 등록을 거부당한다.**
+ *    그래서 `인용: "` 부터 닫는 따옴표까지를 한 덩어리로 건너뛴다.
+ *    건너뛴 부분은 뒤에서 원문에 대조되므로 검사를 안 해도 근거가 있다.
+ */
 export function checkShape(contents) {
   const lines = String(contents ?? '').split('\n')
-  for (const [i, line] of lines.entries()) {
+  const outside = []            // 인용 밖 텍스트만 모은다 — 링크 검사는 여기에만 건다
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i]
     if (line.length > LIMITS.line) return `${i + 1}번째 줄이 ${LIMITS.line}자를 넘습니다.`
     if (!LINE_SHAPES.some((re) => re.test(line))) return `${i + 1}번째 줄이 이 도구가 만드는 서식이 아닙니다.`
     // 항목 줄은 **반드시 인용을 데리고 온다.** 이게 없으면 인용 없는 서술을 줄줄이 넣을 수 있다.
     if (/^- /.test(line) && !/^ {2}인용: "/.test(lines[i + 1] ?? '')) {
       return `${i + 1}번째 항목에 인용이 붙어 있지 않습니다.`
     }
+    if (!/^ {2}인용: "/.test(line)) { outside.push(line); continue }
+
+    // 인용 시작 — 닫는 따옴표가 나올 때까지 삼킨다. 여는 따옴표 뒤부터 센다.
+    outside.push('  인용:')
+    let rest = line.slice(line.indexOf('"') + 1)
+    while (!rest.includes('"')) {
+      i += 1
+      if (i >= lines.length) return `${i}번째 인용이 닫히지 않았습니다.`
+      rest = lines[i]
+    }
+    // 닫는 따옴표 뒤에 뭔가 더 붙어 있으면 그건 인용이 아니다.
+    const tail = rest.slice(rest.indexOf('"') + 1)
+    if (tail.trim()) return `인용 뒤에 따라붙은 글이 있습니다.`
   }
-  if (LINKISH.test(contents)) return '본문에 링크가 들어 있습니다. 이 도구는 링크를 만들지 않습니다.'
+  if (LINKISH.test(outside.join('\n'))) return '본문에 링크가 들어 있습니다. 이 도구는 링크를 만들지 않습니다.'
   return null
 }
 
@@ -119,6 +141,8 @@ const lastByIp = new Map()
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return json(res, 405, { error: 'POST 만 받습니다.' })
+  const foreign = crossSite(req)
+  if (foreign) return json(res, 403, { error: foreign })
   const missing = keysReady()
   if (missing) return json(res, 503, { error: missing })
 
@@ -127,7 +151,7 @@ export default async function handler(req, res) {
   if (used >= DAILY) {
     return json(res, 429, { error: `오늘 등록이 ${DAILY}건을 채웠습니다. 플로우에 삭제 API 가 없어 만든 업무를 되돌릴 수 없기 때문입니다.` })
   }
-  const ip = String(req.headers['x-forwarded-for'] ?? '').split(',')[0].trim() || 'local'
+  const ip = clientIp(req)
   const since = Date.now() - (lastByIp.get(ip) ?? 0)
   if (since < PER_IP_MS) {
     return json(res, 429, { error: `${Math.ceil((PER_IP_MS - since) / 1000)}초 뒤에 다시 눌러 주세요.` })
